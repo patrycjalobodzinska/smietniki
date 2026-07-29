@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EcoRoute — panel zarządzania śmietnikami
 
-## Getting Started
+Panel do optymalizacji tras śmieciarek na podstawie zapełnienia śmietników
+(detekcja kamerami). Role: administrator, spółdzielnia, dyspozytor, kierowca.
 
-First, run the development server:
+Stack: **Next.js 16 (App Router) · React 19 · Tailwind v4 · TanStack Query v5**.
+
+## Uruchomienie
+
+Wymagany **Node ≥ 20** (jest `.nvmrc` → `nvm use`).
 
 ```bash
+nvm use          # 22
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Backend: SprigaAPI vs mocki
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Skopiuj `.env.example` → `.env.local`. Dwie zmienne sterują źródłem danych:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+NEXT_PUBLIC_API_URL=https://spriga-api.essa.sx  # pusty = zawsze mocki
+NEXT_PUBLIC_USE_MOCKS=false                      # true = wymuś mocki (demo offline)
+```
 
-## Learn More
+Gdy `NEXT_PUBLIC_API_URL` jest ustawione i `USE_MOCKS≠true`, aplikacja działa na
+żywym API (logowanie cookie `httpOnly`, `credentials: "include"` — bez tokenów w JS).
+Przełącznik jest w `lib/api/config.ts`; serwisy wybierają implementację
+mock/real (np. `services/infrastructure.{mock,real}.ts`) — hooki i UI bez zmian.
 
-To learn more about Next.js, take a look at the following resources:
+## Architektura
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+app/
+  (dashboard)/          # ekrany za AppShell (sidebar + topbar)
+    page.tsx            # pulpit
+    smietniki/ trasy/ pojazdy/ uzytkownicy/ ustawienia/
+  providers.tsx         # QueryClientProvider + SessionProvider
+  globals.css           # DESIGN TOKENS (kolory, radius) — jedyne źródło prawdy
+components/
+  ui/                   # globalne prymitywy: Button, Input, Select, DataTable, Card, Dialog...
+  domain/               # komponenty domenowe: FillBar, badge statusów/frakcji/ról
+  layout/               # AppShell, Sidebar, Topbar, PageHeader
+  auth/                 # PermissionGate
+lib/
+  types/                # model domenowy (Bin, CollectionRoute, Vehicle, User, Role)
+  api/
+    client.ts           # fetch wrapper (http.get/post/put/del) — pod realne API
+    services/           # binsService, routesService... (dziś mock, potem http.*)
+    hooks/              # useBins, useRoutes... (React Query)
+    mock/               # dane + in-memory store
+    query-keys.ts       # centralne klucze cache
+  auth/session.tsx      # mock sesji + useSession() / has(permission)
+  utils/                # cn(), format()
+config/
+  navigation.ts         # menu boczne (gated uprawnieniami)
+  roles.ts              # role + macierz uprawnień + can()
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Zasady (trzymamy się schematu)
 
-## Deploy on Vercel
+1. **Kolory tylko z tokenów.** Nigdy hex/oklch w komponencie — używaj klas
+   `bg-primary`, `text-muted-foreground`, `border-border`, `bg-fill-critical`
+   itd. Nowy kolor = nowy token w `app/globals.css`.
+2. **Jeden globalny komponent na wzorzec.** Potrzebujesz tabeli → używasz
+   `DataTable` (konfiguracja kolumn). Potrzebujesz pola formularza → `Field` +
+   kontrolka z `components/ui`. Nie duplikujemy prymitywów.
+3. **Dane przez hooki.** Ekran nie woła serwisu bezpośrednio — używa
+   `useX()`/`useMutation`. Klucze cache z `qk` w `query-keys.ts`.
+4. **Przejście na realne API** = podmiana ciał w `lib/api/services/*` na wywołania
+   `http.*` + `NEXT_PUBLIC_API_URL`. Hooki i komponenty bez zmian.
+5. **Uprawnienia deklaratywnie.** Sekcje/akcje sprawdzają `has(permission)` lub
+   `<PermissionGate>`, nie porównują ról wprost. Nowa rola = wpis w `roles.ts`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> Przełącznik ról w topbarze jest tymczasowy (dev) — zniknie po wpięciu auth.

@@ -1,26 +1,327 @@
 @import "tailwindcss";
 
+/* Dark mode driven by a `.dark` class on <html> (toggleable in the UI). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------------ */
+/*  SMART WASTE design tokens                                          */
+/*  Single source of truth for colors, radii, shadows, glass.          */
+/*  Components consume these via Tailwind utilities                     */
+/*  (bg-primary, text-muted-foreground, bg-fill-critical, ...) or the   */
+/*  `.glass` / `.glass-strong` utilities. Never hard-code hex.          */
+/*  Light is the default theme; dark is a first-class counterpart.      */
+/* ------------------------------------------------------------------ */
+
+/* ---- LIGHT (default) — modern frosted glass ---- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --radius: 1rem; /* 16px — airy, modern cards */
+
+  /* Base surfaces sit under translucent glass; kept bright + faintly minty. */
+  --background: #e9f1ec;
+  --background-secondary: #eef4f0;
+  --card: #ffffff;
+  --card-foreground: #0c1712;
+  --surface-hover: #e4eee8;
+  --popover: #ffffff;
+  --popover-foreground: #0c1712;
+
+  --foreground: #0c1712;
+  --muted: #eef4f0;
+  --muted-foreground: #55655c;
+  --border: #dde8e2;
+  --input: #d3e0d9;
+  --ring: #1e8e5a;
+
+  --primary: #12945a;
+  --primary-hover: #0f7d4c;
+  --primary-foreground: #ffffff;
+  --secondary: #e7efe9;
+  --secondary-foreground: #14231b;
+  --accent: #dcf3e6;
+  --accent-foreground: #10603c;
+
+  --success: #1e8e5a;
+  --success-foreground: #ffffff;
+  --warning: #b7891a;
+  --warning-foreground: #ffffff;
+  --danger: #d33f3f;
+  --danger-foreground: #ffffff;
+  --info: #2596c9;
+  --info-foreground: #ffffff;
+  --neutral: #6b7280;
+
+  /* Bin fill-level scale (spec §21.4) */
+  --fill-low: #1e8e5a;
+  --fill-mid: #d1a417;
+  --fill-high: #e07b1a;
+  --fill-critical: #d33f3f;
+  --fill-none: #9aa8a0;
+
+  /* Chart series (spec §21.8): green, mint, yellow, orange, red, gray */
+  --chart-1: #12945a;
+  --chart-2: #39a96b;
+  --chart-3: #d1a417;
+  --chart-4: #e07b1a;
+  --chart-5: #d33f3f;
+  --chart-6: #6b7280;
+
+  /* Frosted glass */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-strong: rgba(255, 255, 255, 0.74);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-shadow: 0 10px 34px -14px rgba(14, 60, 38, 0.22);
+  --glass-blur: 18px;
+
+  /* Decorative ambient glows behind the glass. */
+  --glow-1: rgba(57, 169, 107, 0.28);
+  --glow-2: rgba(30, 142, 90, 0.2);
+  --glow-3: rgba(155, 231, 178, 0.35);
 }
 
+/* ---- DARK (first-class counterpart) ---- */
+.dark {
+  --background: #0b1410;
+  --background-secondary: #101a15;
+  --card: #132019;
+  --card-foreground: #f2f7f4;
+  --surface-hover: #17261e;
+  --popover: #132019;
+  --popover-foreground: #f2f7f4;
+
+  --foreground: #f2f7f4;
+  --muted: #17261e;
+  --muted-foreground: #b7c7be;
+  --border: #223229;
+  --input: #223229;
+  --ring: #39a96b;
+
+  --primary: #1e8e5a;
+  --primary-hover: #39a96b;
+  --primary-foreground: #f2f7f4;
+  --secondary: #17261e;
+  --secondary-foreground: #f2f7f4;
+  --accent: #17261e;
+  --accent-foreground: #9be7b2;
+
+  --success: #39a96b;
+  --success-foreground: #0b1410;
+  --warning: #f2c94c;
+  --warning-foreground: #241d05;
+  --danger: #eb5757;
+  --danger-foreground: #2a0d0d;
+  --info: #56ccf2;
+  --info-foreground: #04222d;
+  --neutral: #6b7280;
+
+  --fill-low: #39a96b;
+  --fill-mid: #f2c94c;
+  --fill-high: #f2994a;
+  --fill-critical: #eb5757;
+  --fill-none: #7d9085;
+
+  --chart-1: #39a96b;
+  --chart-2: #9be7b2;
+  --chart-3: #f2c94c;
+  --chart-4: #f2994a;
+  --chart-5: #eb5757;
+  --chart-6: #7d9085;
+
+  --glass-bg: rgba(19, 32, 25, 0.55);
+  --glass-bg-strong: rgba(19, 32, 25, 0.74);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 12px 36px -14px rgba(0, 0, 0, 0.55);
+  --glass-blur: 18px;
+
+  --glow-1: rgba(57, 169, 107, 0.16);
+  --glow-2: rgba(30, 142, 90, 0.12);
+  --glow-3: rgba(30, 60, 45, 0.4);
+}
+
+/* Expose tokens to Tailwind's utility engine. */
 @theme inline {
   --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-surface-hover: var(--surface-hover);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-neutral: var(--neutral);
+
+  --color-fill-low: var(--fill-low);
+  --color-fill-mid: var(--fill-mid);
+  --color-fill-high: var(--fill-high);
+  --color-fill-critical: var(--fill-critical);
+  --color-fill-none: var(--fill-none);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
+
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 6px);
+  --radius-lg: calc(var(--radius) - 3px);
+  --radius-xl: var(--radius);
+  --radius-2xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    /* Ambient green glows behind the frosted UI (fixed so they don't scroll). */
+    background-color: var(--color-background);
+    background-image:
+      radial-gradient(1100px 620px at 12% -12%, var(--glow-1), transparent 60%),
+      radial-gradient(920px 520px at 92% 4%, var(--glow-2), transparent 55%),
+      radial-gradient(760px 700px at 78% 108%, var(--glow-3), transparent 60%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: var(--color-foreground);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+  /* Thin technical scrollbars. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Frosted-glass surface. Pair with a rounded-* and any padding. */
+  .glass {
+    background-color: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+  }
+  /* More opaque variant for content-dense surfaces (tables, popovers). */
+  .glass-strong {
+    background-color: var(--glass-bg-strong);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+  }
+
+  /* ---- Modern map pins (Leaflet divIcon) ---- */
+  .leaflet-div-icon.sw-pin-icon {
+    background: transparent;
+    border: 0;
+  }
+  .sw-pin {
+    position: relative;
+    width: 28px;
+    height: 44px;
+    filter: drop-shadow(0 5px 5px rgba(12, 40, 26, 0.4));
+    transition: transform 0.15s ease;
+  }
+  .sw-pin:hover {
+    transform: translateY(-2px) scale(1.06);
+  }
+  /* Pointed tail (drawn first, the head overlaps its wide top). */
+  .sw-pin__tail {
+    position: absolute;
+    top: 19px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 22px solid var(--pin);
+  }
+  /* Round head. */
+  .sw-pin__body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 26%, color-mix(in srgb, var(--pin) 45%, #fff), var(--pin) 78%);
+    border: 2.5px solid rgba(255, 255, 255, 0.92);
+    box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.18);
+  }
+  .sw-pin__dot {
+    position: absolute;
+    top: 9px;
+    left: 9px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  }
+  .sw-pin__pulse {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--pin);
+    opacity: 0.55;
+    animation: sw-pin-pulse 1.7s ease-out infinite;
+  }
+  @keyframes sw-pin-pulse {
+    0% { transform: scale(0.55); opacity: 0.6; }
+    70% { transform: scale(2); opacity: 0; }
+    100% { transform: scale(2); opacity: 0; }
+  }
+
+  /* Frosted Leaflet popups to match the glass UI. */
+  .leaflet-popup-content-wrapper {
+    border-radius: 14px;
+    background: var(--glass-bg-strong);
+    color: var(--foreground);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+  }
+  .leaflet-popup-tip {
+    background: var(--glass-bg-strong);
+    box-shadow: none;
+  }
+  .leaflet-popup-content p {
+    margin: 0;
+  }
 }
