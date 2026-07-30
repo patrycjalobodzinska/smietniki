@@ -25,8 +25,7 @@ function MapSkeleton() {
 
 /**
  * Operational dashboard — real data only (SprigaAPI). Every figure is derived
- * client-side from the live infrastructure endpoints; nothing here is mock. The
- * full feature set, including not-yet-wired modules, lives under /features.
+ * client-side from the live infrastructure endpoints; nothing here is mock.
  */
 export default function DashboardPage() {
   const { data: stations, isLoading: stationsLoading } = useStations();
@@ -38,7 +37,7 @@ export default function DashboardPage() {
   const ingestData = useMemo(() => {
     const i = summary?.ingest;
     return [
-      { label: "Kamera", value: i?.cameraEvents ?? 0, color: "var(--color-chart-2)" },
+      { label: "Kamera", value: i?.cameraEvents ?? 0, color: "var(--color-chart-3)" },
       { label: "RFID", value: i?.rfidEvents ?? 0, color: "var(--color-chart-1)" },
       { label: "Termiczne", value: i?.thermalEvents ?? 0, color: "var(--color-chart-4)" },
       { label: "Nieznane", value: i?.unknownEvents ?? 0, color: "var(--color-chart-6)" },
@@ -78,7 +77,7 @@ export default function DashboardPage() {
     return [
       { label: "Access", value: count("access"), color: "var(--color-chart-6)" },
       { label: "Access + Fill", value: count("access_fill"), color: "var(--color-chart-1)" },
-      { label: "Access + Fill + Vision", value: count("access_fill_vision"), color: "var(--color-chart-2)" },
+      { label: "Access + Fill + Vision", value: count("access_fill_vision"), color: "var(--color-chart-3)" },
     ];
   }, [stations]);
 
@@ -158,7 +157,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
-        <StatCard label="Śr. zapełnienie (platforma)" value={summary ? `${Math.round(summary.fill.averageFill)}%` : undefined} icon={Gauge} loading={summaryLoading} tone={(summary?.fill.averageFill ?? 0) >= 80 ? "danger" : "default"} />
+        <StatCard label="Śr. zapełnienie (platforma)" value={summary ? `${Math.round(summary.fill.averageFill)}%` : undefined} icon={Gauge} loading={summaryLoading} dark />
         <StatCard label="Pomiary (24h)" value={summary?.fill.last24hMeasurements} icon={Activity} loading={summaryLoading} hint={summary ? `${summary.fill.totalMeasurements} łącznie` : undefined} />
         <StatCard label="Zdarzenia (24h)" value={summary?.ingest.last24hEvents} icon={Radio} loading={summaryLoading} hint={summary ? `${summary.ingest.totalEvents} łącznie` : undefined} />
         <StatCard label="Sesje dostępu (24h)" value={summary?.access.last24hSessions} icon={KeyRound} loading={summaryLoading} hint={summary ? `${summary.access.totalSessions} łącznie` : undefined} />

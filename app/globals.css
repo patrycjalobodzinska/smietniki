@@ -246,6 +246,11 @@
     outline: 2px solid var(--color-ring);
     outline-offset: 2px;
   }
+  /* Every enabled button/link acts clickable. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
   /* Thin technical scrollbars. */
   * {
     scrollbar-width: thin;
@@ -269,6 +274,25 @@
     box-shadow: var(--glass-shadow);
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
     backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+  }
+
+  /* Dashed row divider with controllable dash length + gap (drawn on the row
+     so it stays continuous across cells). Tune the two px values below. */
+  .row-dash {
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--color-border) 0 9px,
+      transparent 9px 22px
+    );
+    background-position: left bottom;
+    background-size: 100% 1.5px;
+    background-repeat: no-repeat;
+  }
+
+  /* Keep the whole Leaflet map in a low stacking context so its panes/controls
+     never paint over the header or the sidebar drawer. */
+  .leaflet-container {
+    z-index: 0;
   }
 
   /* ---- Modern map pins (Leaflet divIcon) ---- */

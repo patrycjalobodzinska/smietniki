@@ -73,7 +73,7 @@ export function StationMap({ stations, routePath, height = 360 }: StationMapProp
     : [50.0413, 22.0038];
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border" style={{ height }}>
+    <div className="relative isolate z-0 overflow-hidden rounded-xl border border-border" style={{ height }}>
       <MapContainer
         center={center}
         zoom={13}

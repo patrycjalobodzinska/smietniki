@@ -9,6 +9,8 @@ export interface StatCardProps {
   icon?: LucideIcon;
   hint?: string;
   tone?: "default" | "success" | "warning" | "danger";
+  /** Dark forest-green card for emphasis (KPI hero). */
+  dark?: boolean;
   loading?: boolean;
   className?: string;
 }
@@ -26,23 +28,24 @@ export function StatCard({
   icon: Icon,
   hint,
   tone = "default",
+  dark,
   loading,
   className,
 }: StatCardProps) {
   return (
-    <Card className={cn("p-5", className)}>
+    <Card className={cn("p-5", dark && "border-transparent bg-forest text-forest-foreground", className)}>
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">{label}</p>
+          <p className={cn("text-sm", dark ? "text-forest-foreground/70" : "text-muted-foreground")}>{label}</p>
           {loading ? (
             <Skeleton className="h-8 w-16" />
           ) : (
             <p className="text-2xl font-semibold tracking-tight">{value}</p>
           )}
-          {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+          {hint && <p className={cn("text-xs", dark ? "text-forest-foreground/60" : "text-muted-foreground")}>{hint}</p>}
         </div>
         {Icon && (
-          <div className={cn("flex size-10 items-center justify-center rounded-lg", TONE[tone])}>
+          <div className={cn("flex size-10 items-center justify-center rounded-lg", dark ? "bg-lime/25 text-lime" : TONE[tone])}>
             <Icon className="size-5" />
           </div>
         )}

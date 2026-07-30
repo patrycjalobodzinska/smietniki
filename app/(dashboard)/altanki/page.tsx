@@ -2,16 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Search, Camera } from "lucide-react";
+import { Search, Camera } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { FilterBar } from "@/components/layout/filter-bar";
-import { Button, Input, Select, DataTable, type Column } from "@/components/ui";
+import { Input, Select, DataTable, type Column } from "@/components/ui";
 import { FillBar } from "@/components/domain/fill-level";
 import { VariantBadge, StationStatusBadge } from "@/components/domain/badges";
-import { useStations, useCooperatives } from "@/lib/api/hooks/use-infrastructure";
+import { useStations } from "@/lib/api/hooks/use-infrastructure";
 import type { BinStation, DeploymentVariant, StationStatus } from "@/lib/types";
 import { VARIANT_LABEL } from "@/lib/labels";
-import { formatRelative } from "@/lib/utils/format";
 
 const VARIANT_OPTIONS = [
   { value: "all", label: "Wszystkie warianty" },
@@ -31,8 +30,6 @@ export default function StationsPage() {
   const [status, setStatus] = useState<StationStatus | "all">("all");
 
   const { data, isLoading } = useStations({ search, variant, status });
-  const { data: coops } = useCooperatives();
-  const coopName = (id: string) => coops?.find((c) => c.id === id)?.name ?? "—";
 
   const columns: Column<BinStation>[] = [
     {
@@ -45,7 +42,6 @@ export default function StationsPage() {
         </div>
       ),
     },
-    { key: "coop", header: "Spółdzielnia", cell: (s) => <span className="text-sm">{coopName(s.cooperativeId)}</span> },
     { key: "variant", header: "Wariant", cell: (s) => <VariantBadge variant={s.deploymentVariant} /> },
     { key: "containers", header: "Pojemniki", align: "right", cell: (s) => <span className="tabular-nums">{s.containerCount}</span> },
     { key: "fill", header: "Śr. zapełnienie", className: "w-44", cell: (s) => <FillBar level={s.avgFillLevel} /> },
@@ -55,7 +51,6 @@ export default function StationsPage() {
       align: "center",
       cell: (s) => (s.hasCamera ? <Camera className="mx-auto size-4 text-info" /> : <span className="text-muted-foreground">—</span>),
     },
-    { key: "collection", header: "Ostatni odbiór", cell: (s) => <span className="text-sm text-muted-foreground">{s.lastCollectionAt ? formatRelative(s.lastCollectionAt) : "—"}</span> },
     { key: "status", header: "Status", cell: (s) => <StationStatusBadge status={s.status} /> },
   ];
 
@@ -64,7 +59,6 @@ export default function StationsPage() {
       <PageHeader
         title="Altanki"
         description="Altanki śmietnikowe z widocznym poziomem cyfryzacji (Access / Fill / Vision)."
-        actions={<Button><Plus /> Dodaj altankę</Button>}
       />
       <FilterBar>
         <div className="min-w-56 flex-1">

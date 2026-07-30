@@ -52,7 +52,7 @@ export default function AnalyticsPage() {
     return [
       { label: "Access", value: c("access"), color: "var(--color-chart-6)" },
       { label: "Access + Fill", value: c("access_fill"), color: "var(--color-chart-1)" },
-      { label: "Access + Fill + Vision", value: c("access_fill_vision"), color: "var(--color-chart-2)" },
+      { label: "Access + Fill + Vision", value: c("access_fill_vision"), color: "var(--color-chart-3)" },
     ];
   }, [stations]);
 

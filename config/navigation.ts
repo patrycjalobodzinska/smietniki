@@ -3,7 +3,6 @@ import {
   Warehouse,
   Trash2,
   KeyRound,
-  LayoutGrid,
   LineChart,
   Settings,
   type LucideIcon,
@@ -42,12 +41,6 @@ export const NAVIGATION: NavSection[] = [
       { label: "Altanki", href: "/altanki", icon: Warehouse, permission: "stations.view" },
       { label: "Pojemniki", href: "/pojemniki", icon: Trash2, permission: "containers.view" },
       { label: "Sesje dostępu", href: "/sesje", icon: KeyRound, permission: "sessions.view" },
-    ],
-  },
-  {
-    title: "Więcej",
-    items: [
-      { label: "Wszystkie funkcje", href: "/features", icon: LayoutGrid, permission: "dashboard.view" },
     ],
   },
   {
