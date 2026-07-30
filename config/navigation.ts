@@ -1,13 +1,10 @@
 import {
   LayoutDashboard,
-  Building2,
-  Home,
   Warehouse,
   Trash2,
-  Truck,
-  Route,
   KeyRound,
   LayoutGrid,
+  LineChart,
   Settings,
   type LucideIcon,
 } from "lucide-react";
@@ -26,24 +23,22 @@ export interface NavSection {
 }
 
 /**
- * Sidebar structure. Only modules backed by real data (SprigaAPI) live in the
- * main navigation. The complete feature set — including modules still on mock
- * data — is reachable from the "Wszystkie funkcje" (/features) catalog.
+ * Sidebar structure — KM1 scope only (OT ingest domain: bin stations,
+ * containers, access sessions/keys, fill measurements, snapshots). The
+ * subject/logistics layer (odbiory, trasy, pojazdy, spółdzielnie, lokale) is
+ * intentionally out of scope and kept on the `pelny-zakres` branch.
  */
 export const NAVIGATION: NavSection[] = [
   {
     title: "Operacje",
     items: [
       { label: "Dashboard", href: "/", icon: LayoutDashboard, permission: "dashboard.view" },
-      { label: "Odbiory", href: "/odbiory", icon: Truck, permission: "collections.view" },
-      { label: "Trasy PGK", href: "/trasy", icon: Route, permission: "routes.view" },
+      { label: "Analityka", href: "/analityka", icon: LineChart, permission: "analytics.view" },
     ],
   },
   {
     title: "Infrastruktura",
     items: [
-      { label: "Spółdzielnie", href: "/spoldzielnie", icon: Building2, permission: "cooperatives.view" },
-      { label: "Nieruchomości", href: "/nieruchomosci", icon: Home, permission: "properties.view" },
       { label: "Altanki", href: "/altanki", icon: Warehouse, permission: "stations.view" },
       { label: "Pojemniki", href: "/pojemniki", icon: Trash2, permission: "containers.view" },
       { label: "Sesje dostępu", href: "/sesje", icon: KeyRound, permission: "sessions.view" },

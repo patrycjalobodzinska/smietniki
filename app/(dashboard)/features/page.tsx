@@ -1,13 +1,9 @@
 import Link from "next/link";
 import {
   LayoutDashboard,
-  Building2,
-  Home,
   Warehouse,
   Trash2,
   Settings,
-  Truck,
-  Route,
   LineChart,
   KeyRound,
   ArrowRight,
@@ -25,14 +21,10 @@ interface Feature {
 
 const FEATURES: Feature[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard, description: "Pulpit operacyjny — KPI, mapa i stan platformy na żywo." },
-  { label: "Spółdzielnie", href: "/spoldzielnie", icon: Building2, description: "Zarządcy infrastruktury odpadowej wraz z ich obiektami." },
-  { label: "Nieruchomości i lokale", href: "/nieruchomosci", icon: Home, description: "Budynki, lokale, mieszkańcy i przypisane klucze dostępu." },
   { label: "Altanki", href: "/altanki", icon: Warehouse, description: "Altanki śmietnikowe z poziomem cyfryzacji i zapełnieniem." },
   { label: "Pojemniki", href: "/pojemniki", icon: Trash2, description: "Pojemniki z bieżącym zapełnieniem, frakcją i źródłem danych." },
-  { label: "Odbiory", href: "/odbiory", icon: Truck, description: "Historia i rejestracja operacji odbioru odpadów." },
-  { label: "Trasy PGK", href: "/trasy", icon: Route, description: "Trasy odbioru i planowanie (dane z systemu)." },
-  { label: "Sesje dostępu", href: "/sesje", icon: KeyRound, description: "Historia autoryzacji dostępu (RFID) do altanek." },
-  { label: "Analityka", href: "/analityka", icon: LineChart, description: "Wskaźniki, przepełnienia i rankingi liczone na żywo." },
+  { label: "Sesje dostępu", href: "/sesje", icon: KeyRound, description: "Historia autoryzacji dostępu (RFID) do altanek, z flagą anomalii." },
+  { label: "Analityka", href: "/analityka", icon: LineChart, description: "Wskaźniki zapełnienia i pokrycia technologicznego — na żywo." },
   { label: "Ustawienia", href: "/ustawienia", icon: Settings, description: "Profil użytkownika i preferencje systemu." },
 ];
 

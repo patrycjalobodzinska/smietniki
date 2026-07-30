@@ -2,11 +2,11 @@
 
 import { useMemo } from "react";
 import dynamic from "next/dynamic";
-import { Warehouse, Trash2, Building2, Home, Users, Gauge, Activity, Radio, Cpu, KeyRound } from "lucide-react";
+import { Warehouse, Trash2, Gauge, Activity, Radio, KeyRound, Camera } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardHeader, CardTitle, CardContent, StatCard, Spinner } from "@/components/ui";
 import { DonutChart } from "@/components/charts";
-import { useStations, useContainers, useCooperatives } from "@/lib/api/hooks/use-infrastructure";
+import { useStations, useContainers } from "@/lib/api/hooks/use-infrastructure";
 import { useDashboardSummary } from "@/lib/api/hooks/use-dashboard";
 import { fillTone } from "@/lib/types";
 
@@ -31,10 +31,9 @@ function MapSkeleton() {
 export default function DashboardPage() {
   const { data: stations, isLoading: stationsLoading } = useStations();
   const { data: containers, isLoading: containersLoading } = useContainers();
-  const { data: cooperatives, isLoading: coopsLoading } = useCooperatives();
   const { data: summary, isLoading: summaryLoading } = useDashboardSummary();
 
-  const loading = stationsLoading || containersLoading || coopsLoading;
+  const loading = stationsLoading || containersLoading;
 
   const ingestData = useMemo(() => {
     const i = summary?.ingest;
@@ -49,7 +48,6 @@ export default function DashboardPage() {
   const kpis = useMemo(() => {
     const st = stations ?? [];
     const ct = containers ?? [];
-    const co = cooperatives ?? [];
     const measured = ct.filter((c) => typeof c.fillLevel === "number") as { fillLevel: number }[];
     const avgFill = measured.length
       ? Math.round(measured.reduce((s, c) => s + c.fillLevel, 0) / measured.length)
@@ -58,12 +56,10 @@ export default function DashboardPage() {
       stations: st.length,
       activeStations: st.filter((s) => s.status === "active").length,
       containers: ct.length,
-      cooperatives: co.length,
-      properties: co.reduce((s, c) => s + (c.propertyCount ?? 0), 0),
-      units: co.reduce((s, c) => s + (c.unitCount ?? 0), 0),
+      withCamera: st.filter((s) => s.hasCamera).length,
       avgFill,
     };
-  }, [stations, containers, cooperatives]);
+  }, [stations, containers]);
 
   const distData = useMemo(() => {
     const measured = (containers ?? []).filter((c) => typeof c.fillLevel === "number");
@@ -90,13 +86,11 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <PageHeader title="Dashboard" description="Bieżący stan infrastruktury odpadowej — dane na żywo z systemu." />
 
-      {/* KPI — all derived from live endpoints */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
+      {/* KPI — derived from live infrastructure endpoints */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="Altanki" value={kpis.stations} icon={Warehouse} loading={loading} hint={`${kpis.activeStations} aktywnych`} />
         <StatCard label="Pojemniki" value={kpis.containers} icon={Trash2} loading={loading} />
-        <StatCard label="Spółdzielnie" value={kpis.cooperatives} icon={Building2} loading={loading} />
-        <StatCard label="Nieruchomości" value={kpis.properties} icon={Home} loading={loading} />
-        <StatCard label="Lokale" value={kpis.units} icon={Users} loading={loading} />
+        <StatCard label="Altanki z kamerą" value={kpis.withCamera} icon={Camera} loading={loading} />
         <StatCard label="Śr. zapełnienie" value={kpis.avgFill === null ? "N/D" : `${kpis.avgFill}%`} icon={Gauge} tone={(kpis.avgFill ?? 0) >= 80 ? "danger" : "default"} loading={loading} />
       </div>
 
@@ -166,7 +160,6 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard label="Śr. zapełnienie (platforma)" value={summary ? `${Math.round(summary.fill.averageFill)}%` : undefined} icon={Gauge} loading={summaryLoading} tone={(summary?.fill.averageFill ?? 0) >= 80 ? "danger" : "default"} />
         <StatCard label="Pomiary (24h)" value={summary?.fill.last24hMeasurements} icon={Activity} loading={summaryLoading} hint={summary ? `${summary.fill.totalMeasurements} łącznie` : undefined} />
-        <StatCard label="Urządzenia online" value={summary ? `${summary.devices.online}/${summary.devices.total}` : undefined} icon={Cpu} loading={summaryLoading} tone={summary && summary.devices.offline > 0 ? "warning" : "success"} hint={summary ? `${summary.devices.offline} offline` : undefined} />
         <StatCard label="Zdarzenia (24h)" value={summary?.ingest.last24hEvents} icon={Radio} loading={summaryLoading} hint={summary ? `${summary.ingest.totalEvents} łącznie` : undefined} />
         <StatCard label="Sesje dostępu (24h)" value={summary?.access.last24hSessions} icon={KeyRound} loading={summaryLoading} hint={summary ? `${summary.access.totalSessions} łącznie` : undefined} />
         <StatCard label="Retransmisje" value={summary?.ingest.totalRetransmissions} icon={Activity} loading={summaryLoading} />

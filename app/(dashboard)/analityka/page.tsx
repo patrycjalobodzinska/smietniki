@@ -4,35 +4,18 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Gauge, Camera, TrendingUp, AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  StatCard,
-  Tabs,
-  DataTable,
-  type Column,
-} from "@/components/ui";
-import { HBarChart, DonutChart, GroupedBarChart } from "@/components/charts";
+import { Card, CardHeader, CardTitle, CardContent, StatCard, Tabs, DataTable, type Column } from "@/components/ui";
+import { HBarChart, DonutChart } from "@/components/charts";
 import { FillBar } from "@/components/domain/fill-level";
-import { useStations, useContainers, useCooperatives, useProperties } from "@/lib/api/hooks/use-infrastructure";
+import { useStations, useContainers } from "@/lib/api/hooks/use-infrastructure";
 import { FRACTION_LABEL } from "@/lib/labels";
 import type { WasteFraction } from "@/lib/types";
 
 const TABS = [
   { value: "overview", label: "Przegląd" },
   { value: "overfill", label: "Bieżące przepełnienia" },
-  { value: "rankings", label: "Rankingi" },
 ];
 
-interface CoopRow {
-  id: string;
-  name: string;
-  avgFill: number;
-  units: number;
-  residents: number;
-}
 interface OverfillRow {
   id: string;
   code: string;
@@ -40,14 +23,12 @@ interface OverfillRow {
   fillLevel: number;
 }
 
-/** Analytics computed entirely from live infrastructure data — no mock. */
+/** Analytics computed from live infrastructure data (KM1 scope: fill + coverage). */
 export default function AnalyticsPage() {
   const router = useRouter();
   const [tab, setTab] = useState("overview");
   const { data: stations, isLoading } = useStations();
   const { data: containers } = useContainers();
-  const { data: cooperatives } = useCooperatives();
-  const { data: properties } = useProperties();
 
   const overview = useMemo(() => {
     const st = stations ?? [];
@@ -103,23 +84,6 @@ export default function AnalyticsPage() {
     };
   }, [stations, containers]);
 
-  const coopRanking = useMemo<CoopRow[]>(() => {
-    const residentsByCoop = new Map<string, number>();
-    for (const p of properties ?? []) {
-      residentsByCoop.set(p.cooperativeId, (residentsByCoop.get(p.cooperativeId) ?? 0) + p.residentsCount);
-    }
-    return (cooperatives ?? [])
-      .map((c) => ({ id: c.id, name: c.name, avgFill: c.avgFillLevel ?? 0, units: c.unitCount, residents: residentsByCoop.get(c.id) ?? 0 }))
-      .sort((a, b) => b.avgFill - a.avgFill);
-  }, [cooperatives, properties]);
-
-  const rankCols: Column<CoopRow>[] = [
-    { key: "name", header: "Spółdzielnia", cell: (c) => <span className="font-medium">{c.name}</span> },
-    { key: "fill", header: "Śr. zapełnienie", className: "w-44", cell: (c) => <FillBar level={c.avgFill} /> },
-    { key: "units", header: "Lokale", align: "right", cell: (c) => <span className="tabular-nums">{c.units}</span> },
-    { key: "residents", header: "Mieszkańcy", align: "right", cell: (c) => <span className="tabular-nums">{c.residents}</span> },
-  ];
-
   const overfillCols: Column<OverfillRow>[] = [
     { key: "code", header: "Pojemnik", cell: (r) => <span className="font-medium">{r.code}</span> },
     { key: "station", header: "Altanka", cell: (r) => <span className="text-sm text-muted-foreground">{r.stationName}</span> },
@@ -128,7 +92,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Analityka" description="Wskaźniki i rankingi liczone na żywo z danych systemu." />
+      <PageHeader title="Analityka" description="Wskaźniki zapełnienia i pokrycia technologicznego — na żywo z danych systemu." />
       <Tabs items={TABS} value={tab} onValueChange={setTab} />
 
       {tab === "overview" && (
@@ -137,7 +101,7 @@ export default function AnalyticsPage() {
             <StatCard label="Pokrycie Fill" value={`${overview.fillCoverage}%`} icon={Gauge} tone="success" loading={isLoading} hint="altanek z czujnikami" />
             <StatCard label="Pokrycie Vision" value={`${overview.visionCoverage}%`} icon={Camera} tone="default" loading={isLoading} hint="altanek z monitoringiem" />
             <StatCard label="Śr. zapełnienie" value={`${overview.avgFill}%`} icon={TrendingUp} tone="warning" loading={isLoading} />
-            <StatCard label="Altanki > 80%" value={overview.stationsOver80} icon={AlertTriangle} tone="danger" loading={isLoading} hint="wymagają odbioru" />
+            <StatCard label="Altanki > 80%" value={overview.stationsOver80} icon={AlertTriangle} tone="danger" loading={isLoading} hint="wymagają uwagi" />
           </div>
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
@@ -160,30 +124,9 @@ export default function AnalyticsPage() {
             <StatCard label="Powyżej 80%" value={overfill.over80} icon={AlertTriangle} tone="default" />
           </div>
           <Card>
-            <CardHeader><CardTitle>Pojemniki wymagające odbioru</CardTitle></CardHeader>
+            <CardHeader><CardTitle>Pojemniki wymagające uwagi</CardTitle></CardHeader>
             <CardContent className="p-0">
               <DataTable columns={overfillCols} data={overfill.rows} rowKey={(r) => r.id} onRowClick={(r) => router.push(`/pojemniki/${r.id}`)} className="rounded-none border-0" emptyTitle="Brak pojemników powyżej 80%" />
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {tab === "rankings" && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader><CardTitle>Ranking spółdzielni wg zapełnienia</CardTitle></CardHeader>
-            <CardContent className="p-0">
-              <DataTable columns={rankCols} data={coopRanking} rowKey={(c) => c.id} onRowClick={(c) => router.push(`/spoldzielnie/${c.id}`)} className="rounded-none border-0" />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader><CardTitle>Lokale vs mieszkańcy (per spółdzielnia)</CardTitle></CardHeader>
-            <CardContent>
-              <GroupedBarChart
-                data={coopRanking.map((c) => ({ label: c.name, a: c.units, b: c.residents }))}
-                aLabel="Lokale"
-                bLabel="Mieszkańcy"
-              />
             </CardContent>
           </Card>
         </div>

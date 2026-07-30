@@ -2,16 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import {
-  Trash2,
-  Gauge,
-  Truck,
-  Activity,
-  Camera,
-  KeyRound,
-  MapPin,
-  Info,
-} from "lucide-react";
+import { Trash2, Gauge, Activity, AlertTriangle, Camera, KeyRound, MapPin, Info } from "lucide-react";
 import { DetailHeader } from "@/components/layout/detail-header";
 import {
   Card,
@@ -34,19 +25,13 @@ import {
   DataSourceBadge,
   FractionBadge,
   FillStatusBadge,
-  CollectionStatusBadge,
   AnomalyBadge,
 } from "@/components/domain/badges";
-import {
-  useStation,
-  useContainers,
-  useContainerHistory,
-  useCooperatives,
-} from "@/lib/api/hooks/use-infrastructure";
-import { useSessions, useCollections } from "@/lib/api/hooks/use-operations";
+import { useStation, useContainers, useContainerHistory } from "@/lib/api/hooks/use-infrastructure";
+import { useSessions } from "@/lib/api/hooks/use-operations";
 import type { Container } from "@/lib/types";
 import { VARIANT_LABEL, DATA_SOURCE_LABEL } from "@/lib/labels";
-import { formatDateTime, formatRelative } from "@/lib/utils/format";
+import { formatDateTime } from "@/lib/utils/format";
 
 const StationMap = dynamic(() => import("@/components/domain/station-map").then((m) => m.StationMap), {
   ssr: false,
@@ -62,16 +47,14 @@ export default function StationDetailPage() {
   const { data: station, isLoading } = useStation(id);
   const { data: containers } = useContainers({ stationId: id });
   const { data: sessions } = useSessions({ stationId: id });
-  const { data: collections } = useCollections({ stationId: id });
-  const { data: coops } = useCooperatives();
   const { data: history } = useContainerHistory(containers?.[0]?.id ?? "");
 
   if (isLoading || !station) {
     return <div className="flex h-64 items-center justify-center"><Spinner /></div>;
   }
 
-  const coopName = coops?.find((c) => c.id === station.cooperativeId)?.name ?? "—";
   const sessions7d = (sessions ?? []).filter((s) => Date.now() - +new Date(s.startedAt) < 7 * 864e5).length;
+  const anomalies7d = (sessions ?? []).filter((s) => s.anomaly && Date.now() - +new Date(s.startedAt) < 7 * 864e5).length;
 
   const containerCols: Column<Container>[] = [
     { key: "code", header: "Pojemnik", cell: (c) => <span className="font-medium">{c.code}</span> },
@@ -102,9 +85,9 @@ export default function StationDetailPage() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard label="Pojemniki" value={station.containerCount} icon={Trash2} />
         <StatCard label="Śr. zapełnienie" value={station.avgFillLevel === null ? "N/D" : `${station.avgFillLevel}%`} icon={Gauge} tone={(station.avgFillLevel ?? 0) >= 80 ? "danger" : "default"} />
-        <StatCard label="Ostatni odbiór" value={station.lastCollectionAt ? formatRelative(station.lastCollectionAt) : "—"} icon={Truck} />
         <StatCard label="Sesje (7 dni)" value={sessions7d} icon={Activity} />
-        <StatCard label="Aktywne klucze" value={coops?.find((c) => c.id === station.cooperativeId)?.activeKeys ?? "—"} icon={KeyRound} />
+        <StatCard label="Anomalie (7 dni)" value={anomalies7d} icon={AlertTriangle} tone={anomalies7d ? "danger" : "default"} />
+        <StatCard label="Sposób dostępu" value={ACCESS_MODE_LABEL[station.accessMode]} icon={KeyRound} />
         <StatCard label="Kamera" value={station.hasCamera ? "Tak" : "Nie"} icon={Camera} tone={station.hasCamera ? "success" : "default"} />
       </div>
 
@@ -131,25 +114,6 @@ export default function StationDetailPage() {
 
           <Card>
             <CardHeader className="flex-row items-center justify-between">
-              <CardTitle>Historia odbiorów</CardTitle>
-              <span className="text-xs text-muted-foreground">{collections?.length ?? 0} zdarzeń</span>
-            </CardHeader>
-            <CardContent className="divide-y divide-border">
-              {(collections ?? []).slice(0, 6).map((c) => (
-                <div key={c.id} className="flex cursor-pointer items-center gap-3 py-2.5 first:pt-0 hover:opacity-80" onClick={() => router.push(`/odbiory/${c.id}`)}>
-                  <FractionBadge fraction={c.fraction} />
-                  <span className="min-w-0 flex-1 truncate text-sm">{c.operator}</span>
-                  {c.levelBefore !== null && c.levelAfter !== null && <Badge variant="muted">{c.levelBefore}%→{c.levelAfter}%</Badge>}
-                  <CollectionStatusBadge status={c.status} />
-                  <span className="shrink-0 text-xs text-muted-foreground">{formatDateTime(c.collectedAt)}</span>
-                </div>
-              ))}
-              {!collections?.length && <p className="py-4 text-sm text-muted-foreground">Brak odbiorów.</p>}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex-row items-center justify-between">
               <CardTitle>Historia sesji dostępu</CardTitle>
               <span className="text-xs text-muted-foreground">{sessions?.length ?? 0} sesji</span>
             </CardHeader>
@@ -158,12 +122,13 @@ export default function StationDetailPage() {
                 <div key={s.id} className="flex items-center gap-3 py-2.5 first:pt-0">
                   <KeyRound className="size-4 text-muted-foreground" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm">{s.keyIdentifier} · Lokal {s.unitNumber}</p>
+                    <p className="truncate text-sm">{s.keyIdentifier}</p>
                   </div>
                   {s.anomaly && <AnomalyBadge />}
                   <span className="shrink-0 text-xs text-muted-foreground">{formatDateTime(s.startedAt)}</span>
                 </div>
               ))}
+              {!sessions?.length && <p className="py-4 text-sm text-muted-foreground">Brak sesji.</p>}
             </CardContent>
           </Card>
         </div>
@@ -185,7 +150,7 @@ export default function StationDetailPage() {
                   { label: "Sposób otwierania", value: ACCESS_MODE_LABEL[station.accessMode] },
                   { label: "Źródło danych o napełnieniu", value: DATA_SOURCE_LABEL[station.fillDataSource] },
                   { label: "Monitoring wideo", value: station.hasCamera ? "Tak" : "Nie" },
-                  { label: "Spółdzielnia", value: coopName },
+                  { label: "Współrzędne", value: `${station.location.lat.toFixed(4)}, ${station.location.lng.toFixed(4)}` },
                 ]}
               />
             </CardContent>
@@ -208,11 +173,11 @@ export default function StationDetailPage() {
           )}
 
           <Card>
-            <CardHeader><CardTitle>Instrukcje wejścia</CardTitle></CardHeader>
+            <CardHeader><CardTitle>Kontrola dostępu</CardTitle></CardHeader>
             <CardContent>
               <div className="flex gap-2 rounded-lg bg-info/10 p-3 text-xs leading-relaxed text-muted-foreground">
                 <Info className="size-4 shrink-0 text-info" />
-                Otwarcie altanki wymaga autoryzacji kluczem ({ACCESS_MODE_LABEL[station.accessMode]}). Po odbiorze potwierdź opróżnienie każdego pojemnika w widoku operatora.
+                Otwarcie altanki wymaga autoryzacji kluczem ({ACCESS_MODE_LABEL[station.accessMode]}). Nieudane próby są rejestrowane, a przekroczenie limitu podnosi flagę anomalii sesji.
               </div>
             </CardContent>
           </Card>
