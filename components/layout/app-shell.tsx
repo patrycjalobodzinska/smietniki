@@ -19,7 +19,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar onOpenMobile={() => setMobileOpen(true)} />
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto px-4 pb-6 pt-1 lg:px-6 lg:pb-8 lg:pt-2">{children}</main>
       </div>
     </div>
   );

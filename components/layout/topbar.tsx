@@ -8,7 +8,7 @@ export function Topbar({ onOpenMobile }: { onOpenMobile: () => void }) {
   const { user } = useSession();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 bg-transparent px-4 lg:px-6">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 bg-transparent px-4 lg:px-6">
       <button
         onClick={onOpenMobile}
         className="rounded-full p-2 text-muted-foreground hover:bg-surface-hover lg:hidden"
