@@ -12,70 +12,85 @@
 /*  Light is the default theme; dark is a first-class counterpart.      */
 /* ------------------------------------------------------------------ */
 
-/* ---- LIGHT (default) — modern frosted glass ---- */
+/* ---- LIGHT (default) — soft green, flat rounded cards ---- */
 :root {
-  --radius: 1rem; /* 16px — airy, modern cards */
+  --radius: 1.25rem; /* 20px — chunky, friendly cards */
 
-  /* Base surfaces sit under translucent glass; kept bright + faintly minty. */
-  --background: #e9f1ec;
-  --background-secondary: #eef4f0;
+  /* Soft mint page, solid white cards. */
+  --background: #e8f0e3;
+  --background-secondary: #eef4ea;
   --card: #ffffff;
-  --card-foreground: #0c1712;
-  --surface-hover: #e4eee8;
+  --card-foreground: #16261d;
+  --surface-hover: #eef4ea;
   --popover: #ffffff;
-  --popover-foreground: #0c1712;
+  --popover-foreground: #16261d;
 
-  --foreground: #0c1712;
-  --muted: #eef4f0;
-  --muted-foreground: #55655c;
-  --border: #dde8e2;
-  --input: #d3e0d9;
-  --ring: #1e8e5a;
+  --foreground: #16261d;
+  --muted: #f1f5ee;
+  --muted-foreground: #5c6b60;
+  --border: #e6ede2;
+  --input: #e0e8db;
+  --ring: #57b23e;
 
-  --primary: #12945a;
-  --primary-hover: #0f7d4c;
+  /* Readable brand green (text, links, icons). */
+  --primary: #3f9b45;
+  --primary-hover: #368a3c;
   --primary-foreground: #ffffff;
-  --secondary: #e7efe9;
-  --secondary-foreground: #14231b;
-  --accent: #dcf3e6;
-  --accent-foreground: #10603c;
 
-  --success: #1e8e5a;
+  /* Bright pastel lime accent (CTAs, active nav, chart highlight). */
+  --lime: #9ada5c;
+  --lime-foreground: #14342a;
+  /* Dark forest (logo, dark bars, secondary two-tone). */
+  --forest: #16342a;
+  --forest-foreground: #eaf3e2;
+  /* Coral (destructive / logout). */
+  --coral: #e8613c;
+  --coral-foreground: #ffffff;
+
+  --secondary: #eef4ea;
+  --secondary-foreground: #16261d;
+  --accent: #e6f4d8;
+  --accent-foreground: #2e5d1f;
+
+  --success: #3f9b45;
   --success-foreground: #ffffff;
   --warning: #b7891a;
   --warning-foreground: #ffffff;
-  --danger: #d33f3f;
+  --danger: #e8613c;
   --danger-foreground: #ffffff;
   --info: #2596c9;
   --info-foreground: #ffffff;
-  --neutral: #6b7280;
+  --neutral: #7c8a80;
 
-  /* Bin fill-level scale (spec §21.4) */
-  --fill-low: #1e8e5a;
+  /* Bin fill-level scale */
+  --fill-low: #3f9b45;
   --fill-mid: #d1a417;
   --fill-high: #e07b1a;
-  --fill-critical: #d33f3f;
-  --fill-none: #9aa8a0;
+  --fill-critical: #e8613c;
+  --fill-none: #b6c2b0;
 
-  /* Chart series (spec §21.8): green, mint, yellow, orange, red, gray */
-  --chart-1: #12945a;
-  --chart-2: #39a96b;
-  --chart-3: #d1a417;
+  /* Chart series: green, lime, forest, orange, red, light sage */
+  --chart-1: #3f9b45;
+  --chart-2: #9ada5c;
+  --chart-3: #16342a;
   --chart-4: #e07b1a;
-  --chart-5: #d33f3f;
-  --chart-6: #6b7280;
+  --chart-5: #e8613c;
+  --chart-6: #cbd8c4;
 
-  /* Frosted glass */
-  --glass-bg: rgba(255, 255, 255, 0.55);
-  --glass-bg-strong: rgba(255, 255, 255, 0.74);
-  --glass-border: rgba(255, 255, 255, 0.7);
-  --glass-shadow: 0 10px 34px -14px rgba(14, 60, 38, 0.22);
-  --glass-blur: 18px;
+  /* Soft card shadow. */
+  --shadow-soft: 0 1px 2px rgba(16, 40, 28, 0.04), 0 12px 30px -20px rgba(16, 50, 34, 0.28);
 
-  /* Decorative ambient glows behind the glass. */
-  --glow-1: rgba(57, 169, 107, 0.28);
-  --glow-2: rgba(30, 142, 90, 0.2);
-  --glow-3: rgba(155, 231, 178, 0.35);
+  /* Legacy glass tokens (kept for any leftover .glass usage). */
+  --glass-bg: #ffffff;
+  --glass-bg-strong: #ffffff;
+  --glass-border: var(--border);
+  --glass-shadow: var(--shadow-soft);
+  --glass-blur: 0px;
+
+  /* Ambient page tint (mint top-left, pale-yellow top-right). */
+  --glow-1: rgba(190, 222, 150, 0.4);
+  --glow-2: rgba(232, 224, 170, 0.32);
+  --glow-3: rgba(155, 210, 120, 0.22);
 }
 
 /* ---- DARK (first-class counterpart) ---- */
@@ -95,9 +110,17 @@
   --input: #223229;
   --ring: #39a96b;
 
-  --primary: #1e8e5a;
-  --primary-hover: #39a96b;
-  --primary-foreground: #f2f7f4;
+  --primary: #6bbf4b;
+  --primary-hover: #7ccf5a;
+  --primary-foreground: #0b1410;
+
+  --lime: #9ada5c;
+  --lime-foreground: #0b1410;
+  --forest: #0f2118;
+  --forest-foreground: #eaf3e2;
+  --coral: #e8613c;
+  --coral-foreground: #ffffff;
+
   --secondary: #17261e;
   --secondary-foreground: #f2f7f4;
   --accent: #17261e;
@@ -126,11 +149,12 @@
   --chart-5: #eb5757;
   --chart-6: #7d9085;
 
-  --glass-bg: rgba(19, 32, 25, 0.55);
-  --glass-bg-strong: rgba(19, 32, 25, 0.74);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 12px 36px -14px rgba(0, 0, 0, 0.55);
-  --glass-blur: 18px;
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 36px -18px rgba(0, 0, 0, 0.6);
+  --glass-bg: var(--card);
+  --glass-bg-strong: var(--card);
+  --glass-border: var(--border);
+  --glass-shadow: var(--shadow-soft);
+  --glass-blur: 0px;
 
   --glow-1: rgba(57, 169, 107, 0.16);
   --glow-2: rgba(30, 142, 90, 0.12);
@@ -157,6 +181,12 @@
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
+  --color-lime: var(--lime);
+  --color-lime-foreground: var(--lime-foreground);
+  --color-forest: var(--forest);
+  --color-forest-foreground: var(--forest-foreground);
+  --color-coral: var(--coral);
+  --color-coral-foreground: var(--coral-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-accent: var(--accent);
@@ -200,12 +230,12 @@
     border-color: var(--color-border);
   }
   body {
-    /* Ambient green glows behind the frosted UI (fixed so they don't scroll). */
+    /* Soft mint page with a faint mint→pale-yellow tint at the top corners. */
     background-color: var(--color-background);
     background-image:
-      radial-gradient(1100px 620px at 12% -12%, var(--glow-1), transparent 60%),
-      radial-gradient(920px 520px at 92% 4%, var(--glow-2), transparent 55%),
-      radial-gradient(760px 700px at 78% 108%, var(--glow-3), transparent 60%);
+      radial-gradient(1200px 700px at 0% 0%, var(--glow-1), transparent 55%),
+      radial-gradient(1000px 700px at 100% 0%, var(--glow-2), transparent 55%),
+      radial-gradient(800px 800px at 100% 100%, var(--glow-3), transparent 60%);
     background-attachment: fixed;
     background-repeat: no-repeat;
     color: var(--color-foreground);

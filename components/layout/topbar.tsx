@@ -15,35 +15,40 @@ export function Topbar({ onOpenMobile }: { onOpenMobile: () => void }) {
   const { user, role, setRole } = useSession();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-white/50 bg-background/60 px-4 backdrop-blur-xl lg:px-6 dark:border-white/5">
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 bg-transparent px-4 lg:px-6">
       <button
         onClick={onOpenMobile}
-        className="rounded-md p-2 text-muted-foreground hover:bg-surface-hover lg:hidden"
+        className="rounded-full p-2 text-muted-foreground hover:bg-surface-hover lg:hidden"
         aria-label="Otwórz menu"
       >
         <Menu className="size-5" />
       </button>
 
       <div className="hidden max-w-md flex-1 md:block">
-        <Input icon={<Search />} placeholder="Szukaj altanek, pojemników, adresów..." />
+        <Input
+          icon={<Search />}
+          placeholder="Szukaj altanek, pojemników, adresów..."
+          className="h-11 rounded-full! bg-card"
+        />
       </div>
 
-      <div className="ml-auto flex items-center gap-1.5">
+      <div className="ml-auto flex items-center gap-2">
         {/* Dev-only role switcher — removed when real auth is wired. */}
         <Select
           options={ROLE_OPTIONS}
           value={role}
           onChange={(e) => setRole(e.target.value as Role)}
-          className="hidden h-9 w-44 sm:block"
+          className="hidden h-10 w-44 rounded-full! sm:block"
         />
 
-        <Button variant="ghost" size="icon" aria-label="Powiadomienia" className="relative">
-          <Bell className="size-[18px]" />
-          <span className="absolute right-2 top-2 size-1.5 rounded-full bg-danger" />
-        </Button>
         <ThemeToggle />
 
-        <div className="ml-1 flex size-9 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold text-primary">
+        <Button variant="ghost" size="icon" aria-label="Powiadomienia" className="relative border border-border bg-card">
+          <Bell className="size-[18px]" />
+          <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-coral" />
+        </Button>
+
+        <div className="flex size-10 items-center justify-center rounded-full bg-lime/50 text-xs font-semibold text-forest">
           {user.avatarInitials}
         </div>
       </div>

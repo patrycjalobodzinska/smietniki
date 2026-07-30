@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import { Poppins, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { Providers } from "./providers";
 
-const inter = Inter({ variable: "--font-inter", subsets: ["latin", "latin-ext"] });
+const inter = Poppins({
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin", "latin-ext"],
+});
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {

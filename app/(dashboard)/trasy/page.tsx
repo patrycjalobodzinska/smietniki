@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles, MapPin, Clock, Gauge } from "lucide-react";
+import { MapPin, Clock, Gauge } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
-import { Button, Tabs, DataTable, type Column } from "@/components/ui";
+import { Tabs, DataTable, type Column } from "@/components/ui";
 import { RouteStatusBadge } from "@/components/domain/badges";
-import { useRoutes, useOptimizeRoute } from "@/lib/api/hooks/use-operations";
-import { useStations } from "@/lib/api/hooks/use-infrastructure";
+import { useRoutes } from "@/lib/api/hooks/use-operations";
 import type { CollectionRoute, RouteStatus } from "@/lib/types";
 import { formatDate } from "@/lib/utils/format";
 
@@ -55,20 +54,12 @@ export default function RoutesPage() {
   const router = useRouter();
   const [status, setStatus] = useState<RouteStatus | "all">("all");
   const { data, isLoading } = useRoutes({ status });
-  const { data: stations } = useStations();
-  const optimize = useOptimizeRoute();
-
-  const handleOptimize = () => {
-    const ids = (stations ?? []).filter((s) => (s.avgFillLevel ?? 0) >= 70).map((s) => s.id);
-    optimize.mutate(ids, { onSuccess: (route) => router.push(`/trasy/${route.id}`) });
-  };
 
   return (
     <div className="space-y-4">
       <PageHeader
         title="Trasy PGK"
         description="Planowanie i optymalizacja tras odbioru odpadów."
-        actions={<Button onClick={handleOptimize} loading={optimize.isPending}><Sparkles /> Generuj trasę</Button>}
       />
       <Tabs items={TABS} value={status} onValueChange={(v) => setStatus(v as RouteStatus | "all")} />
       <DataTable columns={columns} data={data} rowKey={(r) => r.id} loading={isLoading} onRowClick={(r) => router.push(`/trasy/${r.id}`)} emptyTitle="Brak tras" />

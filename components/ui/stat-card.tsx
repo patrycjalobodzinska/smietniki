@@ -14,10 +14,10 @@ export interface StatCardProps {
 }
 
 const TONE: Record<NonNullable<StatCardProps["tone"]>, string> = {
-  default: "bg-primary/10 text-primary",
+  default: "bg-lime/50 text-forest",
   success: "bg-success/12 text-success",
   warning: "bg-warning/15 text-warning-foreground",
-  danger: "bg-danger/12 text-danger",
+  danger: "bg-coral/15 text-coral",
 };
 
 export function StatCard({
