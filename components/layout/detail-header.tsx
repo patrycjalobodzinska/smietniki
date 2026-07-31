@@ -11,7 +11,7 @@ export interface DetailHeaderProps {
 /** Standard header for detail screens: trail, title, badge row, actions. */
 export function DetailHeader({ breadcrumbs, title, subtitle, badges, actions }: DetailHeaderProps) {
   return (
-    <div className="space-y-3 pb-6">
+    <div className="space-y-3 pb-1">
       <Breadcrumbs items={breadcrumbs} />
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1.5">

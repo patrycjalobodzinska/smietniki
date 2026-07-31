@@ -13,7 +13,7 @@ export function PageHeader({ title, description, actions, className }: PageHeade
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 pb-6 sm:flex-row sm:items-center sm:justify-between",
+        "flex flex-col gap-3 pb-1 sm:flex-row sm:items-center sm:justify-between",
         className,
       )}
     >
