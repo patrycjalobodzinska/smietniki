@@ -6,6 +6,7 @@ import { Leaf, LogOut, X } from "lucide-react";
 import { NAVIGATION } from "@/config/navigation";
 import { useSession } from "@/lib/auth/session";
 import { authService } from "@/lib/api/services/auth";
+import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils/cn";
 
 interface SidebarProps {
@@ -96,8 +97,9 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
           })}
         </nav>
 
-        {/* Identity + logout */}
+        {/* Theme + identity + logout */}
         <div className="mt-4 flex flex-col items-center gap-3">
+          <ThemeToggle />
           <div
             className="flex size-9 items-center justify-center rounded-full bg-lime/50 text-xs font-semibold text-forest"
             title={user.name}
