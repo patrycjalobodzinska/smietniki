@@ -45,6 +45,10 @@ export const qk = {
   },
   vehicles: { list: () => ["vehicles", "list"] as const },
   dashboard: { summary: ["dashboard", "summary"] as const },
+  devices: {
+    all: ["devices"] as const,
+    list: (f?: object) => ["devices", "list", f ?? {}] as const,
+  },
   analytics: {
     insights: ["analytics", "insights"] as const,
     dashboard: ["analytics", "dashboard"] as const,

@@ -168,6 +168,25 @@ export interface AccessSession {
   anomaly: boolean;
 }
 
+/* ---- Devices (urządzenia OT) ---- */
+
+export type DeviceSource = "camera" | "rfid" | "thermal" | "unknown";
+
+export interface Device {
+  id: string;
+  deviceKey: string;
+  source: DeviceSource;
+  ip: string;
+  channelId: number | null;
+  name: string;
+  stationCode: string | null;
+  containerCode: string | null;
+  firstSeenAt: string | null;
+  lastSeenAt: string | null;
+  eventCount: number;
+  online: boolean;
+}
+
 /* ---- Collections (odbiory) ---- */
 
 export type CollectionStatus = "confirmed" | "estimated" | "pending";

@@ -8,6 +8,7 @@ import {
   Route,
   KeyRound,
   LayoutGrid,
+  Router,
   Settings,
   type LucideIcon,
 } from "lucide-react";
@@ -46,6 +47,7 @@ export const NAVIGATION: NavSection[] = [
       { label: "Nieruchomości", href: "/nieruchomosci", icon: Home, permission: "properties.view" },
       { label: "Altanki", href: "/altanki", icon: Warehouse, permission: "stations.view" },
       { label: "Pojemniki", href: "/pojemniki", icon: Trash2, permission: "containers.view" },
+      { label: "Urządzenia", href: "/urzadzenia", icon: Router, permission: "stations.view" },
       { label: "Sesje dostępu", href: "/sesje", icon: KeyRound, permission: "sessions.view" },
     ],
   },
