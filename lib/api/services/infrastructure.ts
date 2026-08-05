@@ -1,20 +1,14 @@
 /**
- * Infrastructure service facade. Backed entirely by the live SprigaAPI; the
- * filter/type contract lives in infrastructure.types.ts so hooks and components
- * import from here unchanged.
+ * Infrastructure service facade (KM1 scope: bin stations + containers).
+ * Backed entirely by the live SprigaAPI. Hooks/components import from here.
  */
 
 export {
-  cooperativesService,
-  propertiesService,
-  unitsService,
   stationsService,
   containersService,
 } from "@/lib/api/services/infrastructure.real";
 
 export type {
-  CooperativeFilters,
-  PropertyFilters,
   StationFilters,
   ContainerFilters,
   FillHistoryPoint,
