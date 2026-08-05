@@ -3,6 +3,7 @@ import {
   Warehouse,
   Trash2,
   KeyRound,
+  Router,
   LineChart,
   Settings,
   type LucideIcon,
@@ -40,6 +41,7 @@ export const NAVIGATION: NavSection[] = [
     items: [
       { label: "Altanki", href: "/altanki", icon: Warehouse, permission: "stations.view" },
       { label: "Pojemniki", href: "/pojemniki", icon: Trash2, permission: "containers.view" },
+      { label: "Urządzenia", href: "/urzadzenia", icon: Router, permission: "stations.view" },
       { label: "Sesje dostępu", href: "/sesje", icon: KeyRound, permission: "sessions.view" },
     ],
   },
