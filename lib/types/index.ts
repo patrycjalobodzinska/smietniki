@@ -91,6 +91,7 @@ export interface AccessKey {
   status: "active" | "revoked";
   issuedAt: string;
   revokedAt: string | null;
+  notes?: string | null;
 }
 
 /* ---- Altanka (bin station) ---- */
