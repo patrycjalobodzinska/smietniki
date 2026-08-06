@@ -1,16 +1,18 @@
 /**
  * API runtime configuration.
  *
- *   NEXT_PUBLIC_API_URL   where the browser sends API calls. Defaults to the
- *                         same-origin proxy `/api` (app/api/[...path]/route.ts),
- *                         which forwards to API_PROXY_TARGET server-side and
- *                         makes the auth cookie first-party — so it works even
- *                         when the backend is on a different domain. Set to a
- *                         full URL (https://api.example.com) only for a direct,
- *                         same-registrable-domain deployment.
+ * The browser ALWAYS calls the same-origin proxy at `/api`
+ * (app/api/[...path]/route.ts), which forwards to the real backend
+ * server-side (API_PROXY_TARGET, a runtime env var) and rewrites the auth
+ * cookie to be first-party. This makes cross-domain backends work in every
+ * browser (Safari/Chrome/Firefox third-party-cookie blocking) and — crucially —
+ * cannot be broken by a stale build-time `NEXT_PUBLIC_API_URL`.
+ *
+ * Configure the backend URL at runtime via API_PROXY_TARGET (server env),
+ * default https://spriga-api.essa.sx.
  */
 
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "/api";
+export const API_BASE = "/api";
 
-/** True when an API base is configured (drives auth bootstrap). Always true here. */
-export const REAL = API_BASE.length > 0;
+/** Kept for the auth bootstrap; always true (we always talk to the proxy). */
+export const REAL = true;
