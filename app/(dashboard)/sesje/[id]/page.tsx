@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { KeyRound, Clock, Timer, Video, ArrowRight } from "lucide-react";
+import { KeyRound, Clock, Timer, Video, ArrowRight, AlertTriangle } from "lucide-react";
 import { DetailHeader } from "@/components/layout/detail-header";
 import {
   Card,
@@ -57,7 +57,48 @@ export default function SessionDetailPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      {session.anomaly && (
+        <div className="mt-4 rounded-lg border border-danger/40 bg-danger/5 p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="mt-0.5 size-5 shrink-0 text-danger" />
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-danger">Wykryto anomalię</p>
+              <p className="text-sm text-muted-foreground">
+                Anomalia dotyczy tej sesji dostępu. Backend zgłasza wyłącznie sam fakt
+                (bez typu i przyczyny) — poniżej kontekst zdarzenia, którego dotyczy.
+              </p>
+              <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+                <div className="flex justify-between gap-3 sm:block">
+                  <dt className="text-muted-foreground">Altanka</dt>
+                  <dd className="font-medium">
+                    {station ? (
+                      <button className="text-primary hover:underline" onClick={() => router.push(`/altanki/${station.id}`)}>
+                        {station.name}
+                      </button>
+                    ) : (
+                      session.stationName || "—"
+                    )}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-3 sm:block">
+                  <dt className="text-muted-foreground">Lokal</dt>
+                  <dd className="font-medium">{session.unitNumber ? `#${session.unitNumber}` : "—"}</dd>
+                </div>
+                <div className="flex justify-between gap-3 sm:block">
+                  <dt className="text-muted-foreground">Klucz / karta</dt>
+                  <dd className="font-medium">{session.keyIdentifier}</dd>
+                </div>
+                <div className="flex justify-between gap-3 sm:block">
+                  <dt className="text-muted-foreground">Czas zdarzenia</dt>
+                  <dd className="font-medium">{formatDateTime(session.startedAt)}</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="Klucz" value={session.keyIdentifier} icon={KeyRound} />
         <StatCard label="Rozpoczęcie" value={formatDateTime(session.startedAt)} icon={Clock} />
         <StatCard label="Zakończenie" value={session.endedAt ? formatDateTime(session.endedAt) : "N/D"} icon={Clock} />
@@ -102,7 +143,8 @@ export default function SessionDetailPage() {
                 columns={1}
                 items={[
                   { label: "Altanka", value: station ? <button className="text-primary hover:underline" onClick={() => router.push(`/altanki/${station.id}`)}>{station.name}</button> : "—" },
-                  { label: "Lokal", value: `#${session.unitNumber}` },
+                  { label: "Lokal", value: session.unitNumber ? `#${session.unitNumber}` : "—" },
+                  { label: "Klucz / karta", value: session.keyIdentifier },
                   { label: "Typ klucza", value: KEY_TYPE_LABEL[session.keyType] },
                   { label: "Anomalia", value: session.anomaly ? "Tak — wykryto" : "Nie" },
                 ]}

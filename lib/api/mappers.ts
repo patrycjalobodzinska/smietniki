@@ -395,6 +395,7 @@ export function mapSession(dto: AccessSessionDto, stations: Map<string, StationR
     keyType: "rfid",
     unitId: dto.unitId ?? "",
     unitNumber: "",
+    accessKeyId: dto.accessKeyId ?? null,
     stationId: st?.id ?? "",
     // The station link travels via deviceKey (devices module, out of scope);
     // fall back to the code, then the device key, so the row is never blank.

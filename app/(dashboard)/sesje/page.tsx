@@ -37,7 +37,7 @@ export default function SessionsPage() {
 
   const columns: Column<AccessSession>[] = [
     { key: "station", header: "Altanka", cell: (s) => <span className="font-medium">{s.stationName}</span> },
-    { key: "key", header: "Klucz / lokal", cell: (s) => <div><p className="text-sm">{s.keyIdentifier}</p><p className="text-xs text-muted-foreground">Lokal {s.unitNumber}</p></div> },
+    { key: "key", header: "Klucz / lokal", cell: (s) => <div><p className="text-sm">{s.keyIdentifier}</p>{s.unitNumber && <p className="text-xs text-muted-foreground">Lokal {s.unitNumber}</p>}</div> },
     { key: "type", header: "Typ klucza", cell: (s) => <Badge variant="outline">{KEY_TYPE_LABEL[s.keyType]}</Badge> },
     { key: "started", header: "Rozpoczęcie", cell: (s) => <span className="text-sm text-muted-foreground">{formatDateTime(s.startedAt)}</span> },
     { key: "duration", header: "Czas trwania", align: "right", cell: (s) => <span className="text-sm tabular-nums">{duration(s.durationSeconds)}</span> },

@@ -86,6 +86,8 @@ export interface Unit {
 export interface AccessKey {
   id: string;
   unitId: string;
+  /** Human label of the lokal this key belongs to; null when unresolved. */
+  unitNumber?: string | null;
   keyType: KeyType;
   keyIdentifier: string;
   status: "active" | "revoked";
@@ -160,6 +162,8 @@ export interface AccessSession {
   keyType: KeyType;
   unitId: string;
   unitNumber: string;
+  /** Id of the access key used, when the event carried one (links to /klucze). */
+  accessKeyId: string | null;
   stationId: string;
   stationName: string;
   startedAt: string;
