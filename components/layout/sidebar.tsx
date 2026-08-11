@@ -6,6 +6,7 @@ import { Leaf, LogOut, X } from "lucide-react";
 import { NAVIGATION } from "@/config/navigation";
 import { useSession } from "@/lib/auth/session";
 import { authService } from "@/lib/api/services/auth";
+import { setFullMode, useFullMode } from "@/lib/full-mode";
 import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils/cn";
 
@@ -20,6 +21,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { has, user } = useSession();
+  const fullMode = useFullMode();
 
   async function handleLogout() {
     try {
@@ -27,6 +29,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
     } catch {
       /* ignore — redirect regardless */
     }
+    setFullMode(false);
     router.replace("/login");
   }
 
@@ -59,7 +62,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
         {/* Nav — icon rail, groups separated by a spacer */}
         <nav className="mt-8 flex flex-1 flex-col items-center gap-2">
           {NAVIGATION.map((section, si) => {
-            const items = section.items.filter((i) => has(i.permission));
+            const items = section.items.filter((i) => has(i.permission) && (!i.full || fullMode));
             if (!items.length) return null;
             return (
               <div key={section.title} className="flex flex-col items-center gap-2">

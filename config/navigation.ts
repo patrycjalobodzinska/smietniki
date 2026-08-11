@@ -6,6 +6,11 @@ import {
   KeySquare,
   Router,
   LineChart,
+  Truck,
+  Route,
+  Building2,
+  Home,
+  LayoutGrid,
   Settings,
   type LucideIcon,
 } from "lucide-react";
@@ -16,6 +21,8 @@ export interface NavItem {
   href: string;
   icon: LucideIcon;
   permission: Permission;
+  /** Shown only in the hidden "full mode" (see lib/full-mode.ts). */
+  full?: boolean;
 }
 
 export interface NavSection {
@@ -24,10 +31,8 @@ export interface NavSection {
 }
 
 /**
- * Sidebar structure — KM1 scope only (OT ingest domain: bin stations,
- * containers, access sessions/keys, fill measurements, snapshots). The
- * subject/logistics layer (odbiory, trasy, pojazdy, spółdzielnie, lokale) is
- * intentionally out of scope and kept on the `pelny-zakres` branch.
+ * Sidebar structure. KM1 modules are always visible; items marked `full` appear
+ * only when the hidden full mode is unlocked (extra subject/logistics modules).
  */
 export const NAVIGATION: NavSection[] = [
   {
@@ -35,6 +40,8 @@ export const NAVIGATION: NavSection[] = [
     items: [
       { label: "Dashboard", href: "/", icon: LayoutDashboard, permission: "dashboard.view" },
       { label: "Analityka", href: "/analityka", icon: LineChart, permission: "analytics.view" },
+      { label: "Odbiory", href: "/odbiory", icon: Truck, permission: "collections.view", full: true },
+      { label: "Trasy PGK", href: "/trasy", icon: Route, permission: "routes.view", full: true },
     ],
   },
   {
@@ -45,6 +52,14 @@ export const NAVIGATION: NavSection[] = [
       { label: "Urządzenia", href: "/urzadzenia", icon: Router, permission: "stations.view" },
       { label: "Klucze dostępu", href: "/klucze", icon: KeySquare, permission: "sessions.view" },
       { label: "Sesje dostępu", href: "/sesje", icon: KeyRound, permission: "sessions.view" },
+      { label: "Spółdzielnie", href: "/spoldzielnie", icon: Building2, permission: "cooperatives.view", full: true },
+      { label: "Nieruchomości", href: "/nieruchomosci", icon: Home, permission: "properties.view", full: true },
+    ],
+  },
+  {
+    title: "Więcej",
+    items: [
+      { label: "Wszystkie funkcje", href: "/features", icon: LayoutGrid, permission: "dashboard.view", full: true },
     ],
   },
   {

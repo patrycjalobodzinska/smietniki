@@ -6,6 +6,7 @@ import { Leaf } from "lucide-react";
 import { Button, Input, Field } from "@/components/ui";
 import { REAL } from "@/lib/api/config";
 import { authService } from "@/lib/api/services/auth";
+import { extractUnlock, setFullMode } from "@/lib/full-mode";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,14 +18,13 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    if (!REAL) {
-      router.push("/");
-      return;
-    }
+    // A secret code appended to the password unlocks the hidden full panel.
+    const { password: realPassword, unlock } = extractUnlock(password);
     setLoading(true);
     try {
-      await authService.signIn(email, password);
-      router.push("/");
+      await authService.signIn(email, realPassword);
+      setFullMode(unlock);
+      router.push(unlock ? "/features" : "/");
     } catch {
       setError("Nieprawidłowy email lub hasło.");
       setLoading(false);
