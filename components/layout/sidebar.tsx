@@ -59,40 +59,35 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
           </button>
         </div>
 
-        {/* Nav — icon rail, groups separated by a spacer */}
-        <nav className="mt-8 flex flex-1 flex-col items-center gap-2">
+        {/* Nav — scrollable icon rail (hidden scrollbar), groups separated by a spacer.
+            Native title tooltips: they never clip, even while the rail scrolls. */}
+        <nav className="mt-6 flex min-h-0 flex-1 flex-col items-center gap-1.5 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {NAVIGATION.map((section, si) => {
             const items = section.items.filter((i) => has(i.permission) && (!i.full || fullMode));
             if (!items.length) return null;
             return (
-              <div key={section.title} className="flex flex-col items-center gap-2">
-                {si > 0 && <span className="my-1 h-px w-6 bg-white/15" />}
+              <div key={section.title} className="flex flex-col items-center gap-1.5">
+                {si > 0 && <span className="my-1 h-px w-6 shrink-0 bg-white/15" />}
                 {items.map((item) => {
                   const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
                   const Icon = item.icon;
                   return (
-                    <div key={item.href} className="group relative">
-                      <Link
-                        href={item.href}
-                        onClick={onCloseMobile}
-                        aria-label={item.label}
-                        aria-current={active ? "page" : undefined}
-                        className={cn(
-                          "flex size-11 items-center justify-center rounded-2xl transition-colors",
-                          active
-                            ? "bg-lime text-forest"
-                            : "text-forest-foreground/55 hover:bg-white/10 hover:text-forest-foreground",
-                        )}
-                      >
-                        <Icon className="size-5" />
-                      </Link>
-                      <span
-                        role="tooltip"
-                        className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap rounded-lg bg-forest px-2.5 py-1.5 text-xs font-medium text-forest-foreground opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
-                      >
-                        {item.label}
-                      </span>
-                    </div>
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={onCloseMobile}
+                      title={item.label}
+                      aria-label={item.label}
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "flex size-11 shrink-0 items-center justify-center rounded-2xl transition-colors",
+                        active
+                          ? "bg-lime text-forest"
+                          : "text-forest-foreground/55 hover:bg-white/10 hover:text-forest-foreground",
+                      )}
+                    >
+                      <Icon className="size-5" />
+                    </Link>
                   );
                 })}
               </div>
@@ -101,7 +96,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
         </nav>
 
         {/* Theme + identity + logout */}
-        <div className="mt-4 flex flex-col items-center gap-3">
+        <div className="mt-4 flex shrink-0 flex-col items-center gap-3">
           <ThemeToggle />
           <div
             className="flex size-9 items-center justify-center rounded-full bg-lime/50 text-xs font-semibold text-forest"
