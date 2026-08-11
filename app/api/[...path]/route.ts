@@ -70,20 +70,27 @@ async function proxy(request: NextRequest, ctx: { params: Promise<{ path: string
         const chunks: Buffer[] = [];
         res.on("data", (c) => chunks.push(c as Buffer));
         res.on("end", () => {
-          const buf = Buffer.concat(chunks);
-          const resHeaders = new Headers();
-          for (const [k, v] of Object.entries(res.headers)) {
-            const key = k.toLowerCase();
-            if (key === "set-cookie" || STRIP_RESPONSE.has(key) || v == null) continue;
-            if (Array.isArray(v)) v.forEach((val) => resHeaders.append(k, val));
-            else resHeaders.set(k, String(v));
+          try {
+            const buf = Buffer.concat(chunks);
+            const status = res.statusCode ?? 502;
+            const resHeaders = new Headers();
+            for (const [k, v] of Object.entries(res.headers)) {
+              const key = k.toLowerCase();
+              if (key === "set-cookie" || STRIP_RESPONSE.has(key) || v == null) continue;
+              if (Array.isArray(v)) v.forEach((val) => resHeaders.append(k, val));
+              else resHeaders.set(k, String(v));
+            }
+            // 204/304/1xx must have a null body (Response throws otherwise → hang).
+            const noBody = status === 204 || status === 304 || (status >= 100 && status < 200);
+            const out = new NextResponse(noBody || buf.length === 0 ? null : buf, { status, headers: resHeaders });
+            const sc = res.headers["set-cookie"];
+            if (Array.isArray(sc)) {
+              for (const cookie of sc) out.headers.append("set-cookie", rewriteSetCookie(cookie, isHttps));
+            }
+            resolve(out);
+          } catch (e) {
+            resolve(NextResponse.json({ error: "proxy_error", message: String(e) }, { status: 502 }));
           }
-          const out = new NextResponse(buf, { status: res.statusCode ?? 502, headers: resHeaders });
-          const sc = res.headers["set-cookie"];
-          if (Array.isArray(sc)) {
-            for (const cookie of sc) out.headers.append("set-cookie", rewriteSetCookie(cookie, isHttps));
-          }
-          resolve(out);
         });
       },
     );
