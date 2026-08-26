@@ -58,7 +58,7 @@ export default function CooperativesPage() {
         </div>
         <Select options={DISTRICT_OPTIONS} value={district} onChange={(e) => setDistrict(e.target.value)} className="h-9 w-52" />
       </FilterBar>
-      <DataTable columns={columns} data={data} rowKey={(c) => c.id} loading={isLoading} onRowClick={(c) => router.push(`/spoldzielnie/${c.id}`)} emptyTitle="Brak spółdzielni" />
+      <DataTable columns={columns} data={data} rowKey={(c) => c.id} loading={isLoading} onRowClick={(c) => router.push(`/spoldzielnie/${c.id}`)} emptyTitle="Brak spółdzielni" pageSize={15} />
     </div>
   );
 }

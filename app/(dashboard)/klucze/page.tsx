@@ -199,7 +199,7 @@ export default function KeysPage() {
         <Select options={TYPE_OPTIONS} value={keyType} onChange={(e) => setKeyType(e.target.value as KeyType | "all")} className="h-9 w-44" />
         <Select options={STATUS_OPTIONS} value={status} onChange={(e) => setStatus(e.target.value as "all" | "active" | "revoked")} className="h-9 w-48" />
       </FilterBar>
-      <DataTable columns={columns} data={data} rowKey={(k) => k.id} loading={isLoading} emptyTitle="Brak kluczy" />
+      <DataTable columns={columns} data={data} rowKey={(k) => k.id} loading={isLoading} emptyTitle="Brak kluczy" pageSize={15} />
 
       <IssueKeyDialog open={issueOpen} onClose={() => setIssueOpen(false)} />
     </div>

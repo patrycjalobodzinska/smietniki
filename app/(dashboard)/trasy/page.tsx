@@ -62,7 +62,7 @@ export default function RoutesPage() {
         description="Planowanie i optymalizacja tras odbioru odpadów."
       />
       <Tabs items={TABS} value={status} onValueChange={(v) => setStatus(v as RouteStatus | "all")} />
-      <DataTable columns={columns} data={data} rowKey={(r) => r.id} loading={isLoading} onRowClick={(r) => router.push(`/trasy/${r.id}`)} emptyTitle="Brak tras" />
+      <DataTable columns={columns} data={data} rowKey={(r) => r.id} loading={isLoading} onRowClick={(r) => router.push(`/trasy/${r.id}`)} emptyTitle="Brak tras" pageSize={15} />
     </div>
   );
 }
