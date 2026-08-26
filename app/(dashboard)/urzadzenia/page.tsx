@@ -78,7 +78,7 @@ export default function DevicesPage() {
         <Select options={SOURCE_OPTIONS} value={source} onChange={(e) => setSource(e.target.value as DeviceSource | "all")} className="h-9 w-48" />
         <Select options={STATUS_OPTIONS} value={online} onChange={(e) => setOnline(e.target.value as "all" | "online" | "offline")} className="h-9 w-44" />
       </FilterBar>
-      <DataTable columns={columns} data={data} rowKey={(d) => d.id} loading={isLoading} emptyTitle="Brak urządzeń" />
+      <DataTable columns={columns} data={data} rowKey={(d) => d.id} loading={isLoading} emptyTitle="Brak urządzeń" pageSize={15} />
     </div>
   );
 }

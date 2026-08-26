@@ -59,7 +59,7 @@ export default function CollectionsPage() {
         <Select options={FRACTION_OPTIONS} value={fraction} onChange={(e) => setFraction(e.target.value as WasteFraction | "all")} className="h-9 w-44" />
         <Select options={STATUS_OPTIONS} value={status} onChange={(e) => setStatus(e.target.value as CollectionStatus | "all")} className="h-9 w-44" />
       </FilterBar>
-      <DataTable columns={columns} data={data} rowKey={(c) => c.id} loading={isLoading} onRowClick={(c) => router.push(`/odbiory/${c.id}`)} emptyTitle="Brak odbiorów" />
+      <DataTable columns={columns} data={data} rowKey={(c) => c.id} loading={isLoading} onRowClick={(c) => router.push(`/odbiory/${c.id}`)} emptyTitle="Brak odbiorów" pageSize={15} />
     </div>
   );
 }

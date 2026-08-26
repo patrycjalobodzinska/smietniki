@@ -50,7 +50,7 @@ export default function ContainersPage() {
         <Select options={STATUS_OPTIONS} value={status} onChange={(e) => setStatus(e.target.value as FillStatus | "all")} className="h-9 w-44" />
         <Select options={SOURCE_OPTIONS} value={dataSource} onChange={(e) => setDataSource(e.target.value as DataSource | "all")} className="h-9 w-44" />
       </FilterBar>
-      <DataTable columns={columns} data={data} rowKey={(c) => c.id} loading={isLoading} onRowClick={(c) => router.push(`/pojemniki/${c.id}`)} emptyTitle="Brak pojemników" />
+      <DataTable columns={columns} data={data} rowKey={(c) => c.id} loading={isLoading} onRowClick={(c) => router.push(`/pojemniki/${c.id}`)} emptyTitle="Brak pojemników" pageSize={15} />
     </div>
   );
 }

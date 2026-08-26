@@ -73,7 +73,7 @@ export default function PropertiesPage() {
         </div>
         <Select options={coopOptions} value={coop} onChange={(e) => setCoop(e.target.value)} className="h-9 w-56" />
       </FilterBar>
-      <DataTable columns={columns} data={data} rowKey={(p) => p.id} loading={isLoading} onRowClick={(p) => router.push(`/nieruchomosci/${p.id}`)} emptyTitle="Brak nieruchomości" />
+      <DataTable columns={columns} data={data} rowKey={(p) => p.id} loading={isLoading} onRowClick={(p) => router.push(`/nieruchomosci/${p.id}`)} emptyTitle="Brak nieruchomości" pageSize={15} />
     </div>
   );
 }

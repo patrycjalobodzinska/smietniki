@@ -118,17 +118,31 @@ export default function StationDetailPage() {
               <span className="text-xs text-muted-foreground">{sessions?.length ?? 0} sesji</span>
             </CardHeader>
             <CardContent className="divide-y divide-border">
-              {(sessions ?? []).slice(0, 6).map((s) => (
-                <div key={s.id} className="flex items-center gap-3 py-2.5 first:pt-0">
+              {(sessions ?? []).slice(0, 5).map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => router.push(`/sesje/${s.id}`)}
+                  className="flex w-full items-center gap-3 py-2.5 text-left transition-colors first:pt-0 hover:bg-lime/8"
+                >
                   <KeyRound className="size-4 text-muted-foreground" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm">{s.keyIdentifier}</p>
                   </div>
                   {s.anomaly && <AnomalyBadge />}
                   <span className="shrink-0 text-xs text-muted-foreground">{formatDateTime(s.startedAt)}</span>
-                </div>
+                </button>
               ))}
               {!sessions?.length && <p className="py-4 text-sm text-muted-foreground">Brak sesji.</p>}
+              {(sessions?.length ?? 0) > 5 && (
+                <div className="pt-3">
+                  <button
+                    onClick={() => router.push(`/sesje?station=${id}`)}
+                    className="text-sm font-medium text-primary hover:underline"
+                  >
+                    Zobacz wszystkie ({sessions!.length}) →
+                  </button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

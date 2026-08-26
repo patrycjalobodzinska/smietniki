@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Search, Video } from "lucide-react";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Search, Video, X } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { FilterBar } from "@/components/layout/filter-bar";
-import { Input, Select, Badge, DataTable, type Column } from "@/components/ui";
+import { Input, Select, Badge, DataTable, Spinner, type Column } from "@/components/ui";
 import { AnomalyBadge } from "@/components/domain/badges";
 import { useSessions } from "@/lib/api/hooks/use-operations";
+import { useStation } from "@/lib/api/hooks/use-infrastructure";
 import type { AccessSession } from "@/lib/types";
 import { KEY_TYPE_LABEL } from "@/lib/labels";
 import { formatDateTime } from "@/lib/utils/format";
@@ -25,13 +26,18 @@ function duration(sec: number | null) {
   return m ? `${m} min ${s}s` : `${s}s`;
 }
 
-export default function SessionsPage() {
+function SessionsList() {
   const router = useRouter();
+  const params = useSearchParams();
+  const stationId = params.get("station") ?? "";
+
   const [search, setSearch] = useState("");
   const [anomaly, setAnomaly] = useState("all");
 
+  const { data: station } = useStation(stationId);
   const { data, isLoading } = useSessions({
     search,
+    stationId: stationId || undefined,
     anomaly: anomaly === "all" ? undefined : anomaly === "yes",
   });
 
@@ -54,7 +60,32 @@ export default function SessionsPage() {
         </div>
         <Select options={ANOMALY_OPTIONS} value={anomaly} onChange={(e) => setAnomaly(e.target.value)} className="h-9 w-48" />
       </FilterBar>
-      <DataTable columns={columns} data={data} rowKey={(s) => s.id} loading={isLoading} onRowClick={(s) => router.push(`/sesje/${s.id}`)} emptyTitle="Brak sesji" />
+
+      {stationId && (
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Filtr altanki:</span>
+          <Badge variant="info">
+            {station?.name ?? stationId}
+            <button
+              onClick={() => router.push("/sesje")}
+              aria-label="Wyczyść filtr altanki"
+              className="ml-1 rounded-full transition-colors hover:text-foreground"
+            >
+              <X className="size-3" />
+            </button>
+          </Badge>
+        </div>
+      )}
+
+      <DataTable columns={columns} data={data} rowKey={(s) => s.id} loading={isLoading} onRowClick={(s) => router.push(`/sesje/${s.id}`)} emptyTitle="Brak sesji" pageSize={15} />
     </div>
+  );
+}
+
+export default function SessionsPage() {
+  return (
+    <Suspense fallback={<div className="flex h-64 items-center justify-center"><Spinner /></div>}>
+      <SessionsList />
+    </Suspense>
   );
 }

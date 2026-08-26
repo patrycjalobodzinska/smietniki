@@ -67,7 +67,7 @@ export default function StationsPage() {
         <Select options={VARIANT_OPTIONS} value={variant} onChange={(e) => setVariant(e.target.value as DeploymentVariant | "all")} className="h-9 w-52" />
         <Select options={STATUS_OPTIONS} value={status} onChange={(e) => setStatus(e.target.value as StationStatus | "all")} className="h-9 w-44" />
       </FilterBar>
-      <DataTable columns={columns} data={data} rowKey={(s) => s.id} loading={isLoading} onRowClick={(s) => router.push(`/altanki/${s.id}`)} emptyTitle="Brak altanek" />
+      <DataTable columns={columns} data={data} rowKey={(s) => s.id} loading={isLoading} onRowClick={(s) => router.push(`/altanki/${s.id}`)} emptyTitle="Brak altanek" pageSize={15} />
     </div>
   );
 }
