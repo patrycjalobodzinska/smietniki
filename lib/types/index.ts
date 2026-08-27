@@ -86,8 +86,6 @@ export interface Unit {
 export interface AccessKey {
   id: string;
   unitId: string;
-  /** Human label of the lokal this key belongs to; null when unresolved. */
-  unitNumber?: string | null;
   keyType: KeyType;
   keyIdentifier: string;
   status: "active" | "revoked";

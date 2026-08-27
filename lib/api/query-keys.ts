@@ -52,7 +52,6 @@ export const qk = {
   accessKeys: {
     all: ["access-keys"] as const,
     list: (f?: object) => ["access-keys", "list", f ?? {}] as const,
-    units: ["access-keys", "units"] as const,
   },
   analytics: {
     insights: ["analytics", "insights"] as const,
