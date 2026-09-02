@@ -18,4 +18,9 @@ export type {
   StationFilters,
   ContainerFilters,
   FillHistoryPoint,
+  CooperativeInput,
+  PropertyInput,
+  UnitInput,
+  StationInput,
+  ContainerInput,
 } from "@/lib/api/services/infrastructure.types";

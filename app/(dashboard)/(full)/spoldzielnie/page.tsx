@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Search } from "lucide-react";
+import { Pencil, Plus, Search } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { FilterBar } from "@/components/layout/filter-bar";
 import { Button, Input, Select, DataTable, type Column } from "@/components/ui";
 import { FillBar } from "@/components/domain/fill-level";
 import { VariantBadge, StationStatusBadge } from "@/components/domain/badges";
+import { CooperativeDialog } from "@/components/domain/forms/cooperative-dialog";
 import { useCooperatives } from "@/lib/api/hooks/use-infrastructure";
 import type { Cooperative } from "@/lib/types";
 
@@ -19,7 +20,8 @@ const DISTRICT_OPTIONS = [
   { value: "Zwięczyca", label: "Zwięczyca" },
 ];
 
-const columns: Column<Cooperative>[] = [
+function buildColumns(onEdit: (c: Cooperative) => void): Column<Cooperative>[] {
+  return [
   {
     key: "name",
     header: "Spółdzielnia",
@@ -37,20 +39,45 @@ const columns: Column<Cooperative>[] = [
   { key: "fill", header: "Śr. zapełnienie", className: "w-40", cell: (c) => <FillBar level={c.avgFillLevel} /> },
   { key: "variant", header: "Wariant dominujący", cell: (c) => <VariantBadge variant={c.deploymentMix} /> },
   { key: "status", header: "Status", cell: (c) => <StationStatusBadge status={c.status === "warning" ? "attention" : c.status === "active" ? "active" : "inactive"} /> },
-];
+  {
+    key: "actions",
+    header: "",
+    align: "right",
+    cell: (c) => (
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit(c);
+        }}
+      >
+        <Pencil /> Edytuj
+      </Button>
+    ),
+  },
+  ];
+}
 
 export default function CooperativesPage() {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [district, setDistrict] = useState("");
+  const [addOpen, setAddOpen] = useState(false);
+  const [edited, setEdited] = useState<Cooperative | null>(null);
   const { data, isLoading } = useCooperatives({ search, district: district || undefined });
+  const columns = buildColumns(setEdited);
 
   return (
     <div className="space-y-4">
       <PageHeader
         title="Spółdzielnie / zarządcy"
         description="Podmioty odpowiedzialne za osiedlową infrastrukturę odpadową."
-        actions={<Button><Plus /> Dodaj spółdzielnię</Button>}
+        actions={
+          <Button onClick={() => setAddOpen(true)}>
+            <Plus /> Dodaj spółdzielnię
+          </Button>
+        }
       />
       <FilterBar>
         <div className="min-w-56 flex-1">
@@ -59,6 +86,11 @@ export default function CooperativesPage() {
         <Select options={DISTRICT_OPTIONS} value={district} onChange={(e) => setDistrict(e.target.value)} className="h-9 w-52" />
       </FilterBar>
       <DataTable columns={columns} data={data} rowKey={(c) => c.id} loading={isLoading} onRowClick={(c) => router.push(`/spoldzielnie/${c.id}`)} emptyTitle="Brak spółdzielni" pageSize={15} />
+
+      {addOpen && <CooperativeDialog open onClose={() => setAddOpen(false)} />}
+      {edited && (
+        <CooperativeDialog open cooperative={edited} onClose={() => setEdited(null)} />
+      )}
     </div>
   );
 }

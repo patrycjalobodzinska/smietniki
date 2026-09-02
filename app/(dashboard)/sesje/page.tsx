@@ -33,12 +33,16 @@ function SessionsList() {
 
   const [search, setSearch] = useState("");
   const [anomaly, setAnomaly] = useState("all");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
 
   const { data: station } = useStation(stationId);
   const { data, isLoading } = useSessions({
     search,
     stationId: stationId || undefined,
     anomaly: anomaly === "all" ? undefined : anomaly === "yes",
+    from: from ? new Date(from).toISOString() : undefined,
+    to: to ? new Date(to).toISOString() : undefined,
   });
 
   const columns: Column<AccessSession>[] = [
@@ -59,6 +63,8 @@ function SessionsList() {
           <Input icon={<Search />} placeholder="Szukaj klucza, altanki, lokalu..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-9" />
         </div>
         <Select options={ANOMALY_OPTIONS} value={anomaly} onChange={(e) => setAnomaly(e.target.value)} className="h-9 w-48" />
+        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-40" aria-label="Od" />
+        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-40" aria-label="Do" />
       </FilterBar>
 
       {stationId && (

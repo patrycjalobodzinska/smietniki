@@ -169,6 +169,8 @@ export interface AccessSession {
   durationSeconds: number | null;
   hasRecording: boolean;
   anomaly: boolean;
+  /** Ingest event behind the session — links to diagnostics/snapshot. */
+  rawEventId: string | null;
 }
 
 /* ---- Devices (urządzenia OT) ---- */
@@ -246,6 +248,121 @@ export interface Vehicle {
   nominalCapacityKg: number;
   currentEstimatedFill: number;
   status: VehicleStatus;
+}
+
+/* ---- Fill telemetry (pomiary zapełnienia) ---- */
+
+export interface FillMeasurement {
+  id: string;
+  /** OT device that reported the value; null for manual entries. */
+  deviceKey: string | null;
+  containerCode: string | null;
+  source: DataSource;
+  value: number;
+  measuredAt: string;
+  /** Ingest event the measurement came from (diagnostics link). */
+  rawEventId: string | null;
+}
+
+/* ---- Raw ingest events (diagnostyka) ---- */
+
+export interface RawEvent {
+  id: string;
+  source: DeviceSource;
+  eventType: string | null;
+  /** Device-side event id used to detect retransmissions. */
+  pid: string | null;
+  deviceIp: string | null;
+  channelId: number | null;
+  occurredAt: string;
+  receivedAt: string;
+  hasSnapshot: boolean;
+  snapshotId: string | null;
+  fillValue: number | null;
+  isRetransmission: boolean;
+  retransmissionCount: number;
+}
+
+/* ---- Platform layer (users, audit log, messaging, CMS, files) ---- */
+
+export type PlatformUserState = "active" | "locked";
+
+export interface PlatformUser {
+  id: string;
+  email: string;
+  /** API role names (None/Client/Admin) with their display labels. */
+  roles: string[];
+  state: PlatformUserState;
+  phone: string | null;
+  phonePrefix: number | null;
+  emailConfirmed: boolean;
+  phoneConfirmed: boolean;
+  createdAt: string;
+  lastPasswordChangeAt: string | null;
+  registrationProvider: string | null;
+}
+
+export interface UserActivity {
+  id: string;
+  type: string;
+  typeLabel: string;
+  name: string | null;
+  message: string | null;
+  userId: string | null;
+  creatorId: string | null;
+  createdAt: string;
+  ipAddress: string | null;
+  userAgent: string | null;
+  deviceName: string | null;
+}
+
+export type MessageStatus = "sent" | "error" | "other";
+
+export interface EmailMessage {
+  id: string;
+  createdAt: string;
+  toEmail: string;
+  subject: string;
+  body: string;
+  status: MessageStatus;
+  statusLabel: string;
+  templateLabel: string;
+}
+
+export interface PushMessage {
+  id: string;
+  createdAt: string;
+  userId: string | null;
+  title: string;
+  body: string;
+  status: MessageStatus;
+  statusLabel: string;
+  templateLabel: string;
+  read: boolean;
+}
+
+export interface Article {
+  id: string;
+  title: string;
+  shortDescription: string | null;
+  content: string | null;
+  mainPhotoId: string | null;
+  createdAt: string;
+  categoryId: string;
+  categoryName: string;
+  published: boolean;
+}
+
+export interface ArticleCategory {
+  id: string;
+  name: string;
+  articleCount: number;
+}
+
+/** A file stored in the platform file store (Public/Private container). */
+export interface StoredFile {
+  id: string;
+  url: string;
 }
 
 /* ---- Analytics ---- */

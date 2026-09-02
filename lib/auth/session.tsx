@@ -74,6 +74,9 @@ interface SessionContextValue {
 
 const SessionContext = createContext<SessionContextValue | null>(null);
 
+/** Screens reachable without a session (login, registration, e-mail confirm). */
+const PUBLIC_PATHS = ["/login", "/rejestracja", "/potwierdzenie"];
+
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [role, setRole] = useState<Role>("city_admin");
   const [realUser, setRealUser] = useState<User | null>(null);
@@ -91,7 +94,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         setRole(u.role);
       })
       .catch(() => {
-        if (!cancelled && pathname !== "/login") router.replace("/login");
+        if (!cancelled && !PUBLIC_PATHS.includes(pathname)) router.replace("/login");
       });
     return () => {
       cancelled = true;

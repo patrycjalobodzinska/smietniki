@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Search, Users, KeyRound } from "lucide-react";
+import { Pencil, Plus, Search, Users, KeyRound } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { FilterBar } from "@/components/layout/filter-bar";
 import { Button, Input, Select, Badge, DataTable, type Column } from "@/components/ui";
 import { StationStatusBadge } from "@/components/domain/badges";
+import { PropertyDialog } from "@/components/domain/forms/property-dialog";
 import { useProperties, useStations, useCooperatives } from "@/lib/api/hooks/use-infrastructure";
 import type { Property } from "@/lib/types";
 
@@ -14,6 +15,8 @@ export default function PropertiesPage() {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [coop, setCoop] = useState("");
+  const [addOpen, setAddOpen] = useState(false);
+  const [edited, setEdited] = useState<Property | null>(null);
 
   const { data, isLoading } = useProperties({ search, cooperativeId: coop || undefined });
   const { data: stations } = useStations();
@@ -58,6 +61,23 @@ export default function PropertiesPage() {
     },
     { key: "station", header: "Altanka", cell: (p) => <span className="text-sm text-muted-foreground">{stationName(p.assignedStationId)}</span> },
     { key: "status", header: "Status", cell: (p) => <StationStatusBadge status={p.status === "warning" ? "attention" : p.status === "active" ? "active" : "inactive"} /> },
+    {
+      key: "actions",
+      header: "",
+      align: "right",
+      cell: (p) => (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={(e) => {
+            e.stopPropagation();
+            setEdited(p);
+          }}
+        >
+          <Pencil /> Edytuj
+        </Button>
+      ),
+    },
   ];
 
   return (
@@ -65,7 +85,11 @@ export default function PropertiesPage() {
       <PageHeader
         title="Nieruchomości i lokale"
         description="Relacja lokal → liczba mieszkańców → liczba aktywnych kluczy."
-        actions={<Button><Plus /> Dodaj nieruchomość</Button>}
+        actions={
+          <Button onClick={() => setAddOpen(true)}>
+            <Plus /> Dodaj nieruchomość
+          </Button>
+        }
       />
       <FilterBar>
         <div className="min-w-56 flex-1">
@@ -74,6 +98,9 @@ export default function PropertiesPage() {
         <Select options={coopOptions} value={coop} onChange={(e) => setCoop(e.target.value)} className="h-9 w-56" />
       </FilterBar>
       <DataTable columns={columns} data={data} rowKey={(p) => p.id} loading={isLoading} onRowClick={(p) => router.push(`/nieruchomosci/${p.id}`)} emptyTitle="Brak nieruchomości" pageSize={15} />
+
+      {addOpen && <PropertyDialog open onClose={() => setAddOpen(false)} />}
+      {edited && <PropertyDialog open property={edited} onClose={() => setEdited(null)} />}
     </div>
   );
 }

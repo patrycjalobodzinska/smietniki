@@ -18,10 +18,13 @@ import {
 import type {
   CollectionFilters,
   CollectionsService,
+  RegisterCollectionInput,
   RouteFilters,
+  RouteInput,
   RoutesService,
   SessionFilters,
   SessionsService,
+  VehicleInput,
   VehiclesService,
 } from "@/lib/api/services/operations.types";
 
@@ -49,7 +52,7 @@ async function containerRefByCode(): Promise<Map<string, ContainerRef>> {
 export const sessionsService: SessionsService = {
   async list(f: SessionFilters = {}): Promise<AccessSession[]> {
     const [dtos, stations] = await Promise.all([
-      getPagedItems<AccessSessionDto>("/v1/access-sessions"),
+      getPagedItems<AccessSessionDto>("/v1/access-sessions", { From: f.from, To: f.to }),
       stationRefByCode(),
     ]);
     let out = dtos
@@ -71,7 +74,7 @@ export const sessionsService: SessionsService = {
 export const collectionsService: CollectionsService = {
   async list(f: CollectionFilters = {}): Promise<Collection[]> {
     const [dtos, stations, containers] = await Promise.all([
-      getPagedItems<CollectionDto>("/v1/collections"),
+      getPagedItems<CollectionDto>("/v1/collections", { From: f.from, To: f.to }),
       stationRefByCode(),
       containerRefByCode(),
     ]);
@@ -88,13 +91,28 @@ export const collectionsService: CollectionsService = {
   async get(id: string) {
     return (await this.list()).find((c) => c.id === id);
   },
+
+  /** POST /v1/collections — register a completed pickup for one container. */
+  register(input: RegisterCollectionInput) {
+    return http.post<string>("/v1/collections", {
+      binStationCode: input.stationCode,
+      containerCode: input.containerCode || null,
+      operatorName: input.operatorName?.trim() || null,
+      vehicleId: input.vehicleId || null,
+      routeId: input.routeId || null,
+      collectedAt: input.collectedAt || null,
+      levelBefore: input.levelBefore ?? null,
+      levelAfter: input.levelAfter ?? null,
+      note: input.note?.trim() || null,
+    });
+  },
 };
 
 /* ---- Routes ------------------------------------------------------- */
 
 export const routesService: RoutesService = {
   async list(f: RouteFilters = {}): Promise<CollectionRoute[]> {
-    const dtos = await getPagedItems<RouteDto>("/v1/routes");
+    const dtos = await getPagedItems<RouteDto>("/v1/routes", { From: f.from, To: f.to });
     let out = dtos.map(mapRoute).sort((a, b) => +new Date(b.date) - +new Date(a.date));
     if (f.status && f.status !== "all") out = out.filter((r) => r.status === f.status);
     return out;
@@ -109,10 +127,19 @@ export const routesService: RoutesService = {
   // stationIds can't be sent — it creates a header route we then resolve by id.
   async optimize(_stationIds: string[]): Promise<CollectionRoute> {
     const date = new Date().toISOString();
-    const id = await http.post<string>("/v1/routes", { date, operatorName: null, vehicleId: null });
+    const id = await this.plan({ date });
     const dtos = await getPagedItems<RouteDto>("/v1/routes");
     const dto = dtos.find((r) => r.id === id);
     return mapRoute(dto ?? { id, date, operatorName: null, vehicleId: null, status: "Planned" });
+  },
+
+  /** POST /v1/routes — plan a route header (date, operator, vehicle). */
+  plan(input: RouteInput) {
+    return http.post<string>("/v1/routes", {
+      date: input.date,
+      operatorName: input.operatorName?.trim() || null,
+      vehicleId: input.vehicleId || null,
+    });
   },
 };
 
@@ -122,5 +149,13 @@ export const vehiclesService: VehiclesService = {
   async list(): Promise<Vehicle[]> {
     const dtos = await getPagedItems<VehicleDto>("/v1/vehicles");
     return dtos.map(mapVehicle);
+  },
+
+  create(input: VehicleInput) {
+    return http.post<string>("/v1/vehicles", {
+      code: input.code.trim(),
+      operatorName: input.operatorName?.trim() || null,
+      nominalCapacityUnits: input.nominalCapacityUnits ?? null,
+    });
   },
 };

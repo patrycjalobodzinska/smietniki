@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { FilterBar } from "@/components/layout/filter-bar";
-import { Input, Select, DataTable, type Column } from "@/components/ui";
+import { Button, Input, Select, DataTable, type Column } from "@/components/ui";
 import { FillBar } from "@/components/domain/fill-level";
 import { FractionBadge, FillStatusBadge, DataSourceBadge } from "@/components/domain/badges";
+import { ContainerDialog } from "@/components/domain/forms/container-dialog";
 import { useContainers, useStations } from "@/lib/api/hooks/use-infrastructure";
 import type { Container, WasteFraction, FillStatus, DataSource } from "@/lib/types";
 import { FRACTION_LABEL, FILL_STATUS_LABEL, DATA_SOURCE_LABEL } from "@/lib/labels";
@@ -23,6 +24,7 @@ export default function ContainersPage() {
   const [fraction, setFraction] = useState<WasteFraction | "all">("all");
   const [status, setStatus] = useState<FillStatus | "all">("all");
   const [dataSource, setDataSource] = useState<DataSource | "all">("all");
+  const [addOpen, setAddOpen] = useState(false);
 
   const { data, isLoading } = useContainers({ search, fraction, status, dataSource });
   const { data: stations } = useStations();
@@ -41,7 +43,16 @@ export default function ContainersPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader title="Pojemniki" description="Pojemniki osiedlowe ze statusem zapełnienia i źródłem danych." />
+      <PageHeader
+        title="Pojemniki"
+        description="Pojemniki osiedlowe ze statusem zapełnienia i źródłem danych."
+        actions={
+          <Button onClick={() => setAddOpen(true)}>
+            <Plus className="size-4" />
+            Dodaj pojemnik
+          </Button>
+        }
+      />
       <FilterBar>
         <div className="min-w-48 flex-1">
           <Input icon={<Search />} placeholder="Szukaj po kodzie..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-9" />
@@ -51,6 +62,8 @@ export default function ContainersPage() {
         <Select options={SOURCE_OPTIONS} value={dataSource} onChange={(e) => setDataSource(e.target.value as DataSource | "all")} className="h-9 w-44" />
       </FilterBar>
       <DataTable columns={columns} data={data} rowKey={(c) => c.id} loading={isLoading} onRowClick={(c) => router.push(`/pojemniki/${c.id}`)} emptyTitle="Brak pojemników" pageSize={15} />
+
+      {addOpen && <ContainerDialog open onClose={() => setAddOpen(false)} />}
     </div>
   );
 }

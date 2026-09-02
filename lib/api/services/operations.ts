@@ -14,4 +14,7 @@ export type {
   SessionFilters,
   CollectionFilters,
   RouteFilters,
+  RegisterCollectionInput,
+  RouteInput,
+  VehicleInput,
 } from "@/lib/api/services/operations.types";

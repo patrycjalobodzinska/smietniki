@@ -78,6 +78,44 @@ const toStationStatus = lookup<StationStatus>(
   "active",
 );
 
+/* ---- Reverse maps (domain → API enum), for write commands ---------- */
+
+export const DEPLOYMENT_TO_API: Record<DeploymentVariant, string> = {
+  access: "Access",
+  access_fill: "AccessFill",
+  access_fill_vision: "AccessFillVision",
+};
+
+export const DATA_SOURCE_TO_API: Record<DataSource, string> = {
+  auto: "Auto",
+  manual: "Manual",
+  estimated: "Estimated",
+  none: "NoData",
+};
+
+/** The API has 5 fractions — our local-only "other" is sent as Mixed. */
+export const FRACTION_TO_API: Record<WasteFraction, string> = {
+  mixed: "Mixed",
+  paper: "Paper",
+  plastic: "Plastic",
+  glass: "Glass",
+  bio: "Bio",
+  other: "Mixed",
+};
+
+export const ACCESS_MODE_TO_API: Record<AccessMode, string> = {
+  rfid: "Rfid",
+  physical: "PhysicalKey",
+  mobile: "MobileKey",
+  mixed: "Mixed",
+};
+
+export const STATION_STATUS_TO_API: Record<StationStatus, string> = {
+  active: "Active",
+  inactive: "Inactive",
+  attention: "Maintenance",
+};
+
 function toBuildingType(v: string | null | undefined): BuildingType {
   const s = (v ?? "").toLowerCase();
   if (s.includes("kamienic")) return "tenement";
@@ -405,6 +443,7 @@ export function mapSession(dto: AccessSessionDto, stations: Map<string, StationR
     durationSeconds: null,
     hasRecording: false,
     anomaly: !!dto.anomalyFlag,
+    rawEventId: dto.rawEventId ?? null,
   };
 }
 

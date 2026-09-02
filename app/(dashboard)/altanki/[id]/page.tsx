@@ -1,8 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Trash2, Gauge, Activity, AlertTriangle, Camera, KeyRound, MapPin, Info } from "lucide-react";
+import {
+  Trash2,
+  Gauge,
+  Activity,
+  AlertTriangle,
+  Camera,
+  KeyRound,
+  MapPin,
+  Info,
+  Pencil,
+  Plus,
+} from "lucide-react";
 import { DetailHeader } from "@/components/layout/detail-header";
 import {
   Card,
@@ -27,6 +39,9 @@ import {
   FillStatusBadge,
   AnomalyBadge,
 } from "@/components/domain/badges";
+import { SnapshotGallery } from "@/components/domain/snapshot-gallery";
+import { StationDialog } from "@/components/domain/forms/station-dialog";
+import { ContainerDialog } from "@/components/domain/forms/container-dialog";
 import { useStation, useContainers, useContainerHistory } from "@/lib/api/hooks/use-infrastructure";
 import { useSessions } from "@/lib/api/hooks/use-operations";
 import type { Container } from "@/lib/types";
@@ -48,6 +63,8 @@ export default function StationDetailPage() {
   const { data: containers } = useContainers({ stationId: id });
   const { data: sessions } = useSessions({ stationId: id });
   const { data: history } = useContainerHistory(containers?.[0]?.id ?? "");
+  const [editOpen, setEditOpen] = useState(false);
+  const [addContainerOpen, setAddContainerOpen] = useState(false);
 
   if (isLoading || !station) {
     return <div className="flex h-64 items-center justify-center"><Spinner /></div>;
@@ -78,7 +95,16 @@ export default function StationDetailPage() {
             <DataSourceBadge source={station.fillDataSource} />
           </>
         }
-        actions={<Button variant="outline"><MapPin /> Pokaż na mapie</Button>}
+        actions={
+          <>
+            <Button variant="outline" onClick={() => setEditOpen(true)}>
+              <Pencil /> Edytuj
+            </Button>
+            <Button variant="outline">
+              <MapPin /> Pokaż na mapie
+            </Button>
+          </>
+        }
       />
 
       {/* KPI */}
@@ -95,7 +121,12 @@ export default function StationDetailPage() {
         {/* Left / main */}
         <div className="space-y-6 lg:col-span-2">
           <Card>
-            <CardHeader><CardTitle>Pojemniki</CardTitle></CardHeader>
+            <CardHeader className="flex-row items-center justify-between">
+              <CardTitle>Pojemniki</CardTitle>
+              <Button size="sm" variant="outline" onClick={() => setAddContainerOpen(true)}>
+                <Plus /> Dodaj pojemnik
+              </Button>
+            </CardHeader>
             <CardContent className="p-0">
               <DataTable
                 columns={containerCols}
@@ -174,14 +205,8 @@ export default function StationDetailPage() {
             <Card>
               <CardHeader><CardTitle>Snapshoty (Vision)</CardTitle></CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-2">
-                  {[0, 1, 2, 3].map((i) => (
-                    <div key={i} className="flex aspect-video flex-col items-center justify-center gap-1 rounded-lg border border-border bg-muted/40 text-muted-foreground">
-                      <Camera className="size-5" />
-                      <span className="text-[10px]">snapshot {i + 1}</span>
-                    </div>
-                  ))}
-                </div>
+                {/* Real JPEGs from the ingest snapshots endpoint. */}
+                <SnapshotGallery stationCode={station.code} />
               </CardContent>
             </Card>
           )}
@@ -197,6 +222,11 @@ export default function StationDetailPage() {
           </Card>
         </div>
       </div>
+
+      {editOpen && <StationDialog open station={station} onClose={() => setEditOpen(false)} />}
+      {addContainerOpen && (
+        <ContainerDialog open stationId={station.id} onClose={() => setAddContainerOpen(false)} />
+      )}
     </div>
   );
 }

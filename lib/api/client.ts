@@ -87,7 +87,21 @@ export const http = {
     request<T>("PATCH", path, body, init),
   del: <T>(path: string, init?: RequestInit) =>
     request<T>("DELETE", path, undefined, init),
+  /**
+   * POST multipart/form-data (file upload). The browser must set the boundary
+   * itself, so no Content-Type header is sent here.
+   */
+  postForm: <T>(path: string, form: FormData, query?: Query) =>
+    request<T>("POST", `${path}${toQueryString(query)}`, undefined, { method: "POST", body: form }),
 };
+
+/**
+ * Absolute (same-origin) URL for a binary endpoint — usable directly as an
+ * `<img src>` / download href, since auth is a first-party cookie.
+ */
+export function assetUrl(path: string): string {
+  return `${API_BASE}${path}`;
+}
 
 /* ------------------------------------------------------------------ */
 /*  Paged envelope                                                     */

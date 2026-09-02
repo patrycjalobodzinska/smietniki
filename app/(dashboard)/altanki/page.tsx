@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Camera } from "lucide-react";
+import { Search, Camera, Plus } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { FilterBar } from "@/components/layout/filter-bar";
-import { Input, Select, DataTable, type Column } from "@/components/ui";
+import { Button, Input, Select, DataTable, type Column } from "@/components/ui";
 import { FillBar } from "@/components/domain/fill-level";
 import { VariantBadge, StationStatusBadge } from "@/components/domain/badges";
+import { StationDialog } from "@/components/domain/forms/station-dialog";
 import { useStations } from "@/lib/api/hooks/use-infrastructure";
 import type { BinStation, DeploymentVariant, StationStatus } from "@/lib/types";
 import { VARIANT_LABEL } from "@/lib/labels";
@@ -28,6 +29,7 @@ export default function StationsPage() {
   const [search, setSearch] = useState("");
   const [variant, setVariant] = useState<DeploymentVariant | "all">("all");
   const [status, setStatus] = useState<StationStatus | "all">("all");
+  const [addOpen, setAddOpen] = useState(false);
 
   const { data, isLoading } = useStations({ search, variant, status });
 
@@ -59,6 +61,12 @@ export default function StationsPage() {
       <PageHeader
         title="Altanki"
         description="Altanki śmietnikowe z widocznym poziomem cyfryzacji (Access / Fill / Vision)."
+        actions={
+          <Button onClick={() => setAddOpen(true)}>
+            <Plus className="size-4" />
+            Dodaj altankę
+          </Button>
+        }
       />
       <FilterBar>
         <div className="min-w-56 flex-1">
@@ -68,6 +76,8 @@ export default function StationsPage() {
         <Select options={STATUS_OPTIONS} value={status} onChange={(e) => setStatus(e.target.value as StationStatus | "all")} className="h-9 w-44" />
       </FilterBar>
       <DataTable columns={columns} data={data} rowKey={(s) => s.id} loading={isLoading} onRowClick={(s) => router.push(`/altanki/${s.id}`)} emptyTitle="Brak altanek" pageSize={15} />
+
+      {addOpen && <StationDialog open onClose={() => setAddOpen(false)} />}
     </div>
   );
 }

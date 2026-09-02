@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Download } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { FilterBar } from "@/components/layout/filter-bar";
 import { Button, Input, Select, Badge, DataTable, type Column } from "@/components/ui";
 import { FractionBadge, CollectionStatusBadge } from "@/components/domain/badges";
+import { CollectionDialog } from "@/components/domain/forms/collection-dialog";
 import { useCollections } from "@/lib/api/hooks/use-operations";
 import type { Collection, WasteFraction, CollectionStatus } from "@/lib/types";
 import { FRACTION_LABEL } from "@/lib/labels";
@@ -24,8 +25,17 @@ export default function CollectionsPage() {
   const [search, setSearch] = useState("");
   const [fraction, setFraction] = useState<WasteFraction | "all">("all");
   const [status, setStatus] = useState<CollectionStatus | "all">("all");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [registerOpen, setRegisterOpen] = useState(false);
 
-  const { data, isLoading } = useCollections({ search, fraction, status });
+  const { data, isLoading } = useCollections({
+    search,
+    fraction,
+    status,
+    from: from ? new Date(from).toISOString() : undefined,
+    to: to ? new Date(to).toISOString() : undefined,
+  });
 
   const columns: Column<Collection>[] = [
     { key: "station", header: "Altanka", cell: (c) => <span className="font-medium">{c.stationName}</span> },
@@ -50,7 +60,11 @@ export default function CollectionsPage() {
       <PageHeader
         title="Odbiory"
         description="Historia i bieżące operacje odbioru odpadów."
-        actions={<Button variant="outline"><Download /> Eksport CSV</Button>}
+        actions={
+          <Button onClick={() => setRegisterOpen(true)}>
+            <Plus /> Zarejestruj odbiór
+          </Button>
+        }
       />
       <FilterBar>
         <div className="min-w-48 flex-1">
@@ -58,8 +72,12 @@ export default function CollectionsPage() {
         </div>
         <Select options={FRACTION_OPTIONS} value={fraction} onChange={(e) => setFraction(e.target.value as WasteFraction | "all")} className="h-9 w-44" />
         <Select options={STATUS_OPTIONS} value={status} onChange={(e) => setStatus(e.target.value as CollectionStatus | "all")} className="h-9 w-44" />
+        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-40" aria-label="Od" />
+        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-40" aria-label="Do" />
       </FilterBar>
       <DataTable columns={columns} data={data} rowKey={(c) => c.id} loading={isLoading} onRowClick={(c) => router.push(`/odbiory/${c.id}`)} emptyTitle="Brak odbiorów" pageSize={15} />
+
+      {registerOpen && <CollectionDialog open onClose={() => setRegisterOpen(false)} />}
     </div>
   );
 }

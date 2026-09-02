@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Users, KeyRound, Home, AlertTriangle, Plus, Minus } from "lucide-react";
+import { Users, KeyRound, Home, AlertTriangle, Plus, Minus, Pencil } from "lucide-react";
 import { DetailHeader } from "@/components/layout/detail-header";
 import {
   Card,
@@ -24,6 +25,8 @@ import {
   useStation,
   useCooperative,
 } from "@/lib/api/hooks/use-infrastructure";
+import { PropertyDialog } from "@/components/domain/forms/property-dialog";
+import { UnitDialog } from "@/components/domain/forms/unit-dialog";
 import type { Unit } from "@/lib/types";
 import { KEY_TYPE_LABEL, BUILDING_LABEL } from "@/lib/labels";
 import { formatDate } from "@/lib/utils/format";
@@ -38,6 +41,8 @@ export default function PropertyDetailPage() {
   const { data: coop } = useCooperative(property?.cooperativeId ?? "");
   const issueKey = useIssueKey(id);
   const revokeKey = useRevokeKey(id);
+  const [editOpen, setEditOpen] = useState(false);
+  const [addUnitOpen, setAddUnitOpen] = useState(false);
 
   if (isLoading || !property) return <div className="flex h-64 items-center justify-center"><Spinner /></div>;
 
@@ -83,6 +88,11 @@ export default function PropertyDetailPage() {
         breadcrumbs={[{ label: "Nieruchomości", href: "/nieruchomosci" }, { label: property.address }]}
         title={property.address}
         subtitle={`${coop?.name ?? ""} · ${property.district}`}
+        actions={
+          <Button variant="outline" onClick={() => setEditOpen(true)}>
+            <Pencil /> Edytuj
+          </Button>
+        }
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
@@ -99,7 +109,9 @@ export default function PropertyDetailPage() {
           <Card>
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle>Lokale</CardTitle>
-              <span className="text-xs text-muted-foreground">relacja mieszkańcy ↔ klucze</span>
+              <Button size="sm" variant="outline" onClick={() => setAddUnitOpen(true)}>
+                <Plus /> Dodaj lokal
+              </Button>
             </CardHeader>
             <CardContent className="p-0">
               <DataTable columns={columns} data={units} rowKey={(u) => u.id} className="rounded-none border-0" />
@@ -124,6 +136,9 @@ export default function PropertyDetailPage() {
           </Card>
         </div>
       </div>
+
+      {editOpen && <PropertyDialog open property={property} onClose={() => setEditOpen(false)} />}
+      {addUnitOpen && <UnitDialog open propertyId={id} onClose={() => setAddUnitOpen(false)} />}
     </div>
   );
 }

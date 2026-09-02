@@ -1,13 +1,11 @@
-import type {
-  BinStation,
-  Container,
-  Cooperative,
-  DeploymentVariant,
-  Property,
-  Unit,
-} from "@/lib/types";
+import type { BinStation, Container, Cooperative, Property, Unit } from "@/lib/types";
 import { ApiError, getPagedItems, http } from "@/lib/api/client";
 import {
+  ACCESS_MODE_TO_API,
+  DATA_SOURCE_TO_API,
+  DEPLOYMENT_TO_API,
+  FRACTION_TO_API,
+  STATION_STATUS_TO_API,
   mapContainer,
   mapCooperative,
   mapProperty,
@@ -21,16 +19,22 @@ import {
   type PropertyDto,
   type UnitDto,
 } from "@/lib/api/mappers";
+import { BUILDING_LABEL } from "@/lib/labels";
 import type {
   ContainerFilters,
+  ContainerInput,
   ContainersService,
+  CooperativeInput,
   CooperativeFilters,
   CooperativesService,
   FillHistoryPoint,
   PropertiesService,
   PropertyFilters,
+  PropertyInput,
   StationFilters,
+  StationInput,
   StationsService,
+  UnitInput,
   UnitsService,
 } from "@/lib/api/services/infrastructure.types";
 
@@ -42,12 +46,6 @@ import type {
  * units services (used only by the hidden "full mode" modules) do read
  * /v1/properties — but only when their own hooks are called.
  */
-
-const DEPLOYMENT_TO_API: Record<DeploymentVariant, string> = {
-  access: "Access",
-  access_fill: "AccessFill",
-  access_fill_vision: "AccessFillVision",
-};
 
 const includesCI = (v: string, q: string) => v.toLowerCase().includes(q.toLowerCase());
 
@@ -127,7 +125,24 @@ export const cooperativesService: CooperativesService = {
       return (await enrichCooperatives([dto]))[0];
     });
   },
+
+  create(input: CooperativeInput) {
+    return http.post<string>("/v1/cooperatives", coopBody(input));
+  },
+  update(id: string, input: CooperativeInput) {
+    return http.put<void>(`/v1/cooperatives/${id}`, { id, ...coopBody(input) });
+  },
 };
+
+function coopBody(input: CooperativeInput) {
+  return {
+    name: input.name.trim(),
+    district: input.district?.trim() || null,
+    contactPerson: input.contactPerson?.trim() || null,
+    email: input.email?.trim() || null,
+    phone: input.phone?.trim() || null,
+  };
+}
 
 /* ---- Properties (full mode) --------------------------------------- */
 
@@ -141,11 +156,34 @@ export const propertiesService: PropertiesService = {
     return out;
   },
   async get(id: string) {
+    // No GET /v1/properties/{id} — resolve from the list.
     const dtos = await getPagedItems<PropertyDto>("/v1/properties");
     const dto = dtos.find((p) => p.id === id);
     return dto ? mapProperty(dto) : undefined;
   },
+
+  create(input: PropertyInput) {
+    return http.post<string>("/v1/properties", {
+      cooperativeId: input.cooperativeId,
+      ...propertyBody(input),
+    });
+  },
+  update(id: string, input: PropertyInput) {
+    return http.put<void>(`/v1/properties/${id}`, { id, ...propertyBody(input) });
+  },
 };
+
+/** `buildingType` is a free-text column in the API; we send the Polish label. */
+function propertyBody(input: PropertyInput) {
+  return {
+    address: input.address.trim(),
+    district: input.district?.trim() || null,
+    buildingType: input.buildingType ? BUILDING_LABEL[input.buildingType] : null,
+    unitsCount: input.unitsCount ?? null,
+    residentsCount: input.residentsCount ?? null,
+    assignedBinStationId: input.assignedStationId || null,
+  };
+}
 
 /* ---- Units + keys (full mode) ------------------------------------- */
 
@@ -171,6 +209,16 @@ export const unitsService: UnitsService = {
     ]);
     const keysByUnit = groupBy(keys, (k) => k.unitId);
     return units.map((u) => mapUnit(u, keysByUnit.get(u.id) ?? []));
+  },
+
+  create(input: UnitInput) {
+    return http.post<string>("/v1/units", {
+      propertyId: input.propertyId,
+      unitNumber: input.unitNumber.trim(),
+      residentsCount: input.residentsCount ?? null,
+      keysLimit: input.keysLimit ?? null,
+      notes: input.notes?.trim() || null,
+    });
   },
 
   async issueKey(unitId: string): Promise<Unit> {
@@ -216,7 +264,37 @@ export const stationsService: StationsService = {
       return mapStation(dto, dto.containers ?? []);
     });
   },
+
+  create(input: StationInput) {
+    return http.post<string>("/v1/bin-stations", {
+      code: input.code.trim(),
+      cooperativeId: input.cooperativeId || null,
+      ...stationBody(input),
+    });
+  },
+  // The update command carries no `code`/`cooperativeId` — both are fixed at
+  // creation time — but it does carry `status`, which create doesn't.
+  update(id: string, input: StationInput) {
+    return http.put<void>(`/v1/bin-stations/${id}`, {
+      id,
+      ...stationBody(input),
+      status: STATION_STATUS_TO_API[input.status ?? "active"],
+    });
+  },
 };
+
+function stationBody(input: StationInput) {
+  return {
+    name: input.name.trim(),
+    address: input.address?.trim() || null,
+    district: input.district?.trim() || null,
+    latitude: input.lat ?? null,
+    longitude: input.lng ?? null,
+    deploymentVariant: DEPLOYMENT_TO_API[input.deploymentVariant],
+    accessMode: ACCESS_MODE_TO_API[input.accessMode],
+    hasCamera: input.hasCamera,
+  };
+}
 
 /* ---- Containers (KM1 — no /v1/properties) ------------------------- */
 
@@ -260,5 +338,25 @@ export const containersService: ContainersService = {
         const [, month, date] = day.split("-");
         return { label: `${date}.${month}`, value: Math.round(m.value) };
       });
+  },
+
+  create(input: ContainerInput) {
+    return http.post<string>("/v1/containers", {
+      code: input.code.trim(),
+      binStationId: input.stationId,
+      fractionType: FRACTION_TO_API[input.fraction],
+      capacity: input.capacityL ?? null,
+      dataSource: DATA_SOURCE_TO_API[input.dataSource],
+    });
+  },
+  // Code and station are fixed at creation; the update command adds sensorStatus.
+  update(id: string, input: ContainerInput) {
+    return http.put<void>(`/v1/containers/${id}`, {
+      id,
+      fractionType: FRACTION_TO_API[input.fraction],
+      capacity: input.capacityL ?? null,
+      dataSource: DATA_SOURCE_TO_API[input.dataSource],
+      sensorStatus: input.sensorStatus?.trim() || null,
+    });
   },
 };

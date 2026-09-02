@@ -44,13 +44,18 @@ export type Permission =
   | "collections.view"
   | "routes.view"
   | "routes.manage"
+  | "vehicles.view"
   | "analytics.view"
   | "cooperatives.view"
   | "properties.view"
   | "properties.manage"
   | "stations.view"
   | "containers.view"
+  | "fill.view"
+  | "events.view"
   | "sessions.view"
+  /** Platform layer: accounts, audit log, messaging, CMS, files. */
+  | "platform.manage"
   | "settings.manage";
 
 const ALL: Permission[] = [
@@ -58,13 +63,17 @@ const ALL: Permission[] = [
   "collections.view",
   "routes.view",
   "routes.manage",
+  "vehicles.view",
   "analytics.view",
   "cooperatives.view",
   "properties.view",
   "properties.manage",
   "stations.view",
   "containers.view",
+  "fill.view",
+  "events.view",
   "sessions.view",
+  "platform.manage",
   "settings.manage",
 ];
 
@@ -78,6 +87,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "properties.manage",
     "stations.view",
     "containers.view",
+    "fill.view",
     "sessions.view",
     "collections.view",
   ],
@@ -86,8 +96,10 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "collections.view",
     "routes.view",
     "routes.manage",
+    "vehicles.view",
     "stations.view",
     "containers.view",
+    "fill.view",
   ],
   foreman: ["dashboard.view", "routes.view", "collections.view", "stations.view"],
 };

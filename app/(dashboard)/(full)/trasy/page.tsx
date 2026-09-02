@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, Clock, Gauge } from "lucide-react";
+import { MapPin, Clock, Gauge, Plus } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
-import { Tabs, DataTable, type Column } from "@/components/ui";
+import { Button, Tabs, DataTable, type Column } from "@/components/ui";
 import { RouteStatusBadge } from "@/components/domain/badges";
+import { RouteDialog } from "@/components/domain/forms/route-dialog";
 import { useRoutes } from "@/lib/api/hooks/use-operations";
 import type { CollectionRoute, RouteStatus } from "@/lib/types";
 import { formatDate } from "@/lib/utils/format";
@@ -53,6 +54,7 @@ const columns: Column<CollectionRoute>[] = [
 export default function RoutesPage() {
   const router = useRouter();
   const [status, setStatus] = useState<RouteStatus | "all">("all");
+  const [planOpen, setPlanOpen] = useState(false);
   const { data, isLoading } = useRoutes({ status });
 
   return (
@@ -60,9 +62,16 @@ export default function RoutesPage() {
       <PageHeader
         title="Trasy PGK"
         description="Planowanie i optymalizacja tras odbioru odpadów."
+        actions={
+          <Button onClick={() => setPlanOpen(true)}>
+            <Plus /> Zaplanuj trasę
+          </Button>
+        }
       />
       <Tabs items={TABS} value={status} onValueChange={(v) => setStatus(v as RouteStatus | "all")} />
       <DataTable columns={columns} data={data} rowKey={(r) => r.id} loading={isLoading} onRowClick={(r) => router.push(`/trasy/${r.id}`)} emptyTitle="Brak tras" pageSize={15} />
+
+      {planOpen && <RouteDialog open onClose={() => setPlanOpen(false)} />}
     </div>
   );
 }

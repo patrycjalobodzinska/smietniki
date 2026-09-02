@@ -12,6 +12,11 @@ import {
   type PropertyFilters,
   type StationFilters,
   type ContainerFilters,
+  type CooperativeInput,
+  type PropertyInput,
+  type UnitInput,
+  type StationInput,
+  type ContainerInput,
 } from "@/lib/api/services/infrastructure";
 
 export function useCooperatives(f: CooperativeFilters = {}) {
@@ -61,4 +66,59 @@ export function useContainer(id: string) {
 }
 export function useContainerHistory(id: string) {
   return useQuery({ queryKey: qk.containers.history(id), queryFn: () => containersService.history(id), enabled: !!id });
+}
+
+/* ------------------------------------------------------------------ */
+/*  Mutations (create / update)                                        */
+/* ------------------------------------------------------------------ */
+
+/** Invalidate every list/detail touched by an infrastructure write. */
+function useInfraMutation<TVars>(
+  fn: (v: TVars) => Promise<unknown>,
+  keys: ReadonlyArray<readonly unknown[]>,
+) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: () => keys.forEach((key) => qc.invalidateQueries({ queryKey: key })),
+  });
+}
+
+export function useSaveCooperative() {
+  return useInfraMutation(
+    ({ id, input }: { id?: string; input: CooperativeInput }) =>
+      id ? cooperativesService.update(id, input) : cooperativesService.create(input),
+    [qk.cooperatives.all],
+  );
+}
+
+export function useSaveProperty() {
+  return useInfraMutation(
+    ({ id, input }: { id?: string; input: PropertyInput }) =>
+      id ? propertiesService.update(id, input) : propertiesService.create(input),
+    [qk.properties.all, qk.cooperatives.all],
+  );
+}
+
+export function useCreateUnit() {
+  return useInfraMutation(
+    (input: UnitInput) => unitsService.create(input),
+    [qk.units.all, qk.properties.all, qk.accessKeys.all],
+  );
+}
+
+export function useSaveStation() {
+  return useInfraMutation(
+    ({ id, input }: { id?: string; input: StationInput }) =>
+      id ? stationsService.update(id, input) : stationsService.create(input),
+    [qk.stations.all, qk.containers.all, qk.cooperatives.all],
+  );
+}
+
+export function useSaveContainer() {
+  return useInfraMutation(
+    ({ id, input }: { id?: string; input: ContainerInput }) =>
+      id ? containersService.update(id, input) : containersService.create(input),
+    [qk.containers.all, qk.stations.all],
+  );
 }

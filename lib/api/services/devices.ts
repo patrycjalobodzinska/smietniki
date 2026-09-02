@@ -1,4 +1,4 @@
-import { getPagedItems } from "@/lib/api/client";
+import { ApiError, getPagedItems, http } from "@/lib/api/client";
 import type { Device, DeviceSource } from "@/lib/types";
 
 /** Raw DTO from GET /v1/devices (only the fields we read). */
@@ -49,6 +49,15 @@ export interface DeviceFilters {
   search?: string;
   source?: DeviceSource | "all";
   online?: "all" | "online" | "offline";
+  /** Server-side filter — the altanka the device is assigned to. */
+  stationCode?: string;
+}
+
+/** Assignment of an OT device to an altanka and (optionally) a container. */
+export interface AssignDeviceInput {
+  deviceId: string;
+  stationCode: string | null;
+  containerCode: string | null;
 }
 
 const includesCI = (v: string, q: string) => v.toLowerCase().includes(q.toLowerCase());
@@ -59,6 +68,7 @@ export const devicesService = {
       f.source && f.source !== "all" && f.source !== "unknown" ? SOURCE_TO_API[f.source] : undefined;
     const dtos = await getPagedItems<DeviceDto>("/v1/devices", {
       Source: source,
+      BinStationCode: f.stationCode,
       OnlineOnly: f.online === "online" ? true : undefined,
     });
     let out = dtos
@@ -74,5 +84,32 @@ export const devicesService = {
       );
     }
     return out;
+  },
+
+  async get(id: string): Promise<Device | undefined> {
+    try {
+      return mapDevice(await http.get<DeviceDto>(`/v1/devices/${id}`));
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 404) return undefined;
+      throw e;
+    }
+  },
+
+  /** PUT /v1/devices/{id}/name — a human label instead of the raw device key. */
+  rename(id: string, name: string): Promise<void> {
+    return http.put<void>(`/v1/devices/${id}/name`, { deviceId: id, name: name.trim() || null });
+  },
+
+  /**
+   * PUT /v1/devices/{id}/assignment — binds the device to an altanka/container.
+   * Without it, access sessions and measurements can only reference the device
+   * key, which is why unassigned devices show up as bare keys in the UI.
+   */
+  assign(input: AssignDeviceInput): Promise<void> {
+    return http.put<void>(`/v1/devices/${input.deviceId}/assignment`, {
+      deviceId: input.deviceId,
+      binStationCode: input.stationCode || null,
+      containerCode: input.containerCode || null,
+    });
   },
 };

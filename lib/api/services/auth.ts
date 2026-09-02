@@ -20,4 +20,50 @@ export const authService = {
   me(): Promise<User> {
     return http.get<UserDto>("/v1/users/user").then(mapUser);
   },
+
+  /** Extends the auth cookie without re-entering credentials. */
+  refresh(): Promise<User> {
+    return http.post<UserDto>("/v1/account/refresh-cookie/web").then(mapUser);
+  },
+
+  /* ---- Self-service account recovery / registration ---------------- */
+
+  /** Step 1 of a password reset: emails a reset token to the address. */
+  requestPasswordReset(email: string): Promise<void> {
+    return http.post<void>("/v1/account/request-password-reset", { email: email.trim() });
+  },
+
+  /** Step 2: sets a new password using the token from the email. */
+  resetPassword(input: {
+    userId: string;
+    token: string;
+    password: string;
+    confirmPassword: string;
+  }): Promise<void> {
+    return http.post<void>("/v1/account/reset-password", {
+      userId: input.userId.trim(),
+      token: input.token.trim(),
+      password: input.password,
+      confirmPassword: input.confirmPassword,
+    });
+  },
+
+  /** Creates an account; returns the new user id. */
+  signUp(email: string, password: string, confirmPassword: string): Promise<{ userId: string }> {
+    return http.post<{ userId: string }>("/v1/account/sign-up", {
+      email: email.trim(),
+      password,
+      confirmPassword,
+    });
+  },
+
+  /** (Re)sends the address-confirmation email for a user. */
+  sendConfirmationEmail(userId: string): Promise<void> {
+    return http.post<void>("/v1/account/confirmation-email", { userId });
+  },
+
+  /** Confirms an email address with the token from the message. */
+  confirmEmail(userId: string, token: string): Promise<void> {
+    return http.post<void>("/v1/account/confirm-email", { userId: userId.trim(), token: token.trim() });
+  },
 };
