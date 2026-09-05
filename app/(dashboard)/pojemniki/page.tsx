@@ -9,6 +9,7 @@ import { Button, Input, Select, DataTable, type Column } from "@/components/ui";
 import { FillBar } from "@/components/domain/fill-level";
 import { FractionBadge, FillStatusBadge, DataSourceBadge } from "@/components/domain/badges";
 import { ContainerDialog } from "@/components/domain/forms/container-dialog";
+import { ChangeFillButton } from "@/components/domain/change-fill-button";
 import { useContainers, useStations } from "@/lib/api/hooks/use-infrastructure";
 import type { Container, WasteFraction, FillStatus, DataSource } from "@/lib/types";
 import { FRACTION_LABEL, FILL_STATUS_LABEL, DATA_SOURCE_LABEL } from "@/lib/labels";
@@ -39,6 +40,13 @@ export default function ContainersPage() {
     { key: "status", header: "Status", cell: (c) => <FillStatusBadge status={c.fillStatus} /> },
     { key: "source", header: "Źródło danych", cell: (c) => <DataSourceBadge source={c.dataSource} /> },
     { key: "predicted", header: "Przepełnienie", cell: (c) => <span className="text-sm text-muted-foreground">{c.predictedFullAt ? `za ${formatRelative(c.predictedFullAt).replace("za ", "")}` : "N/D"}</span> },
+    {
+      key: "actions",
+      header: "",
+      align: "right",
+      className: "w-16",
+      cell: (c) => <ChangeFillButton containerCode={c.code} currentLevel={c.fillLevel} />,
+    },
   ];
 
   return (

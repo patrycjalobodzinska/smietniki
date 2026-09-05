@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardHeader, CardTitle, CardContent, StatCard, Tabs, DataTable, type Column } from "@/components/ui";
 import { HBarChart, DonutChart } from "@/components/charts";
 import { FillBar } from "@/components/domain/fill-level";
+import { ChangeFillButton } from "@/components/domain/change-fill-button";
 import { useStations, useContainers } from "@/lib/api/hooks/use-infrastructure";
 import { FRACTION_LABEL } from "@/lib/labels";
 import type { WasteFraction } from "@/lib/types";
@@ -88,6 +89,13 @@ export default function AnalyticsPage() {
     { key: "code", header: "Pojemnik", cell: (r) => <span className="font-medium">{r.code}</span> },
     { key: "station", header: "Altanka", cell: (r) => <span className="text-sm text-muted-foreground">{r.stationName}</span> },
     { key: "fill", header: "Zapełnienie", className: "w-40", cell: (r) => <FillBar level={r.fillLevel} /> },
+    {
+      key: "actions",
+      header: "",
+      align: "right",
+      className: "w-16",
+      cell: (r) => <ChangeFillButton containerCode={r.code} currentLevel={r.fillLevel} />,
+    },
   ];
 
   return (

@@ -9,6 +9,7 @@ import { Button, DataTable, Input, Select, StatCard, type Column } from "@/compo
 import { FillBar } from "@/components/domain/fill-level";
 import { DataSourceBadge } from "@/components/domain/badges";
 import { MeasurementDialog } from "@/components/domain/forms/measurement-dialog";
+import { ChangeFillButton } from "@/components/domain/change-fill-button";
 import { useFillMeasurements } from "@/lib/api/hooks/use-fill";
 import { useContainers } from "@/lib/api/hooks/use-infrastructure";
 import type { DataSource, FillMeasurement } from "@/lib/types";
@@ -72,6 +73,16 @@ export default function MeasurementsPage() {
       header: "Czas pomiaru",
       cell: (m) => <span className="text-sm text-muted-foreground">{formatDateTime(m.measuredAt)}</span>,
     },
+    {
+      key: "actions",
+      header: "",
+      align: "right",
+      className: "w-16",
+      cell: (m) =>
+        m.containerCode ? (
+          <ChangeFillButton containerCode={m.containerCode} currentLevel={m.value} />
+        ) : null,
+    },
   ];
 
   return (
@@ -82,7 +93,7 @@ export default function MeasurementsPage() {
         actions={
           <Button onClick={() => setAddOpen(true)}>
             <Plus className="size-4" />
-            Dodaj pomiar
+            Zmień zapełnienie
           </Button>
         }
       />

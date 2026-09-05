@@ -31,6 +31,7 @@ import {
 } from "@/components/ui";
 import { TrendLineChart } from "@/components/charts";
 import { FillBar } from "@/components/domain/fill-level";
+import { ChangeFillButton } from "@/components/domain/change-fill-button";
 import {
   VariantBadge,
   StationStatusBadge,
@@ -79,6 +80,13 @@ export default function StationDetailPage() {
     { key: "fill", header: "Zapełnienie", className: "w-40", cell: (c) => <FillBar level={c.fillLevel} /> },
     { key: "status", header: "Status", cell: (c) => <FillStatusBadge status={c.fillStatus} /> },
     { key: "source", header: "Źródło", cell: (c) => <DataSourceBadge source={c.dataSource} /> },
+    {
+      key: "actions",
+      header: "",
+      align: "right",
+      className: "w-16",
+      cell: (c) => <ChangeFillButton containerCode={c.code} currentLevel={c.fillLevel} />,
+    },
   ];
 
   return (

@@ -13,7 +13,6 @@ import {
   Info,
   ArrowRight,
   Pencil,
-  Plus,
 } from "lucide-react";
 import { DetailHeader } from "@/components/layout/detail-header";
 import {
@@ -94,7 +93,7 @@ export default function ContainerDetailPage() {
               <Pencil /> Edytuj
             </Button>
             <Button onClick={() => setMeasureOpen(true)}>
-              <Plus /> Dodaj pomiar
+              <Gauge /> Zmień zapełnienie
             </Button>
           </>
         }
@@ -187,7 +186,12 @@ export default function ContainerDetailPage() {
 
       {editOpen && <ContainerDialog open container={container} onClose={() => setEditOpen(false)} />}
       {measureOpen && (
-        <MeasurementDialog open containerCode={container.code} onClose={() => setMeasureOpen(false)} />
+        <MeasurementDialog
+          open
+          containerCode={container.code}
+          currentLevel={container.fillLevel}
+          onClose={() => setMeasureOpen(false)}
+        />
       )}
     </div>
   );
