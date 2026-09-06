@@ -54,7 +54,7 @@ export const keysService = {
 
   /**
    * Units available to assign a new key to / resolve the lokal per key.
-   * Only fetched in full mode — the units (podmiotowa) layer is out of KM1.
+   * Only fetched in full mode - the units (podmiotowa) layer is out of KM1.
    */
   async units(): Promise<UnitOption[]> {
     const units = await getPagedItems<UnitDto>("/v1/units");

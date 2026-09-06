@@ -49,7 +49,7 @@ export interface DeviceFilters {
   search?: string;
   source?: DeviceSource | "all";
   online?: "all" | "online" | "offline";
-  /** Server-side filter — the altanka the device is assigned to. */
+  /** Server-side filter - the altanka the device is assigned to. */
   stationCode?: string;
 }
 
@@ -95,13 +95,13 @@ export const devicesService = {
     }
   },
 
-  /** PUT /v1/devices/{id}/name — a human label instead of the raw device key. */
+  /** PUT /v1/devices/{id}/name - a human label instead of the raw device key. */
   rename(id: string, name: string): Promise<void> {
     return http.put<void>(`/v1/devices/${id}/name`, { deviceId: id, name: name.trim() || null });
   },
 
   /**
-   * PUT /v1/devices/{id}/assignment — binds the device to an altanka/container.
+   * PUT /v1/devices/{id}/assignment - binds the device to an altanka/container.
    * Without it, access sessions and measurements can only reference the device
    * key, which is why unassigned devices show up as bare keys in the UI.
    */

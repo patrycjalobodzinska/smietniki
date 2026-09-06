@@ -5,7 +5,7 @@ import type { EnumItem } from "@/lib/api/services/users";
 /**
  * Outbound messaging: transactional e-mails (`/v1/emails`) and push
  * notifications (`/v1/pushs`). Both are read-only feeds the backend fills when
- * it sends something — useful for "did the reset e-mail actually go out?".
+ * it sends something - useful for "did the reset e-mail actually go out?".
  */
 
 function toStatus(item?: EnumItem | null): MessageStatus {
@@ -33,8 +33,8 @@ function mapEmail(d: EmailMessageDto): EmailMessage {
     subject: d.subject,
     body: d.messages ?? "",
     status: toStatus(d.status),
-    statusLabel: d.status?.displayName || d.status?.name || "—",
-    templateLabel: d.template?.displayName || d.template?.name || "—",
+    statusLabel: d.status?.displayName || d.status?.name || "-",
+    templateLabel: d.template?.displayName || d.template?.name || "-",
   };
 }
 
@@ -90,8 +90,8 @@ function mapPush(d: PushMessageDto): PushMessage {
     title: d.title ?? "",
     body: d.body ?? "",
     status: toStatus(d.status),
-    statusLabel: d.status?.displayName || d.status?.name || "—",
-    templateLabel: d.template?.displayName || d.template?.name || "—",
+    statusLabel: d.status?.displayName || d.status?.name || "-",
+    templateLabel: d.template?.displayName || d.template?.name || "-",
     read: !!d.isReaded,
   };
 }

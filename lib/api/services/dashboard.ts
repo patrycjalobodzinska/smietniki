@@ -1,7 +1,7 @@
 import { http } from "@/lib/api/client";
 
 /**
- * Platform summary from GET /v1/dashboard/summary — live aggregates across
+ * Platform summary from GET /v1/dashboard/summary - live aggregates across
  * ingest, devices, fill telemetry and access. Shape mirrors the API 1:1.
  */
 export interface DashboardSummary {

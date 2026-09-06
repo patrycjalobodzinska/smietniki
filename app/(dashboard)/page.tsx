@@ -1,14 +1,15 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { Warehouse, Trash2, Gauge, Activity, Radio, KeyRound, Camera } from "lucide-react";
+import { Warehouse, Gauge, Activity, Radio, KeyRound, Camera, Maximize2 } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
-import { Card, CardHeader, CardTitle, CardContent, StatCard, Spinner } from "@/components/ui";
+import { Button, Card, CardHeader, CardTitle, CardContent, Dialog, StatCard, Spinner } from "@/components/ui";
 import { DonutChart } from "@/components/charts";
 import { useStations, useContainers } from "@/lib/api/hooks/use-infrastructure";
 import { useDashboardSummary } from "@/lib/api/hooks/use-dashboard";
 import { fillTone } from "@/lib/types";
+import { formatDateTime } from "@/lib/utils/format";
 
 const StationMap = dynamic(
   () => import("@/components/domain/station-map").then((m) => m.StationMap),
@@ -17,14 +18,14 @@ const StationMap = dynamic(
 
 function MapSkeleton() {
   return (
-    <div className="flex h-[360px] items-center justify-center rounded-xl border border-border bg-muted/40">
+    <div className="flex h-[420px] items-center justify-center rounded-xl border border-border bg-muted/40">
       <Spinner />
     </div>
   );
 }
 
 /**
- * Operational dashboard — real data only (SprigaAPI). Every figure is derived
+ * Operational dashboard - real data only (SprigaAPI). Every figure is derived
  * client-side from the live infrastructure endpoints; nothing here is mock.
  */
 export default function DashboardPage() {
@@ -33,32 +34,19 @@ export default function DashboardPage() {
   const { data: summary, isLoading: summaryLoading } = useDashboardSummary();
 
   const loading = stationsLoading || containersLoading;
+  const [mapOpen, setMapOpen] = useState(false);
 
-  const ingestData = useMemo(() => {
-    const i = summary?.ingest;
-    return [
-      { label: "Kamera", value: i?.cameraEvents ?? 0, color: "var(--color-chart-3)" },
-      { label: "RFID", value: i?.rfidEvents ?? 0, color: "var(--color-chart-1)" },
-      { label: "Termiczne", value: i?.thermalEvents ?? 0, color: "var(--color-chart-4)" },
-      { label: "Nieznane", value: i?.unknownEvents ?? 0, color: "var(--color-chart-6)" },
-    ].filter((d) => d.value > 0);
-  }, [summary]);
-
+  // Liczby altanek/pojemników pochodzą z list infrastruktury; średnie
+  // zapełnienie i telemetrię podaje /v1/dashboard/summary - nie liczymy ich
+  // drugi raz na froncie.
   const kpis = useMemo(() => {
     const st = stations ?? [];
-    const ct = containers ?? [];
-    const measured = ct.filter((c) => typeof c.fillLevel === "number") as { fillLevel: number }[];
-    const avgFill = measured.length
-      ? Math.round(measured.reduce((s, c) => s + c.fillLevel, 0) / measured.length)
-      : null;
     return {
       stations: st.length,
       activeStations: st.filter((s) => s.status === "active").length,
-      containers: ct.length,
       withCamera: st.filter((s) => s.hasCamera).length,
-      avgFill,
     };
-  }, [stations, containers]);
+  }, [stations]);
 
   const distData = useMemo(() => {
     const measured = (containers ?? []).filter((c) => typeof c.fillLevel === "number");
@@ -71,43 +59,88 @@ export default function DashboardPage() {
     ];
   }, [containers]);
 
-  const variantData = useMemo(() => {
-    const st = stations ?? [];
-    const count = (v: string) => st.filter((s) => s.deploymentVariant === v).length;
-    return [
-      { label: "Access", value: count("access"), color: "var(--color-chart-6)" },
-      { label: "Access + Fill", value: count("access_fill"), color: "var(--color-chart-1)" },
-      { label: "Access + Fill + Vision", value: count("access_fill_vision"), color: "var(--color-chart-3)" },
-    ];
-  }, [stations]);
-
   return (
-    <div className="space-y-6">
-      <PageHeader title="Dashboard" description="Bieżący stan infrastruktury odpadowej — dane na żywo z systemu." />
+    <div className="min-w-0 space-y-3 sm:space-y-6">
+      <PageHeader
+        title="Dashboard"
+        description={
+          summary
+            ? `Bieżący stan infrastruktury odpadowej. Dane z systemu, stan na ${formatDateTime(summary.generatedAt)}.`
+            : "Bieżący stan infrastruktury odpadowej."
+        }
+      />
 
-      {/* KPI — derived from live infrastructure endpoints */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Altanki" value={kpis.stations} icon={Warehouse} loading={loading} hint={`${kpis.activeStations} aktywnych`} />
-        <StatCard label="Pojemniki" value={kpis.containers} icon={Trash2} loading={loading} />
-        <StatCard label="Altanki z kamerą" value={kpis.withCamera} icon={Camera} loading={loading} />
-        <StatCard label="Śr. zapełnienie" value={kpis.avgFill === null ? "N/D" : `${kpis.avgFill}%`} icon={Gauge} tone={(kpis.avgFill ?? 0) >= 80 ? "danger" : "default"} loading={loading} />
+      {/* Jedna sekcja KPI: infrastruktura z list + telemetria z /v1/dashboard/summary */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 [&>*]:flex [&>*]:min-h-[7.5rem] [&>*]:flex-col [&>*]:justify-center">
+        <StatCard
+          label="Śr. zapełnienie"
+          value={summary ? `${Math.round(summary.fill.averageFill)}%` : undefined}
+          icon={Gauge}
+          loading={summaryLoading}
+          dark
+          hint={summary ? `${summary.fill.last24hMeasurements} pomiarów w 24 h` : undefined}
+        />
+        <StatCard label="Altanki" value={kpis.stations} icon={Warehouse} loading={loading} hint={`${kpis.activeStations} aktywnych, ${kpis.withCamera} z kamerą`} />
+        <StatCard
+          label="Otwarcia altanek (24 h)"
+          value={summary?.access.last24hSessions}
+          icon={KeyRound}
+          loading={summaryLoading}
+          hint={summary ? `${summary.access.totalSessions.toLocaleString("pl-PL")} łącznie` : undefined}
+        />
+        <StatCard
+          label="Pomiary zapełnienia (24 h)"
+          value={summary?.fill.last24hMeasurements}
+          icon={Activity}
+          loading={summaryLoading}
+          hint={summary ? `${summary.fill.totalMeasurements.toLocaleString("pl-PL")} łącznie` : undefined}
+        />
+        <StatCard
+          label="Zdarzenia (24 h)"
+          value={summary?.ingest.last24hEvents}
+          icon={Radio}
+          loading={summaryLoading}
+          hint={summary ? `${summary.ingest.totalEvents.toLocaleString("pl-PL")} łącznie` : undefined}
+        />
+        <StatCard
+          label="Retransmisje"
+          value={summary?.ingest.totalRetransmissions}
+          icon={Activity}
+          loading={summaryLoading}
+          hint="powtórzone wysyłki zdarzeń"
+        />
+        <StatCard
+          label="Urządzenia online"
+          value={summary ? `${summary.devices.online}/${summary.devices.total}` : undefined}
+          icon={Camera}
+          loading={summaryLoading}
+          tone={summary && summary.devices.offline > 0 ? "warning" : "default"}
+          hint={summary ? `${summary.devices.offline} offline` : undefined}
+        />
       </div>
 
       {/* Map + fill distribution */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader className="flex-row items-center justify-between">
+      <div className="grid gap-3 sm:gap-6 lg:grid-cols-3">
+        <Card className="min-w-0 lg:col-span-2">
+          <CardHeader className="flex-row items-center justify-between gap-2">
             <CardTitle>Mapa altanek</CardTitle>
-            <span className="text-sm text-muted-foreground">{stations?.length ?? 0} lokalizacji</span>
+            <div className="flex shrink-0 items-center gap-2">
+              <span className="hidden text-sm text-muted-foreground sm:inline">
+                {stations?.length ?? 0} lokalizacji
+              </span>
+              <Button size="sm" variant="ghost" onClick={() => setMapOpen(true)}>
+                <Maximize2 /> Powiększ
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
-            <StationMap stations={stations ?? []} />
+            <StationMap stations={stations ?? []} height={420} />
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Dystrybucja zapełnienia</CardTitle>
+            <CardTitle>Zapełnienie</CardTitle>
           </CardHeader>
           <CardContent>
             <DonutChart data={distData} />
@@ -124,70 +157,17 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* Deployment variants */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Warianty wdrożenia altanek</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid items-center gap-6 sm:grid-cols-[240px_1fr]">
-            <DonutChart data={variantData} />
-            <div className="space-y-1.5">
-              {variantData.map((d) => (
-                <div key={d.label} className="flex items-center gap-2 text-sm">
-                  <span className="size-2.5 rounded-full" style={{ background: d.color }} />
-                  <span className="text-muted-foreground">{d.label}</span>
-                  <span className="ml-auto font-semibold tabular-nums">{d.value} altanek</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Live platform summary — GET /v1/dashboard/summary */}
-      <div className="flex items-center gap-2 pt-2">
-        <span className="relative flex size-2">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-70" />
-          <span className="relative inline-flex size-2 rounded-full bg-success" />
-        </span>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          Stan platformy — na żywo
-        </h2>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
-        <StatCard label="Śr. zapełnienie (platforma)" value={summary ? `${Math.round(summary.fill.averageFill)}%` : undefined} icon={Gauge} loading={summaryLoading} dark />
-        <StatCard label="Pomiary (24h)" value={summary?.fill.last24hMeasurements} icon={Activity} loading={summaryLoading} hint={summary ? `${summary.fill.totalMeasurements} łącznie` : undefined} />
-        <StatCard label="Zdarzenia (24h)" value={summary?.ingest.last24hEvents} icon={Radio} loading={summaryLoading} hint={summary ? `${summary.ingest.totalEvents} łącznie` : undefined} />
-        <StatCard label="Sesje dostępu (24h)" value={summary?.access.last24hSessions} icon={KeyRound} loading={summaryLoading} hint={summary ? `${summary.access.totalSessions} łącznie` : undefined} />
-        <StatCard label="Retransmisje" value={summary?.ingest.totalRetransmissions} icon={Activity} loading={summaryLoading} />
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Źródła zdarzeń (ingest)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid items-center gap-6 sm:grid-cols-[240px_1fr]">
-            <DonutChart data={ingestData} />
-            <div className="space-y-1.5">
-              {ingestData.map((d) => (
-                <div key={d.label} className="flex items-center gap-2 text-sm">
-                  <span className="size-2.5 rounded-full" style={{ background: d.color }} />
-                  <span className="text-muted-foreground">{d.label}</span>
-                  <span className="ml-auto font-semibold tabular-nums">{d.value.toLocaleString("pl-PL")}</span>
-                </div>
-              ))}
-              {summary && (
-                <p className="pt-2 text-xs text-muted-foreground">
-                  Pomiary automatyczne: {summary.fill.autoMeasurements.toLocaleString("pl-PL")} · ręczne: {summary.fill.manualMeasurements}
-                </p>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {mapOpen && (
+        <Dialog
+          open
+          onClose={() => setMapOpen(false)}
+          title="Mapa altanek"
+          description={`${stations?.length ?? 0} lokalizacji`}
+          className="max-w-6xl"
+        >
+          <StationMap stations={stations ?? []} height="72dvh" />
+        </Dialog>
+      )}
     </div>
   );
 }

@@ -27,7 +27,7 @@ function ConfirmForm() {
       await authService.confirmEmail(userId, token);
       setOk(true);
     } catch {
-      setError("Nie udało się potwierdzić adresu — token mógł wygasnąć.");
+      setError("Nie udało się potwierdzić adresu - token mógł wygasnąć.");
     } finally {
       setBusy(false);
     }
@@ -79,7 +79,7 @@ export default function ConfirmEmailPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="flex min-h-dvh items-center justify-center">
           <Spinner />
         </div>
       }

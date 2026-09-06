@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Search, Video, X } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { FilterBar } from "@/components/layout/filter-bar";
-import { Input, Select, Badge, DataTable, Spinner, type Column } from "@/components/ui";
+import { Input, Select, Badge, DataTable, DatePicker, Spinner, type Column } from "@/components/ui";
 import { AnomalyBadge } from "@/components/domain/badges";
 import { useSessions } from "@/lib/api/hooks/use-operations";
 import { useStation } from "@/lib/api/hooks/use-infrastructure";
@@ -48,23 +48,23 @@ function SessionsList() {
   const columns: Column<AccessSession>[] = [
     { key: "station", header: "Altanka", cell: (s) => <span className="font-medium">{s.stationName}</span> },
     { key: "key", header: "Klucz / lokal", cell: (s) => <div><p className="text-sm">{s.keyIdentifier}</p>{s.unitNumber && <p className="text-xs text-muted-foreground">Lokal {s.unitNumber}</p>}</div> },
-    { key: "type", header: "Typ klucza", cell: (s) => <Badge variant="outline">{KEY_TYPE_LABEL[s.keyType]}</Badge> },
+    { key: "type", header: "Typ klucza", align: "center", cell: (s) => <Badge variant="outline">{KEY_TYPE_LABEL[s.keyType]}</Badge> },
     { key: "started", header: "Rozpoczęcie", cell: (s) => <span className="text-sm text-muted-foreground">{formatDateTime(s.startedAt)}</span> },
     { key: "duration", header: "Czas trwania", align: "right", cell: (s) => <span className="text-sm tabular-nums">{duration(s.durationSeconds)}</span> },
-    { key: "recording", header: "Nagranie", align: "center", cell: (s) => (s.hasRecording ? <Video className="mx-auto size-4 text-info" /> : <span className="text-muted-foreground">—</span>) },
-    { key: "anomaly", header: "Anomalia", cell: (s) => (s.anomaly ? <AnomalyBadge /> : <span className="text-sm text-muted-foreground">—</span>) },
+    { key: "recording", header: "Nagranie", align: "center", cell: (s) => (s.hasRecording ? <Video className="mx-auto size-4 text-info" /> : <span className="text-muted-foreground">-</span>) },
+    { key: "anomaly", header: "Anomalia", cell: (s) => (s.anomaly ? <AnomalyBadge /> : <span className="text-sm text-muted-foreground">-</span>) },
   ];
 
   return (
-    <div className="space-y-4">
-      <PageHeader title="Sesje dostępu" description="Historia autoryzacji dostępu do altanek." />
+    <div className="space-y-3 sm:space-y-4">
+      <PageHeader title="Otwarcia altanek" description="Historia wejść do altanek: kto, kiedy i jakim kluczem." />
       <FilterBar>
-        <div className="min-w-48 flex-1">
+        <div className="min-w-0 flex-1 sm:min-w-48">
           <Input icon={<Search />} placeholder="Szukaj klucza, altanki, lokalu..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-9" />
         </div>
-        <Select options={ANOMALY_OPTIONS} value={anomaly} onChange={(e) => setAnomaly(e.target.value)} className="h-9 w-48" />
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-40" aria-label="Od" />
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-40" aria-label="Do" />
+        <Select options={ANOMALY_OPTIONS} value={anomaly} onChange={(e) => setAnomaly(e.target.value)} className="h-9 w-full sm:w-48" />
+        <DatePicker value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-full sm:w-44" aria-label="Data od" placeholder="Data od…" />
+        <DatePicker value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-full sm:w-44" aria-label="Data do" placeholder="Data do…" />
       </FilterBar>
 
       {stationId && (

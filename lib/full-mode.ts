@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 
 /**
- * "Full mode" — a hidden unlock that reveals the extra modules removed from the
+ * "Full mode" - a hidden unlock that reveals the extra modules removed from the
  * KM1 panel (odbiory, trasy, spółdzielnie, nieruchomości, features).
  *
  * Unlock: on the login form, append the secret code to the password
  * (default `::pelny`, override with NEXT_PUBLIC_FULL_CODE). It is stripped
  * before the real API login and flips a local flag. This is cosmetic gating
- * (client-side), suitable for a demo — not a security boundary.
+ * (client-side), suitable for a demo - not a security boundary.
  */
 
 export const FULL_CODE = process.env.NEXT_PUBLIC_FULL_CODE ?? "::pelny";

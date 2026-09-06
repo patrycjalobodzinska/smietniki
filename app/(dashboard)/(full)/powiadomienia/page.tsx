@@ -70,7 +70,7 @@ function RegisterDeviceDialog({ open, onClose }: { open: boolean; onClose: () =>
         </>
       }
     >
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         <Field label="Token urządzenia" required>
           {({ id }) => <Input id={id} value={token} onChange={(e) => setToken(e.target.value)} />}
         </Field>
@@ -93,7 +93,7 @@ export default function PushPage() {
 
   const messages = data ?? [];
   const unread = messages.filter((m) => !m.read).length;
-  const emailOf = (id: string | null) => (id ? users?.find((u) => u.id === id)?.email ?? id : "—");
+  const emailOf = (id: string | null) => (id ? users?.find((u) => u.id === id)?.email ?? id : "-");
 
   const columns: Column<PushMessage>[] = [
     {
@@ -107,7 +107,7 @@ export default function PushPage() {
       ),
     },
     { key: "user", header: "Odbiorca", cell: (m) => <span className="text-sm text-muted-foreground">{emailOf(m.userId)}</span> },
-    { key: "template", header: "Szablon", cell: (m) => <Badge variant="outline">{m.templateLabel}</Badge> },
+    { key: "template", header: "Szablon", align: "center", cell: (m) => <Badge variant="outline">{m.templateLabel}</Badge> },
     {
       key: "read",
       header: "Odczytane",
@@ -141,7 +141,7 @@ export default function PushPage() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Powiadomienia push"
         description="Dziennik powiadomień wysłanych do aplikacji mobilnych."
@@ -152,14 +152,14 @@ export default function PushPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
         <StatCard label="Powiadomienia" value={messages.length} icon={Bell} />
         <StatCard label="Nieodczytane" value={unread} icon={BellRing} tone={unread ? "warning" : "default"} />
         <StatCard label="Odczytane" value={messages.length - unread} />
       </div>
 
       <FilterBar>
-        <div className="min-w-56 flex-1">
+        <div className="min-w-0 flex-1 sm:min-w-56">
           <Input
             icon={<Search />}
             placeholder="Szukaj tytułu lub treści..."
@@ -172,7 +172,7 @@ export default function PushPage() {
           options={READ_OPTIONS}
           value={read}
           onChange={(e) => setRead(e.target.value as "all" | "read" | "unread")}
-          className="h-9 w-48"
+          className="h-9 w-full sm:w-48"
         />
       </FilterBar>
 

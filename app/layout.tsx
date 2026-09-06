@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { Poppins, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { Poppins } from "next/font/google";
+// Leaflet przed globals: jego reguły są poza warstwami, więc nasze nadpisania
+// muszą wystąpić po nim w kolejności źródła.
 import "leaflet/dist/leaflet.css";
+import "./globals.css";
 import { Providers } from "./providers";
 
 const inter = Poppins({
@@ -9,10 +11,9 @@ const inter = Poppins({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin", "latin-ext"],
 });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SMART WASTE — centrum zarządzania infrastrukturą odpadową",
+  title: "SMART WASTE - centrum zarządzania infrastrukturą odpadową",
   description:
     "Monitoring altanek śmietnikowych, kontrola dostępu, zapełnienie pojemników, odbiory i trasy PGK.",
 };
@@ -23,7 +24,7 @@ const themeScript = `(function(){try{if(localStorage.getItem('theme')==='dark')d
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pl" className={`${inter.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang="pl" className={inter.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

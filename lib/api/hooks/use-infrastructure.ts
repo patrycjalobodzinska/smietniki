@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { qk } from "@/lib/api/query-keys";
 import {
   cooperativesService,
@@ -51,15 +51,31 @@ export function useRevokeKey(propertyId: string) {
   });
 }
 
+// Zmiana filtra tworzy nowy queryKey. Bez `keepPreviousData` tabela znikałaby
+// na czas requestu i wracała jako skeleton/pustka - stąd trzymamy poprzednie
+// wiersze, a strona sygnalizuje odświeżanie przez `isFetching`.
 export function useStations(f: StationFilters = {}) {
-  return useQuery({ queryKey: qk.stations.list(f), queryFn: () => stationsService.list(f) });
+  return useQuery({
+    queryKey: qk.stations.list(f),
+    queryFn: () => stationsService.list(f),
+    placeholderData: keepPreviousData,
+  });
 }
 export function useStation(id: string) {
   return useQuery({ queryKey: qk.stations.detail(id), queryFn: () => stationsService.get(id), enabled: !!id });
 }
 
-export function useContainers(f: ContainerFilters = {}) {
-  return useQuery({ queryKey: qk.containers.list(f), queryFn: () => containersService.list(f) });
+// `enabled` pozwala widokom pobierać pojemniki dopiero wtedy, gdy naprawdę je
+// pokazują (np. kafle altanek), zamiast przy każdym wejściu na listę.
+export function useContainers(f: ContainerFilters = {}, options: { enabled?: boolean } = {}) {
+  return useQuery({
+    queryKey: qk.containers.list(f),
+    queryFn: () => containersService.list(f),
+    enabled: options.enabled ?? true,
+    // Jak w `useStations`: zmiana filtra nie może opróżniać listy na czas
+    // requestu - inaczej widok mruga tabelą/kaflami i pustym stanem.
+    placeholderData: keepPreviousData,
+  });
 }
 export function useContainer(id: string) {
   return useQuery({ queryKey: qk.containers.detail(id), queryFn: () => containersService.get(id), enabled: !!id });

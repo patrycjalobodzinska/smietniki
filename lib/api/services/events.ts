@@ -67,7 +67,7 @@ export interface RawEventFilters {
   limit?: number;
 }
 
-/** JPEG snapshot URL — auth travels as the first-party cookie, so use it directly. */
+/** JPEG snapshot URL - auth travels as the first-party cookie, so use it directly. */
 export function snapshotUrl(snapshotId: string): string {
   return assetUrl(`/v1/snapshots/${snapshotId}`);
 }
@@ -93,7 +93,7 @@ export const eventsService = {
     return out;
   },
 
-  /** No GET /raw-events/{id} — resolve the event from the feed. */
+  /** No GET /raw-events/{id} - resolve the event from the feed. */
   async get(id: string): Promise<RawEvent | undefined> {
     return (await this.list()).find((e) => e.id === id);
   },

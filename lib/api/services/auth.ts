@@ -4,7 +4,7 @@ import type { User } from "@/lib/types";
 
 /**
  * Authentication against SprigaAPI. Auth is a httpOnly cookie set by sign-in
- * (see lib/api/client.ts) — there is no token to handle here. `credentials:
+ * (see lib/api/client.ts) - there is no token to handle here. `credentials:
  * "include"` on the client sends the cookie on every subsequent request.
  */
 export const authService = {

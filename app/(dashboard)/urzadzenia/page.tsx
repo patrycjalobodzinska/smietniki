@@ -71,7 +71,7 @@ export default function DevicesPage() {
         </div>
       ),
     },
-    { key: "source", header: "Źródło", cell: (d) => <Badge variant={SOURCE_VARIANT[d.source]}>{SOURCE_LABEL[d.source]}</Badge> },
+    { key: "source", header: "Źródło", align: "center", cell: (d) => <Badge variant={SOURCE_VARIANT[d.source]}>{SOURCE_LABEL[d.source]}</Badge> },
     {
       key: "station",
       header: "Przypisanie",
@@ -86,7 +86,7 @@ export default function DevicesPage() {
         ),
     },
     { key: "events", header: "Zdarzenia", align: "right", cell: (d) => <span className="tabular-nums">{d.eventCount.toLocaleString("pl-PL")}</span> },
-    { key: "lastSeen", header: "Ostatnie zdarzenie", cell: (d) => <span className="text-sm text-muted-foreground">{d.lastSeenAt ? formatRelative(d.lastSeenAt) : "—"}</span> },
+    { key: "lastSeen", header: "Ostatnie zdarzenie", cell: (d) => <span className="text-sm text-muted-foreground">{d.lastSeenAt ? formatRelative(d.lastSeenAt) : "-"}</span> },
     {
       key: "status",
       header: "Status",
@@ -110,13 +110,13 @@ export default function DevicesPage() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Urządzenia"
-        description="Urządzenia OT (kamery, czytniki RFID) — stan łączności i przypisanie do altanek."
+        description="Urządzenia OT (kamery, czytniki RFID) - stan łączności i przypisanie do altanek."
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
         <StatCard label="Urządzenia" value={devices.length} />
         <StatCard label="Online" value={onlineCount} tone={onlineCount ? "success" : "default"} />
         <StatCard label="Offline" value={devices.length - onlineCount} tone={devices.length - onlineCount ? "warning" : "default"} />
@@ -127,12 +127,12 @@ export default function DevicesPage() {
         />
       </div>
       <FilterBar>
-        <div className="min-w-56 flex-1">
+        <div className="min-w-0 flex-1 sm:min-w-56">
           <Input icon={<Search />} placeholder="Szukaj nazwy, klucza lub altanki..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-9" />
         </div>
-        <Select options={SOURCE_OPTIONS} value={source} onChange={(e) => setSource(e.target.value as DeviceSource | "all")} className="h-9 w-48" />
-        <Select options={STATUS_OPTIONS} value={online} onChange={(e) => setOnline(e.target.value as "all" | "online" | "offline")} className="h-9 w-44" />
-        <Select options={stationOptions} value={stationCode} onChange={(e) => setStationCode(e.target.value)} className="h-9 w-56" />
+        <Select options={SOURCE_OPTIONS} value={source} onChange={(e) => setSource(e.target.value as DeviceSource | "all")} className="h-9 w-full sm:w-48" />
+        <Select options={STATUS_OPTIONS} value={online} onChange={(e) => setOnline(e.target.value as "all" | "online" | "offline")} className="h-9 w-full sm:w-44" />
+        <Select options={stationOptions} value={stationCode} onChange={(e) => setStationCode(e.target.value)} className="h-9 w-full sm:w-56" />
       </FilterBar>
       <DataTable columns={columns} data={devices} rowKey={(d) => d.id} loading={isLoading} emptyTitle="Brak urządzeń" pageSize={15} />
 

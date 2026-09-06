@@ -10,7 +10,7 @@ import {
   AlertTriangle,
   Camera,
   KeyRound,
-  MapPin,
+  Maximize2,
   Info,
   Pencil,
   Plus,
@@ -25,7 +25,7 @@ import {
   DescriptionList,
   DataTable,
   Button,
-  Badge,
+  Dialog,
   Spinner,
   type Column,
 } from "@/components/ui";
@@ -33,14 +33,13 @@ import { TrendLineChart } from "@/components/charts";
 import { FillBar } from "@/components/domain/fill-level";
 import { ChangeFillButton } from "@/components/domain/change-fill-button";
 import {
-  VariantBadge,
-  StationStatusBadge,
   DataSourceBadge,
   FractionBadge,
   FillStatusBadge,
   AnomalyBadge,
 } from "@/components/domain/badges";
 import { SnapshotGallery } from "@/components/domain/snapshot-gallery";
+import { cn } from "@/lib/utils/cn";
 import { StationDialog } from "@/components/domain/forms/station-dialog";
 import { ContainerDialog } from "@/components/domain/forms/container-dialog";
 import { useStation, useContainers, useContainerHistory } from "@/lib/api/hooks/use-infrastructure";
@@ -65,6 +64,7 @@ export default function StationDetailPage() {
   const { data: sessions } = useSessions({ stationId: id });
   const { data: history } = useContainerHistory(containers?.[0]?.id ?? "");
   const [editOpen, setEditOpen] = useState(false);
+  const [mapOpen, setMapOpen] = useState(false);
   const [addContainerOpen, setAddContainerOpen] = useState(false);
 
   if (isLoading || !station) {
@@ -76,10 +76,10 @@ export default function StationDetailPage() {
 
   const containerCols: Column<Container>[] = [
     { key: "code", header: "Pojemnik", cell: (c) => <span className="font-medium">{c.code}</span> },
-    { key: "fraction", header: "Frakcja", cell: (c) => <FractionBadge fraction={c.fraction} /> },
+    { key: "fraction", header: "Frakcja", align: "center", cell: (c) => <FractionBadge fraction={c.fraction} /> },
     { key: "fill", header: "Zapełnienie", className: "w-40", cell: (c) => <FillBar level={c.fillLevel} /> },
-    { key: "status", header: "Status", cell: (c) => <FillStatusBadge status={c.fillStatus} /> },
-    { key: "source", header: "Źródło", cell: (c) => <DataSourceBadge source={c.dataSource} /> },
+    { key: "status", header: "Status", align: "center", cell: (c) => <FillStatusBadge status={c.fillStatus} /> },
+    { key: "source", header: "Źródło", align: "center", cell: (c) => <DataSourceBadge source={c.dataSource} /> },
     {
       key: "actions",
       header: "",
@@ -95,28 +95,15 @@ export default function StationDetailPage() {
         breadcrumbs={[{ label: "Altanki", href: "/altanki" }, { label: station.name }]}
         title={station.name}
         subtitle={`${station.code} · ${station.address}, ${station.district}`}
-        badges={
-          <>
-            <VariantBadge variant={station.deploymentVariant} />
-            <StationStatusBadge status={station.status} />
-            {station.hasCamera && <Badge variant="info"><Camera className="size-3" /> Monitoring</Badge>}
-            <DataSourceBadge source={station.fillDataSource} />
-          </>
-        }
         actions={
-          <>
-            <Button variant="outline" onClick={() => setEditOpen(true)}>
-              <Pencil /> Edytuj
-            </Button>
-            <Button variant="outline">
-              <MapPin /> Pokaż na mapie
-            </Button>
-          </>
+          <Button variant="outline" onClick={() => setEditOpen(true)}>
+            <Pencil /> Edytuj
+          </Button>
         }
       />
 
       {/* KPI */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard label="Pojemniki" value={station.containerCount} icon={Trash2} />
         <StatCard label="Śr. zapełnienie" value={station.avgFillLevel === null ? "N/D" : `${station.avgFillLevel}%`} icon={Gauge} tone={(station.avgFillLevel ?? 0) >= 80 ? "danger" : "default"} />
         <StatCard label="Sesje (7 dni)" value={sessions7d} icon={Activity} />
@@ -125,10 +112,12 @@ export default function StationDetailPage() {
         <StatCard label="Kamera" value={station.hasCamera ? "Tak" : "Nie"} icon={Camera} tone={station.hasCamera ? "success" : "default"} />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+      <div className="mt-3 sm:mt-6 grid gap-3 sm:gap-6 lg:grid-cols-3">
         {/* Left / main */}
-        <div className="space-y-6 lg:col-span-2">
-          <Card>
+        <div className="min-w-0 space-y-3 sm:space-y-6 lg:col-span-2">
+          {/* overflow-hidden: tabela ma własne kwadratowe rogi (rounded-none),
+              więc bez przycięcia rozjeżdżałaby dolny promień karty. */}
+          <Card className="overflow-hidden">
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle>Pojemniki</CardTitle>
               <Button size="sm" variant="outline" onClick={() => setAddContainerOpen(true)}>
@@ -146,9 +135,32 @@ export default function StationDetailPage() {
             </CardContent>
           </Card>
 
+          {/* Mapa renderowana raz, w jednym miejscu drzewa - duplikat w obu
+              gałęziach warunku powodowałby przemontowanie Leafleta. */}
+          <div className={cn("grid gap-3 sm:gap-6", station.hasCamera && "md:grid-cols-2")}>
+            {station.hasCamera && (
+              <Card>
+                <CardHeader><CardTitle>Zdjęcia z monitoringu</CardTitle></CardHeader>
+                <CardContent>
+                  {/* Real JPEGs from the ingest snapshots endpoint. */}
+                  <SnapshotGallery stationCode={station.code} />
+                </CardContent>
+              </Card>
+            )}
+            <Card>
+              <CardHeader className="flex-row items-center justify-between">
+                <CardTitle>Pozycja</CardTitle>
+                <Button size="sm" variant="ghost" onClick={() => setMapOpen(true)}>
+                  <Maximize2 /> Powiększ
+                </Button>
+              </CardHeader>
+              <CardContent><StationMap stations={[station]} height={220} /></CardContent>
+            </Card>
+          </div>
+
           <Card>
             <CardHeader><CardTitle>Trend zapełnienia (7 dni)</CardTitle></CardHeader>
-            <CardContent>{history && <TrendLineChart data={history} />}</CardContent>
+            <CardContent>{history && <TrendLineChart data={history} seriesLabel="Zapełnienie" />}</CardContent>
           </Card>
 
           <Card>
@@ -187,12 +199,7 @@ export default function StationDetailPage() {
         </div>
 
         {/* Right / side */}
-        <div className="space-y-6">
-          <Card>
-            <CardHeader><CardTitle>Pozycja</CardTitle></CardHeader>
-            <CardContent><StationMap stations={[station]} height={220} /></CardContent>
-          </Card>
-
+        <div className="min-w-0 space-y-3 sm:space-y-6">
           <Card>
             <CardHeader><CardTitle>Konfiguracja technologiczna</CardTitle></CardHeader>
             <CardContent>
@@ -203,21 +210,10 @@ export default function StationDetailPage() {
                   { label: "Sposób otwierania", value: ACCESS_MODE_LABEL[station.accessMode] },
                   { label: "Źródło danych o napełnieniu", value: DATA_SOURCE_LABEL[station.fillDataSource] },
                   { label: "Monitoring wideo", value: station.hasCamera ? "Tak" : "Nie" },
-                  { label: "Współrzędne", value: `${station.location.lat.toFixed(4)}, ${station.location.lng.toFixed(4)}` },
                 ]}
               />
             </CardContent>
           </Card>
-
-          {station.hasCamera && (
-            <Card>
-              <CardHeader><CardTitle>Snapshoty (Vision)</CardTitle></CardHeader>
-              <CardContent>
-                {/* Real JPEGs from the ingest snapshots endpoint. */}
-                <SnapshotGallery stationCode={station.code} />
-              </CardContent>
-            </Card>
-          )}
 
           <Card>
             <CardHeader><CardTitle>Kontrola dostępu</CardTitle></CardHeader>
@@ -230,6 +226,18 @@ export default function StationDetailPage() {
           </Card>
         </div>
       </div>
+
+      {mapOpen && (
+        <Dialog
+          open
+          onClose={() => setMapOpen(false)}
+          title={station.name}
+          description={`${station.address}, ${station.district}`}
+          className="max-w-5xl"
+        >
+          <StationMap stations={[station]} height="70dvh" />
+        </Dialog>
+      )}
 
       {editOpen && <StationDialog open station={station} onClose={() => setEditOpen(false)} />}
       {addContainerOpen && (

@@ -27,7 +27,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
     try {
       await authService.signOut();
     } catch {
-      /* ignore — redirect regardless */
+      /* ignore - redirect regardless */
     }
     setFullMode(false);
     router.replace("/login");
@@ -41,7 +41,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 m-0 flex w-20 flex-col items-center bg-forest py-4 text-forest-foreground transition-transform duration-200 lg:static lg:my-3 lg:ml-3 lg:h-[calc(100vh-1.5rem)] lg:w-20 lg:rounded-3xl lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 m-0 flex w-20 flex-col items-center bg-forest py-4 text-forest-foreground transition-transform duration-200 lg:static lg:my-3 lg:ml-3 lg:h-[calc(100dvh-1.5rem)] lg:w-20 lg:rounded-3xl lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
@@ -59,9 +59,9 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
           </button>
         </div>
 
-        {/* Nav — scrollable icon rail (hidden scrollbar), groups separated by a spacer.
+        {/* Nav - scrollable icon rail (hidden scrollbar), groups separated by a spacer.
             Native title tooltips: they never clip, even while the rail scrolls. */}
-        <nav className="mt-6 flex min-h-0 flex-1 flex-col items-center gap-1.5 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <nav className="mt-3 sm:mt-6 flex min-h-0 flex-1 flex-col items-center gap-1.5 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {NAVIGATION.map((section, si) => {
             const items = section.items.filter((i) => has(i.permission) && (!i.full || fullMode));
             if (!items.length) return null;

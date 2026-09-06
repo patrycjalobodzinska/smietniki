@@ -31,7 +31,7 @@ import type { Article, ArticleCategory } from "@/lib/types";
 import { formatDateTime } from "@/lib/utils/format";
 
 /**
- * Content module (`/v1/articles`) — resident-facing notices and guides, with
+ * Content module (`/v1/articles`) - resident-facing notices and guides, with
  * draft/published state, categories and a main photo from the file store.
  */
 
@@ -84,7 +84,7 @@ function CategoryDialog({
         </>
       }
     >
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         <Field label="Nazwa" required>
           {({ id }) => <Input id={id} value={name} onChange={(e) => setName(e.target.value)} />}
         </Field>
@@ -149,7 +149,7 @@ export default function ContentPage() {
         </div>
       ),
     },
-    { key: "category", header: "Kategoria", cell: (a) => <Badge variant="outline">{a.categoryName}</Badge> },
+    { key: "category", header: "Kategoria", align: "center", cell: (a) => <Badge variant="outline">{a.categoryName}</Badge> },
     {
       key: "state",
       header: "Status",
@@ -229,7 +229,7 @@ export default function ContentPage() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Treści"
         description="Artykuły i komunikaty dla mieszkańców wraz z kategoriami."
@@ -246,7 +246,7 @@ export default function ContentPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
         <StatCard label="Artykuły" value={rows.length} icon={FileText} />
         <StatCard label="Opublikowane" value={publishedCount} tone="success" />
         <StatCard label="Kategorie" value={categories?.length ?? 0} />
@@ -257,7 +257,7 @@ export default function ContentPage() {
       {tab === "articles" ? (
         <>
           <FilterBar>
-            <div className="min-w-56 flex-1">
+            <div className="min-w-0 flex-1 sm:min-w-56">
               <Input
                 icon={<Search />}
                 placeholder="Szukaj tytułu..."
@@ -270,13 +270,13 @@ export default function ContentPage() {
               options={categoryOptions}
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="h-9 w-52"
+              className="h-9 w-full sm:w-52"
             />
             <Select
               options={PUBLISH_OPTIONS}
               value={published}
               onChange={(e) => setPublished(e.target.value as "all" | "published" | "draft")}
-              className="h-9 w-44"
+              className="h-9 w-full sm:w-44"
             />
           </FilterBar>
           <DataTable

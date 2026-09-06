@@ -5,18 +5,19 @@ import Link from "next/link";
 import { Camera, ExternalLink } from "lucide-react";
 import { Badge, Dialog, EmptyState, Skeleton } from "@/components/ui";
 import { SnapshotImage } from "@/components/domain/snapshot-image";
+import { eventTypeLabel } from "@/lib/labels";
 import { useDevices } from "@/lib/api/hooks/use-devices";
 import { useRawEvents } from "@/lib/api/hooks/use-events";
 import type { RawEvent } from "@/lib/types";
 import { formatDateTime } from "@/lib/utils/format";
 
 /**
- * Camera snapshots for one altanka — real JPEGs from GET /v1/snapshots/{id}.
+ * Camera snapshots for one altanka - real JPEGs from GET /v1/snapshots/{id}.
  *
  * The ingest feed identifies a camera by IP, so the station's snapshots are the
  * snapshot-bearing events whose device IP belongs to a camera assigned to that
  * altanka. Without an assignment (PUT /v1/devices/{id}/assignment) there is no
- * way to attribute a frame to a station — hence the hint in the empty state.
+ * way to attribute a frame to a station - hence the hint in the empty state.
  */
 export function SnapshotGallery({
   stationCode,
@@ -74,7 +75,7 @@ export function SnapshotGallery({
     return (
       <EmptyState
         icon={Camera}
-        title="Brak snapshotów"
+        title="Brak zdjęć"
         description="Kamera jest przypisana, ale nie ma zdarzeń z obrazem w historii ingestu."
         className="border-0 py-8"
       />
@@ -89,7 +90,7 @@ export function SnapshotGallery({
             key={e.id}
             onClick={() => setPreview(e)}
             className="group relative aspect-video overflow-hidden rounded-lg border border-border bg-muted/40"
-            title={`${formatDateTime(e.occurredAt)} · ${e.eventType ?? "zdarzenie"}`}
+            title={`${formatDateTime(e.occurredAt)} · ${eventTypeLabel(e.eventType)}`}
           >
             <SnapshotImage
               snapshotId={e.snapshotId!}
@@ -107,7 +108,7 @@ export function SnapshotGallery({
       <Dialog
         open={!!preview}
         onClose={() => setPreview(null)}
-        title="Snapshot z kamery"
+        title="Zdjęcie z kamery"
         description={preview ? formatDateTime(preview.occurredAt) : undefined}
         className="max-w-3xl"
       >
@@ -115,11 +116,12 @@ export function SnapshotGallery({
           <div className="space-y-3">
             <SnapshotImage
               snapshotId={preview.snapshotId!}
-              alt="Snapshot"
+              alt="Zdjęcie z kamery"
+              ratio="video"
               className="w-full rounded-xl border border-border"
             />
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-              <Badge variant="info">{preview.eventType ?? "zdarzenie"}</Badge>
+              <Badge variant="info">{eventTypeLabel(preview.eventType)}</Badge>
               {preview.deviceIp && <Badge variant="muted">{preview.deviceIp}</Badge>}
               {preview.channelId !== null && <Badge variant="muted">kanał {preview.channelId}</Badge>}
               {preview.isRetransmission && (

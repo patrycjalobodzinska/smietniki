@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus, Search } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { FilterBar } from "@/components/layout/filter-bar";
-import { Button, Input, Select, Badge, DataTable, type Column } from "@/components/ui";
+import { Button, Input, Select, Badge, DataTable, DatePicker, type Column } from "@/components/ui";
 import { FractionBadge, CollectionStatusBadge } from "@/components/domain/badges";
 import { CollectionDialog } from "@/components/domain/forms/collection-dialog";
 import { useCollections } from "@/lib/api/hooks/use-operations";
@@ -39,7 +39,7 @@ export default function CollectionsPage() {
 
   const columns: Column<Collection>[] = [
     { key: "station", header: "Altanka", cell: (c) => <span className="font-medium">{c.stationName}</span> },
-    { key: "fraction", header: "Frakcja", cell: (c) => <FractionBadge fraction={c.fraction} /> },
+    { key: "fraction", header: "Frakcja", align: "center", cell: (c) => <FractionBadge fraction={c.fraction} /> },
     { key: "operator", header: "Operator", cell: (c) => <span className="text-sm">{c.operator}</span> },
     {
       key: "level",
@@ -52,11 +52,11 @@ export default function CollectionsPage() {
         ),
     },
     { key: "date", header: "Data", cell: (c) => <span className="text-sm text-muted-foreground">{formatDateTime(c.collectedAt)}</span> },
-    { key: "status", header: "Status", cell: (c) => <CollectionStatusBadge status={c.status} /> },
+    { key: "status", header: "Status", align: "center", cell: (c) => <CollectionStatusBadge status={c.status} /> },
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Odbiory"
         description="Historia i bieżące operacje odbioru odpadów."
@@ -67,13 +67,13 @@ export default function CollectionsPage() {
         }
       />
       <FilterBar>
-        <div className="min-w-48 flex-1">
+        <div className="min-w-0 flex-1 sm:min-w-48">
           <Input icon={<Search />} placeholder="Szukaj altanki..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-9" />
         </div>
-        <Select options={FRACTION_OPTIONS} value={fraction} onChange={(e) => setFraction(e.target.value as WasteFraction | "all")} className="h-9 w-44" />
-        <Select options={STATUS_OPTIONS} value={status} onChange={(e) => setStatus(e.target.value as CollectionStatus | "all")} className="h-9 w-44" />
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-40" aria-label="Od" />
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-40" aria-label="Do" />
+        <Select options={FRACTION_OPTIONS} value={fraction} onChange={(e) => setFraction(e.target.value as WasteFraction | "all")} className="h-9 w-full sm:w-44" />
+        <Select options={STATUS_OPTIONS} value={status} onChange={(e) => setStatus(e.target.value as CollectionStatus | "all")} className="h-9 w-full sm:w-44" />
+        <DatePicker value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-full sm:w-44" aria-label="Data od" placeholder="Data od…" />
+        <DatePicker value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-full sm:w-44" aria-label="Data do" placeholder="Data do…" />
       </FilterBar>
       <DataTable columns={columns} data={data} rowKey={(c) => c.id} loading={isLoading} onRowClick={(c) => router.push(`/odbiory/${c.id}`)} emptyTitle="Brak odbiorów" pageSize={15} />
 

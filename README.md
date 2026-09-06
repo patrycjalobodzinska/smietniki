@@ -1,4 +1,4 @@
-# EcoRoute — panel zarządzania śmietnikami
+# EcoRoute - panel zarządzania śmietnikami
 
 Panel do optymalizacji tras śmieciarek na podstawie zapełnienia śmietników
 (detekcja kamerami). Role: administrator, spółdzielnia, dyspozytor, kierowca.
@@ -25,9 +25,9 @@ NEXT_PUBLIC_USE_MOCKS=false                      # true = wymuś mocki (demo off
 ```
 
 Gdy `NEXT_PUBLIC_API_URL` jest ustawione i `USE_MOCKS≠true`, aplikacja działa na
-żywym API (logowanie cookie `httpOnly`, `credentials: "include"` — bez tokenów w JS).
+żywym API (logowanie cookie `httpOnly`, `credentials: "include"` - bez tokenów w JS).
 Przełącznik jest w `lib/api/config.ts`; serwisy wybierają implementację
-mock/real (np. `services/infrastructure.{mock,real}.ts`) — hooki i UI bez zmian.
+mock/real (np. `services/infrastructure.{mock,real}.ts`) - hooki i UI bez zmian.
 
 ## Architektura
 
@@ -37,7 +37,7 @@ app/
     page.tsx            # pulpit
     smietniki/ trasy/ pojazdy/ uzytkownicy/ ustawienia/
   providers.tsx         # QueryClientProvider + SessionProvider
-  globals.css           # DESIGN TOKENS (kolory, radius) — jedyne źródło prawdy
+  globals.css           # DESIGN TOKENS (kolory, radius) - jedyne źródło prawdy
 components/
   ui/                   # globalne prymitywy: Button, Input, Select, DataTable, Card, Dialog...
   domain/               # komponenty domenowe: FillBar, badge statusów/frakcji/ról
@@ -46,7 +46,7 @@ components/
 lib/
   types/                # model domenowy (Bin, CollectionRoute, Vehicle, User, Role)
   api/
-    client.ts           # fetch wrapper (http.get/post/put/del) — pod realne API
+    client.ts           # fetch wrapper (http.get/post/put/del) - pod realne API
     services/           # binsService, routesService... (dziś mock, potem http.*)
     hooks/              # useBins, useRoutes... (React Query)
     mock/               # dane + in-memory store
@@ -60,17 +60,17 @@ config/
 
 ## Zasady (trzymamy się schematu)
 
-1. **Kolory tylko z tokenów.** Nigdy hex/oklch w komponencie — używaj klas
+1. **Kolory tylko z tokenów.** Nigdy hex/oklch w komponencie - używaj klas
    `bg-primary`, `text-muted-foreground`, `border-border`, `bg-fill-critical`
    itd. Nowy kolor = nowy token w `app/globals.css`.
 2. **Jeden globalny komponent na wzorzec.** Potrzebujesz tabeli → używasz
    `DataTable` (konfiguracja kolumn). Potrzebujesz pola formularza → `Field` +
    kontrolka z `components/ui`. Nie duplikujemy prymitywów.
-3. **Dane przez hooki.** Ekran nie woła serwisu bezpośrednio — używa
+3. **Dane przez hooki.** Ekran nie woła serwisu bezpośrednio - używa
    `useX()`/`useMutation`. Klucze cache z `qk` w `query-keys.ts`.
 4. **Przejście na realne API** = podmiana ciał w `lib/api/services/*` na wywołania
    `http.*` + `NEXT_PUBLIC_API_URL`. Hooki i komponenty bez zmian.
 5. **Uprawnienia deklaratywnie.** Sekcje/akcje sprawdzają `has(permission)` lub
    `<PermissionGate>`, nie porównują ról wprost. Nowa rola = wpis w `roles.ts`.
 
-> Przełącznik ról w topbarze jest tymczasowy (dev) — zniknie po wpięciu auth.
+> Przełącznik ról w topbarze jest tymczasowy (dev) - zniknie po wpięciu auth.

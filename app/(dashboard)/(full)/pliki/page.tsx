@@ -44,7 +44,7 @@ function FileRow({
         className="size-12 shrink-0 rounded-lg border border-border bg-muted object-cover"
       />
       <div className="min-w-0 flex-1">
-        <p className="truncate font-mono text-xs">{file.id}</p>
+        <p className="truncate text-xs">{file.id}</p>
         {file.url && <p className="truncate text-xs text-muted-foreground">{file.url}</p>}
       </div>
       <Button size="sm" variant="ghost" onClick={() => onCopy(file.id)}>
@@ -58,8 +58,8 @@ function FileRow({
 }
 
 /**
- * File store tooling (`/v1/files`). The API has no browse endpoint — a file is
- * reachable only by id — so this screen uploads, looks up by id and deletes;
+ * File store tooling (`/v1/files`). The API has no browse endpoint - a file is
+ * reachable only by id - so this screen uploads, looks up by id and deletes;
  * uploads made here are kept in a session list for convenience.
  */
 export default function FilesPage() {
@@ -124,22 +124,22 @@ export default function FilesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 sm:space-y-6">
       <PageHeader
         title="Pliki"
-        description="Magazyn plików platformy — wgrywanie, podgląd po identyfikatorze i usuwanie."
+        description="Magazyn plików platformy - wgrywanie, podgląd po identyfikatorze i usuwanie."
       />
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-3 sm:gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Wgraj plik</CardTitle>
             <CardDescription>
-              Plik trafia do wybranego kontenera i jest adresowany identyfikatorem — używanym np.
+              Plik trafia do wybranego kontenera i jest adresowany identyfikatorem - używanym np.
               jako zdjęcie główne artykułu.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4">
             <Field label="Kontener">
               {({ id }) => (
                 <Select
@@ -167,9 +167,9 @@ export default function FilesPage() {
         <Card>
           <CardHeader>
             <CardTitle>Znajdź plik</CardTitle>
-            <CardDescription>API nie udostępnia listy plików — potrzebny jest identyfikator.</CardDescription>
+            <CardDescription>API nie udostępnia listy plików - potrzebny jest identyfikator.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4">
             <Field label="Identyfikator pliku">
               {({ id }) => (
                 <div className="flex gap-2">
@@ -201,7 +201,7 @@ export default function FilesPage() {
             <EmptyState
               icon={FileUp}
               title="Brak wgranych plików"
-              description="Lista pokazuje pliki wgrane w tej sesji — API nie udostępnia przeglądania magazynu."
+              description="Lista pokazuje pliki wgrane w tej sesji - API nie udostępnia przeglądania magazynu."
               className="border-0"
             />
           )}

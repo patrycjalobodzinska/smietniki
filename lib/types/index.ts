@@ -1,12 +1,12 @@
 /* ------------------------------------------------------------------ */
-/*  SMART WASTE — domain model                                         */
+/*  SMART WASTE - domain model                                         */
 /*  Hierarchy: Cooperative → Property → Unit → AccessKey               */
 /*             BinStation (altanka) → Container (pojemnik)             */
 /*  Operations: AccessSession, Collection, Route, Vehicle             */
 /*  The mock API and the future real API both conform to these shapes. */
 /* ------------------------------------------------------------------ */
 
-/** Deployment variant — the hybrid digitization model (spec §6.3). */
+/** Deployment variant - the hybrid digitization model (spec §6.3). */
 export type DeploymentVariant = "access" | "access_fill" | "access_fill_vision";
 
 /** Where a data point came from (spec §6.4). */
@@ -169,7 +169,7 @@ export interface AccessSession {
   durationSeconds: number | null;
   hasRecording: boolean;
   anomaly: boolean;
-  /** Ingest event behind the session — links to diagnostics/snapshot. */
+  /** Ingest event behind the session - links to diagnostics/snapshot. */
   rawEventId: string | null;
 }
 

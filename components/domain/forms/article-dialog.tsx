@@ -45,7 +45,7 @@ export function ArticleDialog({
   const [error, setError] = useState<string | null>(null);
 
   const categoryOptions = [
-    { value: "", label: "— wybierz kategorię —" },
+    { value: "", label: "- wybierz kategorię -" },
     ...(categories ?? []).map((c) => ({ value: c.id, label: c.name })),
   ];
 
@@ -88,7 +88,7 @@ export function ArticleDialog({
       open={open}
       onClose={onClose}
       title={editing ? "Edytuj artykuł" : "Nowy artykuł"}
-      description="Treść dla mieszkańców — publikacja odbywa się osobną akcją."
+      description="Treść dla mieszkańców - publikacja odbywa się osobną akcją."
       className="max-w-2xl"
       footer={
         <>

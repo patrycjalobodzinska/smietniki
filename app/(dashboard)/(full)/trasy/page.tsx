@@ -48,7 +48,7 @@ const columns: Column<CollectionRoute>[] = [
     cell: (r) => <span className="inline-flex items-center gap-1 text-sm tabular-nums"><Gauge className="size-3.5 text-muted-foreground" />{r.estimatedVehicleFill}%</span>,
   },
   { key: "distance", header: "Dystans", align: "right", cell: (r) => <span className="text-sm tabular-nums">{r.distanceKm} km</span> },
-  { key: "status", header: "Status", cell: (r) => <RouteStatusBadge status={r.status} /> },
+  { key: "status", header: "Status", align: "center", cell: (r) => <RouteStatusBadge status={r.status} /> },
 ];
 
 export default function RoutesPage() {
@@ -58,7 +58,7 @@ export default function RoutesPage() {
   const { data, isLoading } = useRoutes({ status });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Trasy PGK"
         description="Planowanie i optymalizacja tras odbioru odpadów."

@@ -59,7 +59,7 @@ function PasswordCard() {
           setConfirm("");
           setOk("Hasło zostało zmienione.");
         },
-        onError: () => setError("Nie udało się zmienić hasła — sprawdź obecne hasło i wymagania."),
+        onError: () => setError("Nie udało się zmienić hasła - sprawdź obecne hasło i wymagania."),
       },
     );
   }
@@ -70,7 +70,7 @@ function PasswordCard() {
         <CardTitle>Hasło</CardTitle>
         <CardDescription>Zmiana hasła do konta w systemie.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4">
         <Field label="Obecne hasło">
           {({ id }) => (
             <Input id={id} type="password" value={current} onChange={(e) => setCurrent(e.target.value)} autoComplete="current-password" />
@@ -102,7 +102,7 @@ function ContactCard() {
   const setEmail = useSetAccountEmail();
   const setPhone = useSetAccountPhone();
 
-  // Null means "not edited yet" — the field then shows the loaded account
+  // Null means "not edited yet" - the field then shows the loaded account
   // value, so no effect is needed to seed the form.
   const [emailEdit, setEmailValue] = useState<string | null>(null);
   const [prefixEdit, setPrefix] = useState<string | null>(null);
@@ -119,7 +119,7 @@ function ContactCard() {
     setOk(null);
     if (!email.trim()) return setError("Podaj adres e-mail.");
     setEmail.mutate(email, {
-      onSuccess: () => setOk("Adres e-mail zaktualizowany — wymaga potwierdzenia."),
+      onSuccess: () => setOk("Adres e-mail zaktualizowany - wymaga potwierdzenia."),
       onError: () => setError("Nie udało się zmienić adresu e-mail."),
     });
   }
@@ -144,7 +144,7 @@ function ContactCard() {
         <CardTitle>Dane kontaktowe</CardTitle>
         <CardDescription>Adres e-mail i telefon powiązane z kontem.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4">
         <Field label="Email">
           {({ id }) => (
             <div className="flex gap-2">
@@ -190,11 +190,11 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-3 sm:space-y-6">
       <PageHeader title="Ustawienia" description="Konto użytkownika, bezpieczeństwo i preferencje interfejsu." />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="lg:col-span-2">
+      <div className="grid gap-3 sm:gap-6 lg:grid-cols-2">
+        <Card className="min-w-0 lg:col-span-2">
           <CardHeader>
             <CardTitle>Profil</CardTitle>
             <CardDescription>Dane konta z systemu uwierzytelniania.</CardDescription>
@@ -207,7 +207,7 @@ export default function SettingsPage() {
                 { label: "Rola w panelu", value: ROLES[role].label },
                 {
                   label: "Role systemowe",
-                  value: account?.roles.length ? account.roles.join(", ") : "—",
+                  value: account?.roles.length ? account.roles.join(", ") : "-",
                 },
                 {
                   label: "Status konta",
@@ -234,14 +234,14 @@ export default function SettingsPage() {
                   label: "Ostatnia zmiana hasła",
                   value: account?.lastPasswordChangeAt
                     ? formatDateTime(account.lastPasswordChangeAt)
-                    : "—",
+                    : "-",
                 },
-                { label: "Telefon", value: account?.phone ?? "—" },
+                { label: "Telefon", value: account?.phone ?? "-" },
                 {
                   label: "Konto utworzone",
-                  value: account?.createdAt ? formatDateTime(account.createdAt) : "—",
+                  value: account?.createdAt ? formatDateTime(account.createdAt) : "-",
                 },
-                { label: "Rejestracja", value: account?.registrationProvider ?? "—" },
+                { label: "Rejestracja", value: account?.registrationProvider ?? "-" },
               ]}
             />
           </CardContent>
@@ -250,7 +250,7 @@ export default function SettingsPage() {
         <PasswordCard />
         <ContactCard />
 
-        <Card className="lg:col-span-2">
+        <Card className="min-w-0 lg:col-span-2">
           <CardHeader>
             <CardTitle>Wygląd</CardTitle>
             <CardDescription>Motyw interfejsu (dostępny też w górnym pasku).</CardDescription>

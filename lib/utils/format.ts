@@ -1,4 +1,4 @@
-/** Shared formatting helpers — keep locale/format decisions in one place. */
+/** Shared formatting helpers - keep locale/format decisions in one place. */
 
 const PL = "pl-PL";
 
@@ -19,7 +19,7 @@ export function formatPercent(value: number): string {
   return `${Math.round(value)}%`;
 }
 
-/** "5 min temu", "2 godz. temu" — relative time in Polish. */
+/** "5 min temu", "2 godz. temu" - relative time in Polish. */
 export function formatRelative(value: string | number | Date): string {
   const diff = Date.now() - new Date(value).getTime();
   const rtf = new Intl.RelativeTimeFormat(PL, { numeric: "auto" });

@@ -28,7 +28,7 @@ import {
   type Column,
 } from "@/components/ui";
 import { TrendLineChart } from "@/components/charts";
-import { FractionBadge, FillStatusBadge, DataSourceBadge } from "@/components/domain/badges";
+import { DataSourceBadge } from "@/components/domain/badges";
 import { FillBar } from "@/components/domain/fill-level";
 import { ContainerDialog } from "@/components/domain/forms/container-dialog";
 import { MeasurementDialog } from "@/components/domain/forms/measurement-dialog";
@@ -57,7 +57,7 @@ export default function ContainerDetailPage() {
 
   const measurementCols: Column<FillMeasurement>[] = [
     { key: "value", header: "Zapełnienie", className: "w-40", cell: (m) => <FillBar level={m.value} /> },
-    { key: "source", header: "Źródło", cell: (m) => <DataSourceBadge source={m.source} /> },
+    { key: "source", header: "Źródło", align: "center", cell: (m) => <DataSourceBadge source={m.source} /> },
     {
       key: "device",
       header: "Urządzenie",
@@ -80,13 +80,6 @@ export default function ContainerDetailPage() {
         ]}
         title={container.code}
         subtitle={station ? `${station.name} · ${station.address}` : undefined}
-        badges={
-          <>
-            <FractionBadge fraction={container.fraction} />
-            <FillStatusBadge status={container.fillStatus} />
-            <DataSourceBadge source={container.dataSource} />
-          </>
-        }
         actions={
           <>
             <Button variant="outline" onClick={() => setEditOpen(true)}>
@@ -99,7 +92,7 @@ export default function ContainerDetailPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard label="Zapełnienie" value={container.fillLevel === null ? "N/D" : `${container.fillLevel}%`} icon={Gauge} tone={(container.fillLevel ?? 0) >= 90 ? "danger" : (container.fillLevel ?? 0) >= 75 ? "warning" : "default"} />
         <StatCard label="Ostatni odczyt" value={container.lastMeasurementAt ? formatRelative(container.lastMeasurementAt) : "N/D"} icon={Clock} />
         <StatCard label="Pojemność" value={`${container.capacityL} L`} icon={Box} />
@@ -108,8 +101,8 @@ export default function ContainerDetailPage() {
         <StatCard label="Status czujnika" value={container.sensorOk ? "OK" : "Awaria"} icon={Activity} tone={container.sensorOk ? "success" : "danger"} />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+      <div className="mt-3 sm:mt-6 grid gap-3 sm:gap-6 lg:grid-cols-3">
+        <div className="min-w-0 lg:col-span-2">
           <Card>
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle>Trend napełnienia</CardTitle>
@@ -118,37 +111,16 @@ export default function ContainerDetailPage() {
             <CardContent>
               {container.fillLevel === null ? (
                 <div className="flex h-52 items-center justify-center text-sm text-muted-foreground">
-                  Pojemnik bez pomiaru napełnienia (wariant Access).
+                  Pojemnik bez pomiaru napełnienia (wariant: sama kontrola dostępu).
                 </div>
               ) : (
-                history && <TrendLineChart data={history} />
+                history && <TrendLineChart data={history} seriesLabel="Zapełnienie" />
               )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex-row items-center justify-between">
-              <CardTitle>Historia pomiarów</CardTitle>
-              <span className="text-xs text-muted-foreground">
-                {measurements?.length ?? 0} odczytów
-              </span>
-            </CardHeader>
-            <CardContent className="p-0">
-              <DataTable
-                columns={measurementCols}
-                data={measurements}
-                rowKey={(m) => m.id}
-                loading={measurementsLoading}
-                className="rounded-none border-0"
-                emptyTitle="Brak pomiarów"
-                emptyDescription="Ten pojemnik nie ma jeszcze odczytów zapełnienia."
-                pageSize={10}
-              />
             </CardContent>
           </Card>
         </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-3 sm:space-y-6">
           {station && (
             <Card>
               <CardHeader><CardTitle>Altanka</CardTitle></CardHeader>
@@ -171,18 +143,41 @@ export default function ContainerDetailPage() {
               <div className="flex gap-2 rounded-lg bg-info/10 p-3 text-xs leading-relaxed text-muted-foreground">
                 <Info className="size-4 shrink-0 text-info" />
                 {container.dataSource === "auto"
-                  ? "Dane pochodzą z czujnika napełnienia — wysoka wiarygodność."
+                  ? "Dane pochodzą z czujnika napełnienia - wysoka wiarygodność."
                   : container.dataSource === "manual"
-                    ? "Dane wprowadzane manualnie — średnia wiarygodność."
+                    ? "Dane wprowadzane manualnie - średnia wiarygodność."
                     : container.dataSource === "estimated"
-                      ? "Poziom estymowany na bazie trendu — ograniczona wiarygodność."
-                      : "Brak telemetrii dla tego pojemnika (wariant Access)."}
+                      ? "Poziom estymowany na bazie trendu - ograniczona wiarygodność."
+                      : "Brak telemetrii dla tego pojemnika (wariant: sama kontrola dostępu)."}
                 {!container.sensorOk && " Uwaga: status czujnika wskazuje awarię."}
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Historia na pełną szerokość: prawa kolumna ma tylko dwie krótkie
+          karty, więc obok tabeli zostawała pusta przestrzeń. */}
+      <Card className="mt-3 sm:mt-6 overflow-hidden">
+        <CardHeader className="flex-row items-center justify-between">
+          <CardTitle>Historia pomiarów</CardTitle>
+          <span className="text-xs text-muted-foreground">
+            {measurements?.length ?? 0} odczytów
+          </span>
+        </CardHeader>
+        <CardContent className="p-0">
+          <DataTable
+            columns={measurementCols}
+            data={measurements}
+            rowKey={(m) => m.id}
+            loading={measurementsLoading}
+            className="rounded-none border-0"
+            emptyTitle="Brak pomiarów"
+            emptyDescription="Ten pojemnik nie ma jeszcze odczytów zapełnienia."
+            pageSize={10}
+          />
+        </CardContent>
+      </Card>
 
       {editOpen && <ContainerDialog open container={container} onClose={() => setEditOpen(false)} />}
       {measureOpen && (

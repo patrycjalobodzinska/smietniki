@@ -2,7 +2,7 @@ import { getPagedItems, http } from "@/lib/api/client";
 import type { Article, ArticleCategory } from "@/lib/types";
 
 /**
- * Content module (`/v1/articles`) — the CMS behind resident-facing notices
+ * Content module (`/v1/articles`) - the CMS behind resident-facing notices
  * (segregation guides, outage announcements). Articles are drafts until
  * published, carry a category and an optional main photo from the file store.
  */
@@ -33,7 +33,7 @@ function mapArticle(d: ArticleDto): Article {
     mainPhotoId: d.mainPhotoId ?? null,
     createdAt: d.createdAt,
     categoryId: d.categoryId,
-    categoryName: d.category?.name ?? "—",
+    categoryName: d.category?.name ?? "-",
     published: !!d.isPublish,
   };
 }
@@ -95,7 +95,7 @@ export const articlesService = {
 
   /**
    * Points the article's main photo at an uploaded file (see filesService).
-   * The command also needs `articleId` in the body — Swagger documents only
+   * The command also needs `articleId` in the body - Swagger documents only
    * `mainPhotoId`, and without the id the request fails to bind (400).
    */
   setPhoto(id: string, fileId: string): Promise<void> {

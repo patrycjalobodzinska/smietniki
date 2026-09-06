@@ -11,7 +11,7 @@ import type {
   BuildingType,
 } from "@/lib/types";
 
-/** Central Polish label maps — reused across tables, filters, badges, charts. */
+/** Central Polish label maps - reused across tables, filters, badges, charts. */
 
 export const FRACTION_LABEL: Record<WasteFraction, string> = {
   paper: "Papier",
@@ -23,15 +23,15 @@ export const FRACTION_LABEL: Record<WasteFraction, string> = {
 };
 
 export const VARIANT_LABEL: Record<DeploymentVariant, string> = {
-  access: "Access",
-  access_fill: "Access + Fill",
-  access_fill_vision: "Access + Fill + Vision",
+  access: "Kontrola dostępu",
+  access_fill: "Dostęp + zapełnienie",
+  access_fill_vision: "Dostęp + zapełnienie + monitoring",
 };
 
 export const VARIANT_SHORT: Record<DeploymentVariant, string> = {
-  access: "Access",
-  access_fill: "Fill",
-  access_fill_vision: "Vision",
+  access: "Dostęp",
+  access_fill: "Zapełnienie",
+  access_fill_vision: "Monitoring",
 };
 
 export const DATA_SOURCE_LABEL: Record<DataSource, string> = {
@@ -86,3 +86,20 @@ export const BUILDING_LABEL: Record<BuildingType, string> = {
   tenement: "Kamienica",
   single_family: "Dom jednorodzinny",
 };
+
+/**
+ * Typy zdarzeń ingestu. API zwraca tu surowy identyfikator z urządzenia, więc
+ * tłumaczymy tylko znane wartości - nieznane pokazujemy bez zmian, żeby
+ * diagnostyka nie gubiła informacji.
+ *
+ * `AIOP_Video` to nazwa części multipartu w pushu ISAPI: JSON z analizy obrazu
+ * kamery (Hikvision AI Open Platform) wysyłany razem z klatką JPEG.
+ */
+const EVENT_TYPE_LABEL: Record<string, string> = {
+  AIOP_Video: "Analiza obrazu z kamery",
+};
+
+export function eventTypeLabel(value: string | null | undefined): string {
+  if (!value) return "-";
+  return EVENT_TYPE_LABEL[value] ?? value;
+}

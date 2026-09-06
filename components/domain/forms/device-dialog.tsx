@@ -11,7 +11,7 @@ import type { Device } from "@/lib/types";
  * (PUT /v1/devices/{id}/name, PUT /v1/devices/{id}/assignment).
  *
  * The assignment is what lets sessions, measurements and snapshots resolve a
- * station — an unassigned device shows up in the UI as a bare device key.
+ * station - an unassigned device shows up in the UI as a bare device key.
  */
 export function DeviceDialog({
   open,
@@ -34,14 +34,14 @@ export function DeviceDialog({
 
   const stationId = (stations ?? []).find((s) => s.code === stationCode)?.id;
   const containerOptions = [
-    { value: "", label: "— bez pojemnika —" },
+    { value: "", label: "- bez pojemnika -" },
     ...(containers ?? [])
       // Only containers of the chosen altanka can sensibly be measured by it.
       .filter((c) => !stationId || c.stationId === stationId)
       .map((c) => ({ value: c.code, label: c.code })),
   ];
   const stationOptions = [
-    { value: "", label: "— bez altanki —" },
+    { value: "", label: "- bez altanki -" },
     ...(stations ?? []).map((s) => ({ value: s.code, label: `${s.code} · ${s.name}` })),
   ];
 
@@ -98,7 +98,7 @@ export function DeviceDialog({
             />
           )}
         </Field>
-        <Field label="Pojemnik" hint="Dla czujników zapełnienia — wskazuje mierzony pojemnik.">
+        <Field label="Pojemnik" hint="Dla czujników zapełnienia - wskazuje mierzony pojemnik.">
           {({ id }) => (
             <Select
               id={id}

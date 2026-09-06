@@ -37,8 +37,8 @@ function buildColumns(onEdit: (c: Cooperative) => void): Column<Cooperative>[] {
   { key: "stations", header: "Altanki", align: "right", cell: (c) => <span className="tabular-nums">{c.stationCount}</span> },
   { key: "keys", header: "Aktywne klucze", align: "right", cell: (c) => <span className="tabular-nums">{c.activeKeys}</span> },
   { key: "fill", header: "Śr. zapełnienie", className: "w-40", cell: (c) => <FillBar level={c.avgFillLevel} /> },
-  { key: "variant", header: "Wariant dominujący", cell: (c) => <VariantBadge variant={c.deploymentMix} /> },
-  { key: "status", header: "Status", cell: (c) => <StationStatusBadge status={c.status === "warning" ? "attention" : c.status === "active" ? "active" : "inactive"} /> },
+  { key: "variant", header: "Wariant dominujący", align: "center", cell: (c) => <VariantBadge variant={c.deploymentMix} /> },
+  { key: "status", header: "Status", align: "center", cell: (c) => <StationStatusBadge status={c.status === "warning" ? "attention" : c.status === "active" ? "active" : "inactive"} /> },
   {
     key: "actions",
     header: "",
@@ -69,7 +69,7 @@ export default function CooperativesPage() {
   const columns = buildColumns(setEdited);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Spółdzielnie / zarządcy"
         description="Podmioty odpowiedzialne za osiedlową infrastrukturę odpadową."
@@ -80,10 +80,10 @@ export default function CooperativesPage() {
         }
       />
       <FilterBar>
-        <div className="min-w-56 flex-1">
+        <div className="min-w-0 flex-1 sm:min-w-56">
           <Input icon={<Search />} placeholder="Szukaj nazwy lub dzielnicy..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-9" />
         </div>
-        <Select options={DISTRICT_OPTIONS} value={district} onChange={(e) => setDistrict(e.target.value)} className="h-9 w-52" />
+        <Select options={DISTRICT_OPTIONS} value={district} onChange={(e) => setDistrict(e.target.value)} className="h-9 w-full sm:w-52" />
       </FilterBar>
       <DataTable columns={columns} data={data} rowKey={(c) => c.id} loading={isLoading} onRowClick={(c) => router.push(`/spoldzielnie/${c.id}`)} emptyTitle="Brak spółdzielni" pageSize={15} />
 

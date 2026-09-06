@@ -65,7 +65,7 @@ export default function PropertyDetailPage() {
       ),
     },
     { key: "types", header: "Typy", cell: (u) => <span className="text-xs text-muted-foreground">{u.keyTypes.map((t) => KEY_TYPE_LABEL[t]).join(", ")}</span> },
-    { key: "last", header: "Ostatnie użycie", cell: (u) => <span className="text-sm text-muted-foreground">{u.lastUsedAt ? formatDate(u.lastUsedAt) : "—"}</span> },
+    { key: "last", header: "Ostatnie użycie", cell: (u) => <span className="text-sm text-muted-foreground">{u.lastUsedAt ? formatDate(u.lastUsedAt) : "-"}</span> },
     {
       key: "actions",
       header: "Akcje",
@@ -95,18 +95,18 @@ export default function PropertyDetailPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard label="Lokale" value={property.unitsCount} icon={Home} />
         <StatCard label="Mieszkańcy" value={property.residentsCount} icon={Users} />
         <StatCard label="Aktywne klucze" value={property.activeKeys} icon={KeyRound} />
         <StatCard label="Lokale bez klucza" value={unitsWithoutKey} icon={KeyRound} tone={unitsWithoutKey ? "warning" : "default"} />
         <StatCard label="Nadwyżka kluczy" value={unitsOverLimit} icon={AlertTriangle} tone={unitsOverLimit ? "danger" : "default"} />
-        <StatCard label="Altanka" value={station?.code ?? "—"} icon={Home} />
+        <StatCard label="Altanka" value={station?.code ?? "-"} icon={Home} />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          <Card>
+      <div className="mt-3 sm:mt-6 grid gap-3 sm:gap-6 lg:grid-cols-3">
+        <div className="min-w-0 space-y-3 sm:space-y-6 lg:col-span-2">
+          <Card className="overflow-hidden">
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle>Lokale</CardTitle>
               <Button size="sm" variant="outline" onClick={() => setAddUnitOpen(true)}>
@@ -119,7 +119,7 @@ export default function PropertyDetailPage() {
           </Card>
         </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-3 sm:space-y-6">
           <Card>
             <CardHeader><CardTitle>Dane podstawowe</CardTitle></CardHeader>
             <CardContent>
@@ -127,9 +127,9 @@ export default function PropertyDetailPage() {
                 columns={1}
                 items={[
                   { label: "Adres", value: property.address },
-                  { label: "Spółdzielnia", value: coop?.name ?? "—" },
+                  { label: "Spółdzielnia", value: coop?.name ?? "-" },
                   { label: "Typ budynku", value: BUILDING_LABEL[property.buildingType] },
-                  { label: "Przypisana altanka", value: station ? <button className="text-primary hover:underline" onClick={() => router.push(`/altanki/${station.id}`)}>{station.name}</button> : "—" },
+                  { label: "Przypisana altanka", value: station ? <button className="text-primary hover:underline" onClick={() => router.push(`/altanki/${station.id}`)}>{station.name}</button> : "-" },
                 ]}
               />
             </CardContent>

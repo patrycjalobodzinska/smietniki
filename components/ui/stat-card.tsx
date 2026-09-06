@@ -15,11 +15,12 @@ export interface StatCardProps {
   className?: string;
 }
 
+/** Ikona jest znakiem wodnym w prawym dolnym rogu - stąd sam kolor, bez tła. */
 const TONE: Record<NonNullable<StatCardProps["tone"]>, string> = {
-  default: "bg-lime/50 text-forest",
-  success: "bg-success/12 text-success",
-  warning: "bg-warning/15 text-warning-foreground",
-  danger: "bg-coral/15 text-coral",
+  default: "text-primary",
+  success: "text-success",
+  warning: "text-warning",
+  danger: "text-coral",
 };
 
 export function StatCard({
@@ -33,21 +34,34 @@ export function StatCard({
   className,
 }: StatCardProps) {
   return (
-    <Card className={cn("p-5", dark && "border-transparent bg-forest text-forest-foreground", className)}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
-          <p className={cn("text-sm", dark ? "text-forest-foreground/70" : "text-muted-foreground")}>{label}</p>
-          {loading ? (
-            <Skeleton className="h-8 w-16" />
-          ) : (
-            <p className="text-2xl font-semibold tracking-tight">{value}</p>
+    <Card
+      className={cn(
+        "relative overflow-hidden p-4",
+        dark && "border-transparent bg-forest text-forest-foreground",
+        className,
+      )}
+    >
+      {Icon && (
+        <Icon
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute -bottom-4 -right-3 size-24",
+            dark ? "text-lime opacity-25" : cn(TONE[tone], "opacity-[0.13] dark:opacity-20"),
           )}
-          {hint && <p className={cn("text-xs", dark ? "text-forest-foreground/60" : "text-muted-foreground")}>{hint}</p>}
-        </div>
-        {Icon && (
-          <div className={cn("flex size-10 items-center justify-center rounded-lg", dark ? "bg-lime/25 text-lime" : TONE[tone])}>
-            <Icon className="size-5" />
-          </div>
+          strokeWidth={1.5}
+        />
+      )}
+      <div className="relative space-y-0.5">
+        <p className={cn("text-xs font-medium", dark ? "text-forest-foreground/70" : "text-muted-foreground")}>
+          {label}
+        </p>
+        {loading ? (
+          <Skeleton className="h-7 w-16" />
+        ) : (
+          <p className="text-2xl font-semibold leading-tight tracking-tight tabular-nums">{value}</p>
+        )}
+        {hint && (
+          <p className={cn("text-xs", dark ? "text-forest-foreground/60" : "text-muted-foreground")}>{hint}</p>
         )}
       </div>
     </Card>

@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Dialog, Field, Input, Select } from "@/components/ui";
+import { Button, Dialog, DatePicker, Field, Input, Select } from "@/components/ui";
 import { useAddManualMeasurement } from "@/lib/api/hooks/use-fill";
 import { useContainers } from "@/lib/api/hooks/use-infrastructure";
 
 const PRESETS = [0, 25, 50, 75, 100];
 
 /**
- * Manual fill entry (POST /v1/fill/manual-measurement) — how Access-only
+ * Manual fill entry (POST /v1/fill/manual-measurement) - how Access-only
  * altankas (no sensor) get a level, and how a bad auto reading is corrected.
  *
  * The API has no update on a measurement: "changing" a fill level means
@@ -24,7 +24,7 @@ export function MeasurementDialog({
   onClose: () => void;
   /** Pre-selected container; when omitted the user picks one. */
   containerCode?: string;
-  /** Current level of the pre-selected container — prefills the field. */
+  /** Current level of the pre-selected container - prefills the field. */
   currentLevel?: number | null;
 }) {
   const add = useAddManualMeasurement();
@@ -62,7 +62,7 @@ export function MeasurementDialog({
   }
 
   const options = [
-    { value: "", label: "— wybierz pojemnik —" },
+    { value: "", label: "- wybierz pojemnik -" },
     ...(containers ?? []).map((c) => ({ value: c.code, label: c.code })),
   ];
 
@@ -141,9 +141,9 @@ export function MeasurementDialog({
         </Field>
         <Field label="Czas pomiaru" hint="Puste = teraz.">
           {({ id }) => (
-            <Input
+            <DatePicker
               id={id}
-              type="datetime-local"
+              withTime
               value={measuredAt}
               onChange={(e) => setMeasuredAt(e.target.value)}
             />

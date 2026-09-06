@@ -25,7 +25,7 @@ import { ROLES } from "@/config/roles";
 
 type V = BadgeProps["variant"];
 
-/** Deployment variant chip (Access / Fill / Vision) — visible everywhere per spec. */
+/** Deployment variant chip (Access / Fill / Vision) - visible everywhere per spec. */
 export function VariantBadge({ variant }: { variant: DeploymentVariant }) {
   const map: Record<DeploymentVariant, { v: V; icon: typeof KeyRound }> = {
     access: { v: "muted", icon: KeyRound },

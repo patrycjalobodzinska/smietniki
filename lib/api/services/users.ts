@@ -5,7 +5,7 @@ import type { PlatformUser, PlatformUserState } from "@/lib/types";
  * Platform user administration (`/v1/users`) and the signed-in account
  * (`/v1/account`, `/v1/users/{password,email,phone-number}`).
  *
- * This is the identity layer of the backend — separate from our domain roles in
+ * This is the identity layer of the backend - separate from our domain roles in
  * config/roles.ts, which drive what the UI shows.
  */
 

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
+import { MapPin, Loader2 } from "lucide-react";
 import {
   Button,
   Dialog,
@@ -9,6 +11,7 @@ import {
   Select,
   Switch,
 } from "@/components/ui";
+import { geocode } from "@/lib/api/geocode";
 import { useCooperatives, useSaveStation } from "@/lib/api/hooks/use-infrastructure";
 import { useFullMode } from "@/lib/full-mode";
 import type { AccessMode, BinStation, DeploymentVariant, StationStatus } from "@/lib/types";
@@ -17,9 +20,18 @@ import { STATION_STATUS_LABEL, VARIANT_LABEL } from "@/lib/labels";
 /**
  * Create / edit an altanka (POST /v1/bin-stations, PUT /v1/bin-stations/{id}).
  *
- * `code` and the owning cooperative are set at creation only — the update
- * command carries neither — while `status` exists only on update.
+ * `code` and the owning cooperative are set at creation only - the update
+ * command carries neither - while `status` exists only on update.
  */
+
+// Leaflet dotyka `window` przy imporcie - musi ładować się tylko po stronie klienta.
+const LocationPicker = dynamic(
+  () => import("@/components/domain/location-picker").then((m) => m.LocationPicker),
+  {
+    ssr: false,
+    loading: () => <div className="h-[260px] rounded-xl border border-border bg-muted/40" />,
+  },
+);
 
 const VARIANT_OPTIONS = (Object.keys(VARIANT_LABEL) as DeploymentVariant[]).map((v) => ({
   value: v,
@@ -38,7 +50,7 @@ const STATUS_OPTIONS = (Object.keys(STATION_STATUS_LABEL) as StationStatus[]).ma
   label: STATION_STATUS_LABEL[s],
 }));
 
-/** Cooperative picker — mounted only in full mode, so KM1 never calls the endpoint. */
+/** Cooperative picker - mounted only in full mode, so KM1 never calls the endpoint. */
 function CooperativeField({
   value,
   onChange,
@@ -48,7 +60,7 @@ function CooperativeField({
 }) {
   const { data: coops, isLoading } = useCooperatives();
   const options = [
-    { value: "", label: isLoading ? "Ładowanie spółdzielni…" : "— bez spółdzielni —" },
+    { value: "", label: isLoading ? "Ładowanie spółdzielni…" : "- bez spółdzielni -" },
     ...(coops ?? []).map((c) => ({ value: c.id, label: c.name })),
   ];
   return (
@@ -79,22 +91,54 @@ export function StationDialog({
   const [address, setAddress] = useState(station?.address ?? "");
   const [district, setDistrict] = useState(station?.district ?? "");
   const [cooperativeId, setCooperativeId] = useState(station?.cooperativeId ?? "");
-  const [lat, setLat] = useState(station ? String(station.location.lat) : "");
-  const [lng, setLng] = useState(station ? String(station.location.lng) : "");
+  // Współrzędne ustawia wyłącznie mapa (klik, przeciągnięcie pinu, geokoder),
+  // więc trzymamy je od razu jako liczby - nie ma tekstu do walidowania.
+  const [lat, setLat] = useState<number | null>(station?.location.lat ?? null);
+  const [lng, setLng] = useState<number | null>(station?.location.lng ?? null);
   const [variant, setVariant] = useState<DeploymentVariant>(station?.deploymentVariant ?? "access");
   const [accessMode, setAccessMode] = useState<AccessMode>(station?.accessMode ?? "rfid");
   const [hasCamera, setHasCamera] = useState(station?.hasCamera ?? false);
   const [status, setStatus] = useState<StationStatus>(station?.status ?? "active");
   const [error, setError] = useState<string | null>(null);
 
+  // Geokodowanie adresu: stan przycisku + komunikat pod mapą.
+  const [locating, setLocating] = useState(false);
+  const [geoNote, setGeoNote] = useState<string | null>(null);
+  const [flyToken, setFlyToken] = useState(0);
+
+  const setPoint = (la: number, ln: number) => {
+    setLat(la);
+    setLng(ln);
+  };
+
+  async function locateByAddress() {
+    const query = [address, district, name].filter(Boolean).join(", ");
+    if (!query.trim()) {
+      setGeoNote("Podaj adres, żeby wyszukać pozycję.");
+      return;
+    }
+    setLocating(true);
+    setGeoNote(null);
+    try {
+      const [hit] = await geocode(query, 1);
+      if (!hit) {
+        setGeoNote("Nie znaleziono takiego adresu. Ustaw pozycję klikając w mapę.");
+        return;
+      }
+      setPoint(hit.lat, hit.lng);
+      setFlyToken((t) => t + 1);
+      setGeoNote(hit.label);
+    } catch {
+      setGeoNote("Wyszukiwarka adresów jest niedostępna. Ustaw pozycję klikając w mapę.");
+    } finally {
+      setLocating(false);
+    }
+  }
+
   function submit() {
     setError(null);
     if (!editing && !code.trim()) return setError("Podaj kod altanki (np. ALT-014).");
     if (!name.trim()) return setError("Podaj nazwę altanki.");
-    const num = (v: string) => (v.trim() === "" ? null : Number(v.replace(",", ".")));
-    if ((lat && Number.isNaN(num(lat))) || (lng && Number.isNaN(num(lng))))
-      return setError("Współrzędne muszą być liczbami.");
-
     save.mutate(
       {
         id: station?.id,
@@ -104,8 +148,8 @@ export function StationDialog({
           address,
           district,
           cooperativeId: cooperativeId || null,
-          lat: num(lat),
-          lng: num(lng),
+          lat,
+          lng,
           deploymentVariant: variant,
           accessMode,
           hasCamera,
@@ -158,16 +202,21 @@ export function StationDialog({
         <Field label="Dzielnica">
           {({ id }) => <Input id={id} value={district} onChange={(e) => setDistrict(e.target.value)} />}
         </Field>
-        {/* The cooperative layer is out of KM1 — only the full mode assigns one. */}
+        {/* The cooperative layer is out of KM1 - only the full mode assigns one. */}
         {!editing && fullMode && (
           <CooperativeField value={cooperativeId} onChange={setCooperativeId} />
         )}
-        <Field label="Szerokość geogr.">
-          {({ id }) => <Input id={id} value={lat} onChange={(e) => setLat(e.target.value)} placeholder="50.0413" />}
-        </Field>
-        <Field label="Długość geogr.">
-          {({ id }) => <Input id={id} value={lng} onChange={(e) => setLng(e.target.value)} placeholder="21.9990" />}
-        </Field>
+        <div className="space-y-2 sm:col-span-2">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm font-medium">Pozycja</p>
+            <Button size="sm" variant="outline" onClick={locateByAddress} disabled={locating}>
+              {locating ? <Loader2 className="animate-spin" /> : <MapPin />}
+              Znajdź po adresie
+            </Button>
+          </div>
+          <LocationPicker lat={lat} lng={lng} onChange={setPoint} flyToken={flyToken} />
+          {geoNote && <p className="text-xs text-muted-foreground">{geoNote}</p>}
+        </div>
         <Field label="Wariant wdrożenia" required>
           {({ id }) => (
             <Select
@@ -203,7 +252,7 @@ export function StationDialog({
         <div className="flex items-center justify-between gap-4 rounded-xl border border-border px-3.5 py-2.5 sm:col-span-2">
           <div>
             <p className="text-sm font-medium">Monitoring wideo</p>
-            <p className="text-xs text-muted-foreground">Altanka ma kamerę (wariant Vision).</p>
+            <p className="text-xs text-muted-foreground">Altanka ma kamerę (wariant z monitoringiem).</p>
           </div>
           <Switch checked={hasCamera} onCheckedChange={setHasCamera} />
         </div>

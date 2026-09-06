@@ -93,7 +93,7 @@ export function DataTable<T>({
   // Reset to the first page whenever the (filtered) row count changes, so a
   // filter that shrinks the set never strands the user on an empty page.
   // Adjusting state during render (rather than in an effect) avoids a cascading
-  // re-render — the React-recommended pattern for deriving from prior props.
+  // re-render - the React-recommended pattern for deriving from prior props.
   const [prevTotal, setPrevTotal] = useState(total);
   if (total !== prevTotal) {
     setPrevTotal(total);
@@ -107,7 +107,7 @@ export function DataTable<T>({
   // No data (and not loading) → show only the empty state, never a bare table.
   if (!loading && (!data || data.length === 0)) {
     return (
-      <div className={cn("overflow-hidden rounded-2xl border border-border bg-card", className)}>
+      <div className={cn("overflow-hidden rounded-xl border border-border bg-card", className)}>
         <EmptyState title={emptyTitle} description={emptyDescription} className="border-0" />
       </div>
     );
@@ -118,7 +118,7 @@ export function DataTable<T>({
   const lastRow = Math.min(safePage * pageSize!, total);
 
   return (
-    <div className={cn("overflow-hidden rounded-2xl border border-border bg-card p-1.5", className)}>
+    <div className={cn("overflow-hidden rounded-xl border border-border bg-card p-1.5", className)}>
       <Table>
         <THead>
           <tr>

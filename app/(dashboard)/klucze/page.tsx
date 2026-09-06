@@ -68,7 +68,7 @@ function IssueKeyDialog({ open, onClose }: { open: boolean; onClose: () => void 
   }
 
   const unitOptions = [
-    { value: "", label: unitsLoading ? "Ładowanie lokali…" : "— wybierz lokal —" },
+    { value: "", label: unitsLoading ? "Ładowanie lokali…" : "- wybierz lokal -" },
     ...(units ?? []).map((u) => ({ value: u.id, label: u.label })),
   ];
 
@@ -89,7 +89,7 @@ function IssueKeyDialog({ open, onClose }: { open: boolean; onClose: () => void 
         </>
       }
     >
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         <Field label="Lokal" required>
           {({ id }) => (
             <Select
@@ -157,13 +157,13 @@ export default function KeysPage() {
               return label ? (
                 <span className="text-sm">{label}</span>
               ) : (
-                <span className="text-sm text-muted-foreground">—</span>
+                <span className="text-sm text-muted-foreground">-</span>
               );
             },
           } satisfies Column<AccessKey>,
         ]
       : []),
-    { key: "type", header: "Typ", cell: (k) => <Badge variant="outline">{KEY_TYPE_LABEL[k.keyType]}</Badge> },
+    { key: "type", header: "Typ", align: "center", cell: (k) => <Badge variant="outline">{KEY_TYPE_LABEL[k.keyType]}</Badge> },
     {
       key: "status",
       header: "Status",
@@ -175,7 +175,7 @@ export default function KeysPage() {
         ),
     },
     { key: "issued", header: "Wydano", cell: (k) => <span className="text-sm text-muted-foreground">{formatDateTime(k.issuedAt)}</span> },
-    { key: "revoked", header: "Unieważniono", cell: (k) => <span className="text-sm text-muted-foreground">{k.revokedAt ? formatDateTime(k.revokedAt) : "—"}</span> },
+    { key: "revoked", header: "Unieważniono", cell: (k) => <span className="text-sm text-muted-foreground">{k.revokedAt ? formatDateTime(k.revokedAt) : "-"}</span> },
     {
       key: "actions",
       header: "",
@@ -197,7 +197,7 @@ export default function KeysPage() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Klucze dostępu"
         description={
@@ -215,11 +215,11 @@ export default function KeysPage() {
         }
       />
       <FilterBar>
-        <div className="min-w-56 flex-1">
+        <div className="min-w-0 flex-1 sm:min-w-56">
           <Input icon={<Search />} placeholder="Szukaj po identyfikatorze..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-9" />
         </div>
-        <Select options={TYPE_OPTIONS} value={keyType} onChange={(e) => setKeyType(e.target.value as KeyType | "all")} className="h-9 w-44" />
-        <Select options={STATUS_OPTIONS} value={status} onChange={(e) => setStatus(e.target.value as "all" | "active" | "revoked")} className="h-9 w-48" />
+        <Select options={TYPE_OPTIONS} value={keyType} onChange={(e) => setKeyType(e.target.value as KeyType | "all")} className="h-9 w-full sm:w-44" />
+        <Select options={STATUS_OPTIONS} value={status} onChange={(e) => setStatus(e.target.value as "all" | "active" | "revoked")} className="h-9 w-full sm:w-48" />
       </FilterBar>
       <DataTable columns={columns} data={data} rowKey={(k) => k.id} loading={isLoading} emptyTitle="Brak kluczy" pageSize={15} />
 

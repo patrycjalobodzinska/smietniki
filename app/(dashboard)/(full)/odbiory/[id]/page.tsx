@@ -38,7 +38,7 @@ export default function CollectionDetailPage() {
     <div>
       <DetailHeader
         breadcrumbs={[{ label: "Odbiory", href: "/odbiory" }, { label: collection.stationName }]}
-        title={`Odbiór — ${collection.stationName}`}
+        title={`Odbiór - ${collection.stationName}`}
         subtitle={formatDateTime(collection.collectedAt)}
         badges={
           <>
@@ -50,15 +50,15 @@ export default function CollectionDetailPage() {
         actions={collection.routeId && <Button variant="outline" onClick={() => router.push("/trasy")}><RouteIcon /> Powiązana trasa</Button>}
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
         <StatCard label="Poziom przed" value={collection.levelBefore === null ? "N/D" : `${collection.levelBefore}%`} icon={Gauge} tone={(collection.levelBefore ?? 0) >= 90 ? "danger" : "default"} />
         <StatCard label="Poziom po" value={collection.levelAfter === null ? "N/D" : `${collection.levelAfter}%`} icon={Gauge} tone="success" />
         <StatCard label="Wkład do śmieciarki" value={`${collection.estimatedVehicleLoadDelta}%`} icon={Weight} />
         <StatCard label="Operator" value={collection.operator} icon={Truck} />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+      <div className="mt-3 sm:mt-6 grid gap-3 sm:gap-6 lg:grid-cols-3">
+        <div className="min-w-0 space-y-3 sm:space-y-6 lg:col-span-2">
           <Card>
             <CardHeader><CardTitle>Lokalizacja</CardTitle></CardHeader>
             <CardContent>{station && <StationMap stations={[station]} height={240} />}</CardContent>
@@ -73,7 +73,7 @@ export default function CollectionDetailPage() {
           </Card>
         </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-3 sm:space-y-6">
           <Card>
             <CardHeader><CardTitle>Dane odbioru</CardTitle></CardHeader>
             <CardContent>

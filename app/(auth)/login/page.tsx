@@ -93,8 +93,8 @@ export default function LoginPage() {
 
       <p className="mt-4 text-center text-xs text-muted-foreground">
         {REAL
-          ? "Połączono z SprigaAPI — dane logowania pre-wypełnione"
-          : "Wersja demonstracyjna — dane pre-wypełnione"}
+          ? "Połączono z SprigaAPI - dane logowania pre-wypełnione"
+          : "Wersja demonstracyjna - dane pre-wypełnione"}
       </p>
 
       <PasswordResetDialog open={resetOpen} onClose={() => setResetOpen(false)} />

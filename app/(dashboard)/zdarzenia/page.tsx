@@ -9,6 +9,7 @@ import {
   Badge,
   Button,
   DataTable,
+  DatePicker,
   DescriptionList,
   Dialog,
   Input,
@@ -20,6 +21,7 @@ import {
 import { SnapshotImage } from "@/components/domain/snapshot-image";
 import { useRawEvents } from "@/lib/api/hooks/use-events";
 import type { DeviceSource, RawEvent } from "@/lib/types";
+import { eventTypeLabel } from "@/lib/labels";
 import { formatDateTime } from "@/lib/utils/format";
 
 /**
@@ -45,14 +47,14 @@ const SOURCE_OPTIONS = [
 ];
 const KIND_OPTIONS = [
   { value: "all", label: "Wszystkie zdarzenia" },
-  { value: "snapshots", label: "Tylko ze snapshotem" },
+  { value: "snapshots", label: "Tylko ze zdjęciem" },
   { value: "retransmissions", label: "Tylko retransmisje" },
 ];
 
 /** Ingest lag: how long the event took to reach the platform. */
 function lag(e: RawEvent): string {
   const ms = +new Date(e.receivedAt) - +new Date(e.occurredAt);
-  if (!Number.isFinite(ms)) return "—";
+  if (!Number.isFinite(ms)) return "-";
   const s = Math.round(ms / 1000);
   if (Math.abs(s) < 60) return `${s} s`;
   return `${Math.round(s / 60)} min`;
@@ -90,13 +92,14 @@ function RawEventsList() {
       cell: (e) => (
         <div>
           <p className="font-medium">{formatDateTime(e.occurredAt)}</p>
-          <p className="text-xs text-muted-foreground">{e.eventType ?? "—"}</p>
+          <p className="text-xs text-muted-foreground">{eventTypeLabel(e.eventType)}</p>
         </div>
       ),
     },
     {
       key: "source",
       header: "Źródło",
+      align: "center",
       cell: (e) => <Badge variant={SOURCE_VARIANT[e.source]}>{SOURCE_LABEL[e.source]}</Badge>,
     },
     {
@@ -104,7 +107,7 @@ function RawEventsList() {
       header: "Urządzenie",
       cell: (e) => (
         <span className="text-sm text-muted-foreground">
-          {e.deviceIp ?? "—"}
+          {e.deviceIp ?? "-"}
           {e.channelId !== null ? ` · kanał ${e.channelId}` : ""}
         </span>
       ),
@@ -112,10 +115,10 @@ function RawEventsList() {
     {
       key: "fill",
       header: "Zapełnienie",
-      align: "right",
+      align: "center",
       cell: (e) =>
         e.fillValue === null ? (
-          <span className="text-muted-foreground">—</span>
+          <span className="text-muted-foreground">-</span>
         ) : (
           <span className="tabular-nums">{Math.round(e.fillValue)}%</span>
         ),
@@ -128,12 +131,13 @@ function RawEventsList() {
         e.hasSnapshot && e.snapshotId ? (
           <Camera className="mx-auto size-4 text-info" />
         ) : (
-          <span className="text-muted-foreground">—</span>
+          <span className="text-muted-foreground">-</span>
         ),
     },
     {
       key: "retrans",
       header: "Retransmisja",
+      align: "center",
       cell: (e) =>
         e.isRetransmission ? (
           <Badge variant="warning">
@@ -147,15 +151,14 @@ function RawEventsList() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Zdarzenia z urządzeń"
-        description="Surowy strumień ingestu (ISAPI) — diagnostyka łączności, retransmisji i obrazu z kamer."
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
         <StatCard label="Zdarzenia (filtr)" value={events.length} />
-        <StatCard label="Ze snapshotem" value={withSnapshot} />
+        <StatCard label="Ze zdjęciem" value={withSnapshot} />
         <StatCard label="Z pomiarem zapełnienia" value={withFill} />
         <StatCard label="Retransmisje" value={retransmissions} tone={retransmissions ? "warning" : "default"} />
       </div>
@@ -170,21 +173,21 @@ function RawEventsList() {
             className="h-9"
           />
         </div>
-        <Input placeholder="PID" value={pid} onChange={(e) => setPid(e.target.value)} className="h-9 w-40" />
+        <Input placeholder="PID" value={pid} onChange={(e) => setPid(e.target.value)} className="h-9 w-full sm:w-40" />
         <Select
           options={SOURCE_OPTIONS}
           value={source}
           onChange={(e) => setSource(e.target.value as DeviceSource | "all")}
-          className="h-9 w-44"
+          className="h-9 w-full sm:w-44"
         />
         <Select
           options={KIND_OPTIONS}
           value={kind}
           onChange={(e) => setKind(e.target.value as "all" | "snapshots" | "retransmissions")}
-          className="h-9 w-52"
+          className="h-9 w-full sm:w-52"
         />
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-40" aria-label="Od" />
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-40" aria-label="Do" />
+        <DatePicker value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-full sm:w-44" aria-label="Data od" placeholder="Data od…" />
+        <DatePicker value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-full sm:w-44" aria-label="Data do" placeholder="Data do…" />
       </FilterBar>
 
       <DataTable
@@ -211,11 +214,12 @@ function RawEventsList() {
         }
       >
         {selected && (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {selected.hasSnapshot && selected.snapshotId && (
               <SnapshotImage
                 snapshotId={selected.snapshotId}
-                alt="Snapshot zdarzenia"
+                alt="Zdjęcie zdarzenia"
+                ratio="video"
                 className="w-full rounded-xl border border-border"
               />
             )}
@@ -223,11 +227,11 @@ function RawEventsList() {
               columns={2}
               items={[
                 { label: "Źródło", value: SOURCE_LABEL[selected.source] },
-                { label: "Typ zdarzenia", value: selected.eventType ?? "—" },
-                { label: "PID", value: selected.pid ?? "—" },
-                { label: "Adres IP", value: selected.deviceIp ?? "—" },
-                { label: "Kanał", value: selected.channelId ?? "—" },
-                { label: "Zapełnienie", value: selected.fillValue === null ? "—" : `${Math.round(selected.fillValue)}%` },
+                { label: "Typ zdarzenia", value: eventTypeLabel(selected.eventType) },
+                { label: "PID", value: selected.pid ?? "-" },
+                { label: "Adres IP", value: selected.deviceIp ?? "-" },
+                { label: "Kanał", value: selected.channelId ?? "-" },
+                { label: "Zapełnienie", value: selected.fillValue === null ? "-" : `${Math.round(selected.fillValue)}%` },
                 { label: "Czas zdarzenia", value: formatDateTime(selected.occurredAt) },
                 { label: "Czas odbioru", value: formatDateTime(selected.receivedAt) },
                 { label: "Opóźnienie", value: lag(selected) },

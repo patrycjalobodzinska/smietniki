@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Dialog, Field, Input, Select } from "@/components/ui";
+import { Button, Dialog, DatePicker, Field, Input, Select } from "@/components/ui";
 import { usePlanRoute, useVehicles } from "@/lib/api/hooks/use-operations";
 
 /**
- * Plan a route (POST /v1/routes). The API stores only a header — date,
- * operator, vehicle — so no stops are sent here.
+ * Plan a route (POST /v1/routes). The API stores only a header - date,
+ * operator, vehicle - so no stops are sent here.
  */
 export function RouteDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const plan = usePlanRoute();
@@ -27,7 +27,7 @@ export function RouteDialog({ open, onClose }: { open: boolean; onClose: () => v
   }
 
   const vehicleOptions = [
-    { value: "", label: "— bez pojazdu —" },
+    { value: "", label: "- bez pojazdu -" },
     ...(vehicles ?? []).map((v) => ({ value: v.id, label: `${v.code} · ${v.operator}` })),
   ];
 
@@ -36,7 +36,7 @@ export function RouteDialog({ open, onClose }: { open: boolean; onClose: () => v
       open={open}
       onClose={onClose}
       title="Zaplanuj trasę"
-      description="API przechowuje nagłówek trasy (data, operator, pojazd) — punkty dodaje się przez odbiory."
+      description="API przechowuje nagłówek trasy (data, operator, pojazd) - punkty dodaje się przez odbiory."
       footer={
         <>
           <Button variant="ghost" onClick={onClose}>
@@ -50,7 +50,7 @@ export function RouteDialog({ open, onClose }: { open: boolean; onClose: () => v
     >
       <div className="space-y-4">
         <Field label="Data" required>
-          {({ id }) => <Input id={id} type="date" value={date} onChange={(e) => setDate(e.target.value)} />}
+          {({ id }) => <DatePicker id={id} value={date} onChange={(e) => setDate(e.target.value)} />}
         </Field>
         <Field label="Operator">
           {({ id }) => (

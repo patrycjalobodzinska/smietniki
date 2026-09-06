@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown, Check } from "lucide-react";
+import { useAnchoredPopover } from "@/components/ui/use-anchored-popover";
 import { cn } from "@/lib/utils/cn";
 
 export interface SelectOption {
@@ -25,7 +27,7 @@ export interface SelectProps {
 }
 
 /**
- * Custom select — a styled button + popup listbox (no native <select> chrome).
+ * Custom select - a styled button + popup listbox (no native <select> chrome).
  * Keeps the previous props/API: pass `value`+`onChange` for controlled use, or
  * `defaultValue` for uncontrolled. `onChange` receives a synthetic event so
  * call sites reading `e.target.value` keep working.
@@ -47,14 +49,19 @@ export function Select({
   const [internal, setInternal] = useState(defaultValue ?? "");
   const current = isControlled ? value : internal;
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  // Lista w portalu: inaczej `overflow-y: auto` modala przycinałby ją
+  // i wymuszał przewijanie panelu.
+  const { anchorRef, popoverRef, style, place } = useAnchoredPopover(open, 264);
 
   const selected = options.find((o) => o.value === current);
 
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      const t = e.target as Node;
+      // Panel leży w portalu, więc musi być w teście osobno od kontrolki.
+      if (anchorRef.current?.contains(t) || popoverRef.current?.contains(t)) return;
+      setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
@@ -65,7 +72,7 @@ export function Select({
       document.removeEventListener("mousedown", onDoc);
       document.removeEventListener("keydown", onKey);
     };
-  }, [open]);
+  }, [open, anchorRef, popoverRef]);
 
   function choose(v: string) {
     if (!isControlled) setInternal(v);
@@ -74,7 +81,7 @@ export function Select({
   }
 
   return (
-    <div ref={ref} className={cn("relative h-10 w-full rounded-xl", className)}>
+    <div ref={anchorRef} className={cn("relative h-10 w-full rounded-xl", className)}>
       <button
         type="button"
         id={id}
@@ -83,7 +90,10 @@ export function Select({
         aria-expanded={open}
         aria-invalid={invalid || undefined}
         aria-label={ariaLabel}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          if (!open) place();
+          setOpen((o) => !o);
+        }}
         className={cn(
           "flex h-full w-full cursor-pointer items-center justify-between gap-2 rounded-[inherit] border border-input bg-card px-3.5 text-left text-sm transition-colors hover:bg-surface-hover focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50",
           invalid && "border-danger focus-visible:border-danger",
@@ -97,11 +107,15 @@ export function Select({
         />
       </button>
 
-      {open && (
-        <div
-          role="listbox"
-          className="absolute left-0 top-full z-50 mt-2 max-h-64 w-max min-w-full max-w-[min(20rem,calc(100vw-2rem))] overflow-auto rounded-2xl border border-border bg-popover p-1.5 shadow-[var(--shadow-soft)]"
-        >
+      {open &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            ref={popoverRef}
+            role="listbox"
+            style={style}
+            className="z-[100] w-max max-w-[min(20rem,calc(100vw-2rem))] overflow-auto rounded-2xl border border-border bg-popover p-1.5 shadow-[var(--shadow-soft)]"
+          >
           {options.map((o) => {
             const active = o.value === current;
             return (
@@ -121,8 +135,9 @@ export function Select({
               </button>
             );
           })}
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

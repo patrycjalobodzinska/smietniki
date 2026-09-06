@@ -7,7 +7,7 @@ import { fillTone, type BinStation, type FillTone } from "@/lib/types";
 import { useIsDark } from "@/lib/hooks/use-is-dark";
 import { VARIANT_SHORT } from "@/lib/labels";
 
-/** Marker fill colors (spec §21.4) — stable across themes. */
+/** Marker fill colors (spec §21.4) - stable across themes. */
 const TONE_HEX: Record<FillTone, string> = {
   low: "#39a96b",
   mid: "#f2c94c",
@@ -16,7 +16,7 @@ const TONE_HEX: Record<FillTone, string> = {
 };
 const NONE_HEX = "#7d9085";
 
-/** Cache one DivIcon per (color, critical) combo — cheap + keeps markers stable. */
+/** Cache one DivIcon per (color, critical) combo - cheap + keeps markers stable. */
 const iconCache = new Map<string, DivIcon>();
 
 function pinIcon(level: number | null): DivIcon {
@@ -59,9 +59,19 @@ export interface StationMapProps {
 export function StationMap({ stations, routePath, height = 360 }: StationMapProps) {
   const dark = useIsDark();
 
-  const tileUrl = dark
-    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-    : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+  /**
+   * Podkład CARTO Voyager (dane OSM, bez klucza API) rozbity na dwie warstwy:
+   * sam rysunek mapy w `tilePane` i nazwy w `overlayPane`. Dzięki temu etykiety
+   * leżą nad drogami i plamami zieleni, ale pod pinami - nie zasłaniają
+   * markerów, a mapa nie jest kaszą jak surowe kafelki OSM.
+   */
+  const style = dark ? "dark" : "voyager";
+  const baseUrl = `https://{s}.basemaps.cartocdn.com/rastertiles/${style}_nolabels/{z}/{x}/{y}{r}.png`;
+  const labelsUrl = `https://{s}.basemaps.cartocdn.com/rastertiles/${style}_only_labels/{z}/{x}/{y}{r}.png`;
+  const subdomains = ["a", "b", "c", "d"];
+  // Licencja OSM/CARTO wymaga widocznego źródła kafelków.
+  const attribution =
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
   const bounds = useMemo<LatLngBoundsExpression | null>(() => {
     if (!stations.length) return null;
@@ -79,10 +89,10 @@ export function StationMap({ stations, routePath, height = 360 }: StationMapProp
         zoom={13}
         scrollWheelZoom={false}
         style={{ height: "100%", width: "100%", background: "var(--color-muted)" }}
-        attributionControl={false}
       >
-        {/* CARTO basemaps — no API key required. */}
-        <TileLayer url={tileUrl} subdomains={["a", "b", "c", "d"]} />
+        <TileLayer url={baseUrl} subdomains={subdomains} attribution={attribution} />
+        {/* Etykiety osobno, w overlayPane - pod markerami, nad podkładem. */}
+        <TileLayer url={labelsUrl} subdomains={subdomains} pane="overlayPane" />
         <FitBounds bounds={bounds} />
 
         {routePath && routePath.length > 1 && (

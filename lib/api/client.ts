@@ -2,7 +2,7 @@
  * Typed fetch wrapper for the SprigaAPI backend.
  *
  * Auth is a httpOnly cookie (`__access-token`) set by the sign-in endpoint, so
- * the browser attaches it automatically — we only need `credentials: "include"`.
+ * the browser attaches it automatically - we only need `credentials: "include"`.
  * There is no token to read or store in JS. CORS on the API already allows the
  * dev origin with credentials.
  *
@@ -96,7 +96,7 @@ export const http = {
 };
 
 /**
- * Absolute (same-origin) URL for a binary endpoint — usable directly as an
+ * Absolute (same-origin) URL for a binary endpoint - usable directly as an
  * `<img src>` / download href, since auth is a first-party cookie.
  */
 export function assetUrl(path: string): string {

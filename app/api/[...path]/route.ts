@@ -7,7 +7,7 @@ import https from "node:https";
  *
  * The browser calls `/api/v1/...` on the frontend's own origin; this handler
  * forwards to the real backend (API_PROXY_TARGET) server-side and relays the
- * response — rewriting `Set-Cookie` so the auth cookie lands as a first-party
+ * response - rewriting `Set-Cookie` so the auth cookie lands as a first-party
  * cookie on the frontend domain. That sidesteps third-party-cookie blocking
  * (Safari/ITP, Chrome, Firefox strict) when the API is on a different domain.
  *
@@ -32,7 +32,7 @@ function rewriteSetCookie(cookie: string, isHttps: boolean): string {
   let out = cookie.replace(/;\s*Domain=[^;]*/i, ""); // bind to the frontend host
   if (!isHttps) {
     // Over http (dev): a Secure cookie is dropped, and SameSite=None requires
-    // Secure — so strip Secure and relax SameSite to Lax.
+    // Secure - so strip Secure and relax SameSite to Lax.
     out = out.replace(/;\s*Secure/i, "");
     out = out.replace(/;\s*SameSite=None/i, "; SameSite=Lax");
   }

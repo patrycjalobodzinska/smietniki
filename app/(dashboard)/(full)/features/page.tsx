@@ -41,7 +41,7 @@ interface FeatureGroup {
 }
 
 const OPERATIONS: Feature[] = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard, description: "Pulpit operacyjny — KPI, mapa i stan platformy na żywo." },
+  { label: "Dashboard", href: "/", icon: LayoutDashboard, description: "Pulpit operacyjny - KPI, mapa i stan platformy na żywo." },
   { label: "Spółdzielnie", href: "/spoldzielnie", icon: Building2, description: "Zarządcy infrastruktury odpadowej wraz z ich obiektami." },
   { label: "Nieruchomości i lokale", href: "/nieruchomosci", icon: Home, description: "Budynki, lokale, mieszkańcy i przypisane klucze dostępu." },
   { label: "Altanki", href: "/altanki", icon: Warehouse, description: "Altanki śmietnikowe z poziomem cyfryzacji i zapełnieniem." },
@@ -57,7 +57,7 @@ const INFRASTRUCTURE: Feature[] = [
   { label: "Klucze dostępu", href: "/klucze", icon: KeySquare, description: "Wydawanie i unieważnianie kluczy/kart RFID." },
   { label: "Pomiary zapełnienia", href: "/pomiary", icon: Gauge, description: "Telemetria zapełnienia i ręczne wpisy pomiarów." },
   { label: "Urządzenia", href: "/urzadzenia", icon: Router, description: "Urządzenia OT: łączność, nazwy i przypisanie do altanek." },
-  { label: "Zdarzenia z urządzeń", href: "/zdarzenia", icon: Activity, description: "Surowy ingest ISAPI: retransmisje, opóźnienia, snapshoty." },
+  { label: "Zdarzenia z urządzeń", href: "/zdarzenia", icon: Activity, description: "Surowy ingest ISAPI: retransmisje, opóźnienia, zdjęcia z kamer." },
   { label: "Pojazdy", href: "/pojazdy", icon: Car, description: "Flota realizująca odbiory, przypisywana do tras." },
 ];
 
@@ -73,7 +73,7 @@ const PLATFORM: Feature[] = [
 const GROUPS: FeatureGroup[] = [
   {
     title: "Operacje i infrastruktura",
-    description: "Rdzeń panelu — dane osiedlowe, zapełnienie i logistyka odbioru.",
+    description: "Rdzeń panelu - dane osiedlowe, zapełnienie i logistyka odbioru.",
     features: OPERATIONS,
   },
   {
@@ -108,10 +108,10 @@ function FeatureCard({ f }: { f: Feature }) {
 
 export default function FeaturesPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 sm:space-y-6">
       <PageHeader
         title="Wszystkie funkcje"
-        description="Pełen zakres platformy — wszystkie moduły działają na danych na żywo z systemu."
+        description="Pełen zakres platformy - wszystkie moduły działają na danych na żywo z systemu."
       />
       {GROUPS.map((g) => (
         <section key={g.title} className="space-y-3">

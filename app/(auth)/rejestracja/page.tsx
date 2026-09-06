@@ -32,7 +32,7 @@ export default function RegisterPage() {
       setUserId(res.userId);
       setOk("Konto utworzone. Sprawdź skrzynkę i potwierdź adres e-mail.");
     } catch {
-      setError("Nie udało się utworzyć konta — adres może być już zajęty.");
+      setError("Nie udało się utworzyć konta - adres może być już zajęty.");
     } finally {
       setBusy(false);
     }
@@ -92,7 +92,7 @@ export default function RegisterPage() {
       {userId && (
         <div className="mt-4 space-y-2 rounded-xl bg-info/10 p-3 text-xs text-muted-foreground">
           <p>
-            Identyfikator konta: <span className="font-mono text-foreground">{userId}</span>
+            Identyfikator konta: <span className="text-foreground">{userId}</span>
           </p>
           <div className="flex flex-wrap gap-3">
             <button onClick={resend} className="font-medium text-primary hover:underline">
@@ -102,7 +102,7 @@ export default function RegisterPage() {
               href={`/potwierdzenie?userId=${encodeURIComponent(userId)}`}
               className="font-medium text-primary hover:underline"
             >
-              Mam token — potwierdź adres
+              Mam token - potwierdź adres
             </Link>
           </div>
         </div>

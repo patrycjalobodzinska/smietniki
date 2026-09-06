@@ -93,7 +93,7 @@ export const DATA_SOURCE_TO_API: Record<DataSource, string> = {
   none: "NoData",
 };
 
-/** The API has 5 fractions — our local-only "other" is sent as Mixed. */
+/** The API has 5 fractions - our local-only "other" is sent as Mixed. */
 export const FRACTION_TO_API: Record<WasteFraction, string> = {
   mixed: "Mixed",
   paper: "Paper",
@@ -423,13 +423,13 @@ export interface VehicleDto {
   status: string;
 }
 
-// The API models a session as a single access event (occurredAt, RFID card) —
+// The API models a session as a single access event (occurredAt, RFID card) -
 // there's no end time/duration, key type or recording flag, so those default.
 export function mapSession(dto: AccessSessionDto, stations: Map<string, StationRef>): AccessSession {
   const st = dto.binStationCode ? stations.get(dto.binStationCode) : undefined;
   return {
     id: dto.id,
-    keyIdentifier: dto.cardIdentifier ?? "—",
+    keyIdentifier: dto.cardIdentifier ?? "-",
     keyType: "rfid",
     unitId: dto.unitId ?? "",
     unitNumber: "",
@@ -437,7 +437,7 @@ export function mapSession(dto: AccessSessionDto, stations: Map<string, StationR
     stationId: st?.id ?? "",
     // The station link travels via deviceKey (devices module, out of scope);
     // fall back to the code, then the device key, so the row is never blank.
-    stationName: st?.name ?? dto.binStationCode ?? dto.deviceKey ?? "—",
+    stationName: st?.name ?? dto.binStationCode ?? dto.deviceKey ?? "-",
     startedAt: dto.occurredAt,
     endedAt: null,
     durationSeconds: null,
@@ -459,10 +459,10 @@ export function mapCollection(
   return {
     id: dto.id,
     stationId: st?.id ?? "",
-    stationName: st?.name ?? dto.binStationCode ?? "—",
+    stationName: st?.name ?? dto.binStationCode ?? "-",
     containerId: ct?.id ?? "",
     fraction: ct?.fraction ?? "mixed",
-    operator: dto.operatorName ?? "—",
+    operator: dto.operatorName ?? "-",
     vehicleId: dto.vehicleId ?? null,
     routeId: dto.routeId ?? null,
     collectedAt: dto.collectedAt,
@@ -475,7 +475,7 @@ export function mapCollection(
   };
 }
 
-// The API's route is a header only (date/operator/vehicle/status) — no stops,
+// The API's route is a header only (date/operator/vehicle/status) - no stops,
 // distances or estimates, and there is no per-route detail endpoint. Those
 // fields default to empty so the UI renders without them.
 export function mapRoute(dto: RouteDto): CollectionRoute {
@@ -484,7 +484,7 @@ export function mapRoute(dto: RouteDto): CollectionRoute {
     id: dto.id,
     name: day ? `Trasa ${day}` : "Trasa",
     date: dto.date,
-    operator: dto.operatorName ?? "—",
+    operator: dto.operatorName ?? "-",
     vehicleId: dto.vehicleId ?? null,
     status: toRouteStatus(dto.status),
     stops: [],
@@ -498,7 +498,7 @@ export function mapVehicle(dto: VehicleDto): Vehicle {
   return {
     id: dto.id,
     code: dto.code,
-    operator: dto.operatorName ?? "—",
+    operator: dto.operatorName ?? "-",
     nominalCapacityKg: dto.nominalCapacityUnits ?? 0,
     currentEstimatedFill: 0,
     status: toVehicleStatus(dto.status),

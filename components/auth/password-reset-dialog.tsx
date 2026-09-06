@@ -6,8 +6,8 @@ import { authService } from "@/lib/api/services/auth";
 
 /**
  * Password recovery in two steps, matching the API:
- * 1. POST /v1/account/request-password-reset — mails a token,
- * 2. POST /v1/account/reset-password — token + userId + new password.
+ * 1. POST /v1/account/request-password-reset - mails a token,
+ * 2. POST /v1/account/reset-password - token + userId + new password.
  *
  * The token and user id arrive in the message, so step 2 asks for both.
  */
@@ -59,7 +59,7 @@ export function PasswordResetDialog({ open, onClose }: { open: boolean; onClose:
       await authService.resetPassword({ userId, token, password, confirmPassword: confirm });
       setOk("Hasło zostało ustawione. Możesz się zalogować.");
     } catch {
-      setError("Nie udało się ustawić hasła — token mógł wygasnąć.");
+      setError("Nie udało się ustawić hasła - token mógł wygasnąć.");
     } finally {
       setBusy(false);
     }

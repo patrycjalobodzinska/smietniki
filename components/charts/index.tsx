@@ -19,7 +19,7 @@ import {
 /**
  * Chart primitives for SMART WASTE. Colors reference design tokens via CSS
  * variables (var(--color-chart-*)), so every chart adapts to dark/light
- * automatically — no per-theme chart code.
+ * automatically - no per-theme chart code.
  */
 
 const AXIS = "var(--color-muted-foreground)";
@@ -36,14 +36,41 @@ const tooltipStyle = {
 
 const axisProps = { stroke: AXIS, fontSize: 11, tickLine: false, axisLine: false } as const;
 
+/**
+ * Recharts mierzy szerokość raz i nie kurczy się poniżej zmierzonej wartości,
+ * więc w komórce siatki (domyślne `min-width: auto`) rozpycha całą kolumnę -
+ * na telefonie widać to jako poziome przewijanie strony. `min-w-0` pozwala
+ * komórce się zwężyć, `overflow-hidden` ucina resztę zanim urośnie layout.
+ */
+function ChartBox({ children }: { children: React.ReactNode }) {
+  return <div className="w-full min-w-0 overflow-hidden">{children}</div>;
+}
+
 export interface Point {
   label: string;
   value: number;
 }
 
-export function TrendLineChart({ data, height = 220, max = 100 }: { data: Point[]; height?: number; max?: number }) {
+/**
+ * Nazwa serii w tooltipie. Recharts bez `name` pokazuje surowy `dataKey`,
+ * czyli angielskie "value" - stąd polski domyślny podpis.
+ */
+const DEFAULT_SERIES = "Wartość";
+
+export function TrendLineChart({
+  data,
+  height = 220,
+  max = 100,
+  seriesLabel = DEFAULT_SERIES,
+}: {
+  data: Point[];
+  height?: number;
+  max?: number;
+  seriesLabel?: string;
+}) {
   return (
-    <ResponsiveContainer width="100%" height={height}>
+    <ChartBox>
+      <ResponsiveContainer width="100%" height={height}>
       <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
         <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
         <XAxis dataKey="label" {...axisProps} />
@@ -51,6 +78,7 @@ export function TrendLineChart({ data, height = 220, max = 100 }: { data: Point[
         <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: GRID }} />
         <Line
           type="monotone"
+          name={seriesLabel}
           dataKey="value"
           stroke="var(--color-chart-1)"
           strokeWidth={2.5}
@@ -58,39 +86,60 @@ export function TrendLineChart({ data, height = 220, max = 100 }: { data: Point[
           activeDot={{ r: 4 }}
         />
       </LineChart>
-    </ResponsiveContainer>
+      </ResponsiveContainer>
+    </ChartBox>
   );
 }
 
-export function DailyBarChart({ data, height = 220 }: { data: Point[]; height?: number }) {
+export function DailyBarChart({
+  data,
+  height = 220,
+  seriesLabel = DEFAULT_SERIES,
+}: {
+  data: Point[];
+  height?: number;
+  seriesLabel?: string;
+}) {
   return (
-    <ResponsiveContainer width="100%" height={height}>
+    <ChartBox>
+      <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
         <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
         <XAxis dataKey="label" {...axisProps} />
         <YAxis {...axisProps} />
         <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "var(--color-surface-hover)" }} />
-        <Bar dataKey="value" fill="var(--color-chart-2)" radius={[4, 4, 0, 0]} maxBarSize={28} />
+        <Bar name={seriesLabel} dataKey="value" fill="var(--color-chart-2)" radius={[4, 4, 0, 0]} maxBarSize={28} />
       </BarChart>
-    </ResponsiveContainer>
+      </ResponsiveContainer>
+    </ChartBox>
   );
 }
 
-export function HBarChart({ data, height = 220 }: { data: Point[]; height?: number }) {
+export function HBarChart({
+  data,
+  height = 220,
+  seriesLabel = DEFAULT_SERIES,
+}: {
+  data: Point[];
+  height?: number;
+  seriesLabel?: string;
+}) {
   return (
-    <ResponsiveContainer width="100%" height={height}>
+    <ChartBox>
+      <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} layout="vertical" margin={{ top: 4, right: 12, bottom: 0, left: 12 }}>
         <CartesianGrid strokeDasharray="3 3" stroke={GRID} horizontal={false} />
         <XAxis type="number" domain={[0, 100]} {...axisProps} />
         <YAxis type="category" dataKey="label" width={72} {...axisProps} />
         <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "var(--color-surface-hover)" }} />
-        <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={22}>
+        <Bar name={seriesLabel} dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={22}>
           {data.map((_, i) => (
             <Cell key={i} fill={SERIES[i % SERIES.length]} />
           ))}
         </Bar>
       </BarChart>
-    </ResponsiveContainer>
+      </ResponsiveContainer>
+    </ChartBox>
   );
 }
 
@@ -112,7 +161,8 @@ export function GroupedBarChart({
   height?: number;
 }) {
   return (
-    <ResponsiveContainer width="100%" height={height}>
+    <ChartBox>
+      <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
         <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
         <XAxis dataKey="label" {...axisProps} />
@@ -122,7 +172,8 @@ export function GroupedBarChart({
         <Bar name={aLabel} dataKey="a" fill="var(--color-chart-1)" radius={[4, 4, 0, 0]} maxBarSize={26} />
         <Bar name={bLabel} dataKey="b" fill="var(--color-chart-3)" radius={[4, 4, 0, 0]} maxBarSize={26} />
       </BarChart>
-    </ResponsiveContainer>
+      </ResponsiveContainer>
+    </ChartBox>
   );
 }
 
@@ -134,7 +185,8 @@ export interface Slice {
 
 export function DonutChart({ data, height = 220 }: { data: Slice[]; height?: number }) {
   return (
-    <ResponsiveContainer width="100%" height={height}>
+    <ChartBox>
+      <ResponsiveContainer width="100%" height={height}>
       <PieChart>
         <Pie
           data={data}
@@ -157,6 +209,7 @@ export function DonutChart({ data, height = 220 }: { data: Slice[]; height?: num
           wrapperStyle={{ fontSize: 12, color: "var(--color-muted-foreground)" }}
         />
       </PieChart>
-    </ResponsiveContainer>
+      </ResponsiveContainer>
+    </ChartBox>
   );
 }

@@ -73,17 +73,17 @@ export default function RouteDetailPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard label="Punkty" value={route.stops.length} icon={MapPin} />
         <StatCard label="Punkty krytyczne" value={criticalCount} icon={AlertTriangle} tone={criticalCount ? "danger" : "default"} />
         <StatCard label="Przewidywany czas" value={`${route.estimatedDurationMin} min`} icon={Clock} />
         <StatCard label="Wykorzystanie pojazdu" value={`${route.estimatedVehicleFill}%`} icon={Gauge} tone={route.estimatedVehicleFill >= 85 ? "warning" : "default"} />
         <StatCard label="Dystans" value={`${route.distanceKm} km`} icon={MapPin} />
-        <StatCard label="Pojazd" value={vehicle?.code ?? "—"} icon={Truck} />
+        <StatCard label="Pojazd" value={vehicle?.code ?? "-"} icon={Truck} />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+      <div className="mt-3 sm:mt-6 grid gap-3 sm:gap-6 lg:grid-cols-3">
+        <div className="min-w-0 space-y-3 sm:space-y-6 lg:col-span-2">
           <Card>
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle>Mapa trasy</CardTitle>
@@ -103,7 +103,7 @@ export default function RouteDetailPage() {
           <Card>
             <CardHeader><CardTitle>Estymowane zapełnienie śmieciarki</CardTitle></CardHeader>
             <CardContent>
-              <TrendLineChart data={fillCurve} />
+              <TrendLineChart data={fillCurve} seriesLabel="Zapełnienie" />
               <p className="mt-1 text-xs text-muted-foreground">Oś X: kolejny punkt trasy · oś Y: szacowane wypełnienie pojazdu (%)</p>
             </CardContent>
           </Card>

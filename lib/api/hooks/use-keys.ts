@@ -8,7 +8,7 @@ export function useAccessKeys(f: KeyFilters = {}) {
   return useQuery({ queryKey: qk.accessKeys.list(f), queryFn: () => keysService.list(f) });
 }
 
-/** Units for the lokal column / "Wydaj klucz" picker — full mode only (lazy). */
+/** Units for the lokal column / "Wydaj klucz" picker - full mode only (lazy). */
 export function useKeyUnits(enabled: boolean) {
   return useQuery({
     queryKey: qk.accessKeys.units,

@@ -3,7 +3,7 @@ import type { StoredFile } from "@/lib/types";
 import type { EnumItem } from "@/lib/api/services/users";
 
 /**
- * File store (`/v1/files`) — uploads land in a container (Public/Private) and
+ * File store (`/v1/files`) - uploads land in a container (Public/Private) and
  * are addressed by id. There is no browse endpoint: a file is reachable only
  * through whatever references it (e.g. an article's main photo).
  */

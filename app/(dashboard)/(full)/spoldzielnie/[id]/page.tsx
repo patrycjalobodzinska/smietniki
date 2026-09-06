@@ -16,6 +16,7 @@ import {
 } from "@/components/ui";
 import { DonutChart } from "@/components/charts";
 import { FillBar } from "@/components/domain/fill-level";
+import { VARIANT_SHORT } from "@/lib/labels";
 import { VariantBadge, StationStatusBadge } from "@/components/domain/badges";
 import { useCooperative, useProperties, useStations } from "@/lib/api/hooks/use-infrastructure";
 import type { BinStation, Property } from "@/lib/types";
@@ -31,9 +32,9 @@ export default function CooperativeDetailPage() {
   if (isLoading || !coop) return <div className="flex h-64 items-center justify-center"><Spinner /></div>;
 
   const coverage = [
-    { label: "Access", value: (stations ?? []).filter((s) => s.deploymentVariant === "access").length, color: "var(--color-chart-6)" },
-    { label: "Fill", value: (stations ?? []).filter((s) => s.deploymentVariant === "access_fill").length, color: "var(--color-chart-1)" },
-    { label: "Vision", value: (stations ?? []).filter((s) => s.deploymentVariant === "access_fill_vision").length, color: "var(--color-chart-2)" },
+    { label: VARIANT_SHORT.access, value: (stations ?? []).filter((s) => s.deploymentVariant === "access").length, color: "var(--color-chart-6)" },
+    { label: VARIANT_SHORT.access_fill, value: (stations ?? []).filter((s) => s.deploymentVariant === "access_fill").length, color: "var(--color-chart-1)" },
+    { label: VARIANT_SHORT.access_fill_vision, value: (stations ?? []).filter((s) => s.deploymentVariant === "access_fill_vision").length, color: "var(--color-chart-2)" },
   ];
 
   const propCols: Column<Property>[] = [
@@ -44,9 +45,9 @@ export default function CooperativeDetailPage() {
   ];
   const stationCols: Column<BinStation>[] = [
     { key: "name", header: "Altanka", cell: (s) => <span className="font-medium">{s.name}</span> },
-    { key: "variant", header: "Wariant", cell: (s) => <VariantBadge variant={s.deploymentVariant} /> },
+    { key: "variant", header: "Wariant", align: "center", cell: (s) => <VariantBadge variant={s.deploymentVariant} /> },
     { key: "fill", header: "Zapełnienie", className: "w-40", cell: (s) => <FillBar level={s.avgFillLevel} /> },
-    { key: "status", header: "Status", cell: (s) => <StationStatusBadge status={s.status} /> },
+    { key: "status", header: "Status", align: "center", cell: (s) => <StationStatusBadge status={s.status} /> },
   ];
 
   return (
@@ -58,7 +59,7 @@ export default function CooperativeDetailPage() {
         badges={<VariantBadge variant={coop.deploymentMix} />}
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard label="Altanki" value={coop.stationCount} icon={Warehouse} />
         <StatCard label="Nieruchomości" value={coop.propertyCount} icon={Home} />
         <StatCard label="Lokale" value={coop.unitCount} icon={Users} />
@@ -67,15 +68,15 @@ export default function CooperativeDetailPage() {
         <StatCard label="Pojemniki" value={(stations ?? []).reduce((a, s) => a + s.containerCount, 0)} icon={Trash2} />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          <Card>
+      <div className="mt-3 sm:mt-6 grid gap-3 sm:gap-6 lg:grid-cols-3">
+        <div className="min-w-0 space-y-3 sm:space-y-6 lg:col-span-2">
+          <Card className="overflow-hidden">
             <CardHeader><CardTitle>Nieruchomości</CardTitle></CardHeader>
             <CardContent className="p-0">
               <DataTable columns={propCols} data={properties} rowKey={(p) => p.id} onRowClick={(p) => router.push(`/nieruchomosci/${p.id}`)} className="rounded-none border-0" />
             </CardContent>
           </Card>
-          <Card>
+          <Card className="overflow-hidden">
             <CardHeader><CardTitle>Altanki</CardTitle></CardHeader>
             <CardContent className="p-0">
               <DataTable columns={stationCols} data={stations} rowKey={(s) => s.id} onRowClick={(s) => router.push(`/altanki/${s.id}`)} className="rounded-none border-0" />
@@ -83,7 +84,7 @@ export default function CooperativeDetailPage() {
           </Card>
         </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-3 sm:space-y-6">
           <Card>
             <CardHeader><CardTitle>Dane podstawowe</CardTitle></CardHeader>
             <CardContent>

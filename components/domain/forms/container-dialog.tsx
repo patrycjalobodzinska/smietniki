@@ -12,7 +12,7 @@ import { DATA_SOURCE_LABEL, FRACTION_LABEL } from "@/lib/labels";
  */
 
 const FRACTION_OPTIONS = (Object.keys(FRACTION_LABEL) as WasteFraction[])
-  // The API knows 5 fractions — "other" would silently become Mixed.
+  // The API knows 5 fractions - "other" would silently become Mixed.
   .filter((f) => f !== "other")
   .map((f) => ({ value: f, label: FRACTION_LABEL[f] }));
 
@@ -73,7 +73,7 @@ export function ContainerDialog({
   }
 
   const stationOptions = [
-    { value: "", label: "— wybierz altankę —" },
+    { value: "", label: "- wybierz altankę -" },
     ...(stations ?? []).map((s) => ({ value: s.id, label: `${s.code} · ${s.name}` })),
   ];
 

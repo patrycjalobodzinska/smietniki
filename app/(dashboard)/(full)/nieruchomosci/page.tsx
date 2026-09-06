@@ -26,8 +26,8 @@ export default function PropertiesPage() {
     { value: "", label: "Wszystkie spółdzielnie" },
     ...(coops ?? []).map((c) => ({ value: c.id, label: c.name })),
   ];
-  const stationName = (id: string | null) => (id ? stations?.find((s) => s.id === id)?.name ?? "—" : "—");
-  const coopName = (id: string) => coops?.find((c) => c.id === id)?.name ?? "—";
+  const stationName = (id: string | null) => (id ? stations?.find((s) => s.id === id)?.name ?? "-" : "-");
+  const coopName = (id: string) => coops?.find((c) => c.id === id)?.name ?? "-";
 
   const columns: Column<Property>[] = [
     {
@@ -60,7 +60,7 @@ export default function PropertiesPage() {
       ),
     },
     { key: "station", header: "Altanka", cell: (p) => <span className="text-sm text-muted-foreground">{stationName(p.assignedStationId)}</span> },
-    { key: "status", header: "Status", cell: (p) => <StationStatusBadge status={p.status === "warning" ? "attention" : p.status === "active" ? "active" : "inactive"} /> },
+    { key: "status", header: "Status", align: "center", cell: (p) => <StationStatusBadge status={p.status === "warning" ? "attention" : p.status === "active" ? "active" : "inactive"} /> },
     {
       key: "actions",
       header: "",
@@ -81,7 +81,7 @@ export default function PropertiesPage() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Nieruchomości i lokale"
         description="Relacja lokal → liczba mieszkańców → liczba aktywnych kluczy."
@@ -92,10 +92,10 @@ export default function PropertiesPage() {
         }
       />
       <FilterBar>
-        <div className="min-w-56 flex-1">
+        <div className="min-w-0 flex-1 sm:min-w-56">
           <Input icon={<Search />} placeholder="Szukaj adresu..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-9" />
         </div>
-        <Select options={coopOptions} value={coop} onChange={(e) => setCoop(e.target.value)} className="h-9 w-56" />
+        <Select options={coopOptions} value={coop} onChange={(e) => setCoop(e.target.value)} className="h-9 w-full sm:w-56" />
       </FilterBar>
       <DataTable columns={columns} data={data} rowKey={(p) => p.id} loading={isLoading} onRowClick={(p) => router.push(`/nieruchomosci/${p.id}`)} emptyTitle="Brak nieruchomości" pageSize={15} />
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Dialog, Field, Input, Select, Textarea } from "@/components/ui";
+import { Button, Dialog, DatePicker, Field, Input, Select, Textarea } from "@/components/ui";
 import { useRegisterCollection, useRoutes, useVehicles } from "@/lib/api/hooks/use-operations";
 import { useContainers, useStations } from "@/lib/api/hooks/use-infrastructure";
 import { formatDate } from "@/lib/utils/format";
@@ -56,21 +56,21 @@ export function CollectionDialog({ open, onClose }: { open: boolean; onClose: ()
   }
 
   const stationOptions = [
-    { value: "", label: "— wybierz altankę —" },
+    { value: "", label: "- wybierz altankę -" },
     ...(stations ?? []).map((s) => ({ value: s.code, label: `${s.code} · ${s.name}` })),
   ];
   const containerOptions = [
-    { value: "", label: "— cała altanka —" },
+    { value: "", label: "- cała altanka -" },
     ...(containers ?? [])
       .filter((c) => !stationId || c.stationId === stationId)
       .map((c) => ({ value: c.code, label: c.code })),
   ];
   const vehicleOptions = [
-    { value: "", label: "— bez pojazdu —" },
+    { value: "", label: "- bez pojazdu -" },
     ...(vehicles ?? []).map((v) => ({ value: v.id, label: `${v.code} · ${v.operator}` })),
   ];
   const routeOptions = [
-    { value: "", label: "— bez trasy —" },
+    { value: "", label: "- bez trasy -" },
     ...(routes ?? []).map((r) => ({ value: r.id, label: `${r.name} (${formatDate(r.date)})` })),
   ];
 
@@ -123,7 +123,7 @@ export function CollectionDialog({ open, onClose }: { open: boolean; onClose: ()
         </Field>
         <Field label="Czas odbioru" hint="Puste = teraz.">
           {({ id }) => (
-            <Input id={id} type="datetime-local" value={collectedAt} onChange={(e) => setCollectedAt(e.target.value)} />
+            <DatePicker id={id} withTime value={collectedAt} onChange={(e) => setCollectedAt(e.target.value)} />
           )}
         </Field>
         <Field label="Pojazd">

@@ -44,7 +44,7 @@ import type {
  * Bin stations + containers (KM1) do NOT depend on /v1/properties, so they load
  * even on a stage where that endpoint is missing. The cooperatives/properties/
  * units services (used only by the hidden "full mode" modules) do read
- * /v1/properties — but only when their own hooks are called.
+ * /v1/properties - but only when their own hooks are called.
  */
 
 const includesCI = (v: string, q: string) => v.toLowerCase().includes(q.toLowerCase());
@@ -156,7 +156,7 @@ export const propertiesService: PropertiesService = {
     return out;
   },
   async get(id: string) {
-    // No GET /v1/properties/{id} — resolve from the list.
+    // No GET /v1/properties/{id} - resolve from the list.
     const dtos = await getPagedItems<PropertyDto>("/v1/properties");
     const dto = dtos.find((p) => p.id === id);
     return dto ? mapProperty(dto) : undefined;
@@ -238,7 +238,7 @@ export const unitsService: UnitsService = {
   },
 };
 
-/* ---- Bin stations (KM1 — no /v1/properties) ----------------------- */
+/* ---- Bin stations (KM1 - no /v1/properties) ----------------------- */
 
 export const stationsService: StationsService = {
   async list(f: StationFilters = {}): Promise<BinStation[]> {
@@ -272,8 +272,8 @@ export const stationsService: StationsService = {
       ...stationBody(input),
     });
   },
-  // The update command carries no `code`/`cooperativeId` — both are fixed at
-  // creation time — but it does carry `status`, which create doesn't.
+  // The update command carries no `code`/`cooperativeId` - both are fixed at
+  // creation time - but it does carry `status`, which create doesn't.
   update(id: string, input: StationInput) {
     return http.put<void>(`/v1/bin-stations/${id}`, {
       id,
@@ -296,7 +296,7 @@ function stationBody(input: StationInput) {
   };
 }
 
-/* ---- Containers (KM1 — no /v1/properties) ------------------------- */
+/* ---- Containers (KM1 - no /v1/properties) ------------------------- */
 
 export const containersService: ContainersService = {
   async list(f: ContainerFilters = {}): Promise<Container[]> {

@@ -55,7 +55,7 @@ export function UnitDialog({
       open={open}
       onClose={onClose}
       title="Dodaj lokal"
-      description="Lokal w tej nieruchomości — podstawa limitu kluczy dostępu."
+      description="Lokal w tej nieruchomości - podstawa limitu kluczy dostępu."
       footer={
         <>
           <Button variant="ghost" onClick={onClose}>

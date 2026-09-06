@@ -65,11 +65,11 @@ export function PropertyDialog({
   }
 
   const coopOptions = [
-    { value: "", label: "— wybierz spółdzielnię —" },
+    { value: "", label: "- wybierz spółdzielnię -" },
     ...(coops ?? []).map((c) => ({ value: c.id, label: c.name })),
   ];
   const stationOptions = [
-    { value: "", label: "— bez altanki —" },
+    { value: "", label: "- bez altanki -" },
     ...(stations ?? []).map((s) => ({ value: s.id, label: `${s.code} · ${s.name}` })),
   ];
 

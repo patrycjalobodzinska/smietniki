@@ -19,7 +19,7 @@ import type { EmailMessage } from "@/lib/types";
 import { formatDateTime } from "@/lib/utils/format";
 
 /**
- * Transactional e-mail log (`/v1/emails`) — what the platform actually sent
+ * Transactional e-mail log (`/v1/emails`) - what the platform actually sent
  * (account created, password reset) and whether delivery failed.
  */
 export default function EmailsPage() {
@@ -58,7 +58,7 @@ export default function EmailsPage() {
         </div>
       ),
     },
-    { key: "template", header: "Szablon", cell: (e) => <Badge variant="outline">{e.templateLabel}</Badge> },
+    { key: "template", header: "Szablon", align: "center", cell: (e) => <Badge variant="outline">{e.templateLabel}</Badge> },
     {
       key: "status",
       header: "Status",
@@ -78,20 +78,20 @@ export default function EmailsPage() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Wiadomości e-mail"
         description="Dziennik wiadomości transakcyjnych wysłanych przez platformę."
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
         <StatCard label="Wiadomości" value={emails.length} icon={Mail} />
         <StatCard label="Wysłane" value={emails.length - failed} tone="success" />
         <StatCard label="Błędy" value={failed} tone={failed ? "danger" : "default"} />
       </div>
 
       <FilterBar>
-        <div className="min-w-56 flex-1">
+        <div className="min-w-0 flex-1 sm:min-w-56">
           <Input
             icon={<Search />}
             placeholder="Szukaj tematu lub adresu..."
@@ -100,12 +100,12 @@ export default function EmailsPage() {
             className="h-9"
           />
         </div>
-        <Select options={statusOptions} value={status} onChange={(e) => setStatus(e.target.value)} className="h-9 w-44" />
+        <Select options={statusOptions} value={status} onChange={(e) => setStatus(e.target.value)} className="h-9 w-full sm:w-44" />
         <Select
           options={templateOptions}
           value={template}
           onChange={(e) => setTemplate(e.target.value)}
-          className="h-9 w-52"
+          className="h-9 w-full sm:w-52"
         />
       </FilterBar>
 

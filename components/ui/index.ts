@@ -32,3 +32,5 @@ export { Spinner } from "./spinner";
 export { EmptyState, type EmptyStateProps } from "./empty-state";
 export { Dialog, type DialogProps } from "./dialog";
 export { Tabs, type TabItem, type TabsProps } from "./tabs";
+export { ViewToggle, type ListView } from "./view-toggle";
+export { DatePicker, type DatePickerProps } from "./date-picker";

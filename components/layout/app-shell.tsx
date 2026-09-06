@@ -10,7 +10,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-dvh overflow-hidden">
       <Sidebar
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed((c) => !c)}
@@ -27,7 +27,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Menu className="size-5" />
       </button>
 
-      <main className="flex-1 overflow-y-auto px-4 pb-8 pt-16 lg:px-6 lg:pb-8 lg:pt-6">{children}</main>
+      {/* data-app-scroll: to ten element przewija stronę (nie <body>), więc
+          modal musi zablokować właśnie go - patrz components/ui/dialog.tsx. */}
+      <main
+        data-app-scroll
+        className="flex-1 overflow-y-auto px-4 pb-8 pt-16 lg:px-6 lg:pb-8 lg:pt-6"
+      >
+        {children}
+      </main>
     </div>
   );
 }

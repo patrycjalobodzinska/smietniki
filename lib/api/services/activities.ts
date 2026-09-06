@@ -3,7 +3,7 @@ import type { UserActivity } from "@/lib/types";
 import type { EnumItem } from "@/lib/api/services/users";
 
 /**
- * Audit log (`/v1/userActivities`) — every sign-in, password change, lock and
+ * Audit log (`/v1/userActivities`) - every sign-in, password change, lock and
  * domain event the backend records, with the originating IP / user agent.
  */
 
@@ -23,7 +23,7 @@ function mapActivity(d: UserActivityDto): UserActivity {
   return {
     id: d.id,
     type: d.type?.name ?? "",
-    typeLabel: d.type?.displayName || d.type?.name || "—",
+    typeLabel: d.type?.displayName || d.type?.name || "-",
     name: d.name ?? null,
     message: d.message ?? null,
     userId: d.userId ?? null,
@@ -69,7 +69,7 @@ export const activitiesService = {
     return http.get<UserActivityDto>(`/v1/userActivities/${id}`).then(mapActivity);
   },
 
-  /** Activity types available on this deployment (long list — used as filter). */
+  /** Activity types available on this deployment (long list - used as filter). */
   async types(): Promise<EnumItem[]> {
     const res = await http.get<{ userActivityTypes: EnumItem[] }>("/v1/userActivities/types");
     return res?.userActivityTypes ?? [];

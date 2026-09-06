@@ -6,7 +6,7 @@ import { Button } from "@/components/ui";
 import { MeasurementDialog } from "@/components/domain/forms/measurement-dialog";
 
 /**
- * "Zmień zapełnienie" action for any container — usable inside clickable table
+ * "Zmień zapełnienie" action for any container - usable inside clickable table
  * rows (it swallows the click so the row navigation doesn't fire).
  */
 export function ChangeFillButton({

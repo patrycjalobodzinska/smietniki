@@ -12,9 +12,9 @@
 /*  Light is the default theme; dark is a first-class counterpart.      */
 /* ------------------------------------------------------------------ */
 
-/* ---- LIGHT (default) — soft green, flat rounded cards ---- */
+/* ---- LIGHT (default) - soft green, flat rounded cards ---- */
 :root {
-  --radius: 1.25rem; /* 20px — chunky, friendly cards */
+  --radius: 0.75rem; /* 12px - promień kart; skala niżej wychodzi od niego */
 
   /* Soft mint page, solid white cards. */
   --background: #e8f0e3;
@@ -215,14 +215,24 @@
   --color-chart-5: var(--chart-5);
   --color-chart-6: var(--chart-6);
 
+  /* Poppins jest jedynym krojem w aplikacji. `font-mono` celowo wskazuje na
+     ten sam stos, żeby przypadkowe użycie tej klasy nie wprowadziło drugiego
+     kroju tylnymi drzwiami. */
   --font-sans: var(--font-inter);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-inter);
+  /* Preflight Tailwinda używa tego stosu dla code/kbd/pre/samp. */
+  --default-font-family: var(--font-inter);
+  --default-mono-font-family: var(--font-inter);
 
-  --radius-sm: calc(var(--radius) - 8px);
-  --radius-md: calc(var(--radius) - 6px);
-  --radius-lg: calc(var(--radius) - 3px);
-  --radius-xl: var(--radius);
-  --radius-2xl: calc(var(--radius) + 4px);
+  /* Cała skala promieni Tailwinda - wartości wprost, bo `calc` od jednej
+     zmiennej dawał zbyt duże skoki na małych elementach (rounded-lg wychodziło
+     17px). `rounded-full` zostaje pigułką i nie jest tu skalowane. */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 12px;
+  --radius-3xl: 14px;
 }
 
 @layer base {
@@ -363,7 +373,7 @@
 
   /* Frosted Leaflet popups to match the glass UI. */
   .leaflet-popup-content-wrapper {
-    border-radius: 14px;
+    border-radius: 10px;
     background: var(--glass-bg-strong);
     color: var(--foreground);
     border: 1px solid var(--glass-border);
@@ -378,4 +388,16 @@
   .leaflet-popup-content p {
     margin: 0;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Jeden krój na całej stronie                                        */
+/*  Poza warstwami celowo: reguły w @layer przegrywają z niewarstwowym  */
+/*  CSS bibliotek (leaflet.css narzuca "Helvetica Neue" w popupach      */
+/*  i atrybucji mapy), niezależnie od kolejności importów.              */
+/* ------------------------------------------------------------------ */
+.leaflet-container,
+.leaflet-container .leaflet-control,
+.leaflet-popup-content {
+  font-family: var(--font-sans), system-ui, sans-serif;
 }

@@ -48,7 +48,7 @@ export function useVehicles() {
   return useQuery({ queryKey: qk.vehicles.list(), queryFn: () => vehiclesService.list() });
 }
 
-/** POST /v1/collections — registering a pickup changes fill levels too. */
+/** POST /v1/collections - registering a pickup changes fill levels too. */
 export function useRegisterCollection() {
   const qc = useQueryClient();
   return useMutation({

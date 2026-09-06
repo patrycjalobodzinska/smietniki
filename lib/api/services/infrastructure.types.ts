@@ -83,7 +83,7 @@ export interface UnitInput {
 }
 
 export interface StationInput {
-  /** Immutable after creation — the update command has no `code`. */
+  /** Immutable after creation - the update command has no `code`. */
   code: string;
   name: string;
   address?: string;

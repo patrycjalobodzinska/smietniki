@@ -10,7 +10,7 @@ import { VehicleDialog } from "@/components/domain/forms/vehicle-dialog";
 import { useVehicles } from "@/lib/api/hooks/use-operations";
 import type { Vehicle } from "@/lib/types";
 
-/** Collection fleet (GET/POST /v1/vehicles) — vehicles referenced by routes and pickups. */
+/** Collection fleet (GET/POST /v1/vehicles) - vehicles referenced by routes and pickups. */
 export default function VehiclesPage() {
   const [search, setSearch] = useState("");
   const [addOpen, setAddOpen] = useState(false);
@@ -29,18 +29,18 @@ export default function VehiclesPage() {
       align: "right",
       cell: (v) => (
         <span className="text-sm tabular-nums">
-          {v.nominalCapacityKg ? v.nominalCapacityKg.toLocaleString("pl-PL") : "—"}
+          {v.nominalCapacityKg ? v.nominalCapacityKg.toLocaleString("pl-PL") : "-"}
         </span>
       ),
     },
-    { key: "status", header: "Status", cell: (v) => <VehicleStatusBadge status={v.status} /> },
+    { key: "status", header: "Status", align: "center", cell: (v) => <VehicleStatusBadge status={v.status} /> },
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Pojazdy"
-        description="Flota realizująca odbiory — przypisywana do tras i pojedynczych odbiorów."
+        description="Flota realizująca odbiory - przypisywana do tras i pojedynczych odbiorów."
         actions={
           <Button onClick={() => setAddOpen(true)}>
             <Plus /> Dodaj pojazd
@@ -48,14 +48,14 @@ export default function VehiclesPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
         <StatCard label="Pojazdy" value={vehicles.length} icon={Truck} />
         <StatCard label="Dostępne" value={available} tone={available ? "success" : "default"} />
         <StatCard label="Niedostępne" value={vehicles.length - available} />
       </div>
 
       <FilterBar>
-        <div className="min-w-56 flex-1">
+        <div className="min-w-0 flex-1 sm:min-w-56">
           <Input
             icon={<Search />}
             placeholder="Szukaj oznaczenia lub operatora..."

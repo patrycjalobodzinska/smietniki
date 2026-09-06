@@ -22,7 +22,7 @@ import type { UserActivity } from "@/lib/types";
 import { formatDateTime } from "@/lib/utils/format";
 
 /**
- * Audit log (`/v1/userActivities`) — sign-ins, password changes, locks and
+ * Audit log (`/v1/userActivities`) - sign-ins, password changes, locks and
  * domain events, with the originating IP and user agent.
  */
 function ActivityList() {
@@ -43,7 +43,7 @@ function ActivityList() {
   const { data: users } = usePlatformUsers();
 
   const emailOf = (id: string | null) =>
-    id ? users?.find((u) => u.id === id)?.email ?? id : "—";
+    id ? users?.find((u) => u.id === id)?.email ?? id : "-";
 
   const typeOptions = [
     { value: "", label: "Wszystkie typy" },
@@ -66,11 +66,11 @@ function ActivityList() {
       header: "Konto",
       cell: (a) => <span className="text-sm text-muted-foreground">{emailOf(a.userId)}</span>,
     },
-    { key: "ip", header: "Adres IP", cell: (a) => <span className="text-sm tabular-nums">{a.ipAddress ?? "—"}</span> },
+    { key: "ip", header: "Adres IP", cell: (a) => <span className="text-sm tabular-nums">{a.ipAddress ?? "-"}</span> },
     {
       key: "device",
       header: "Urządzenie",
-      cell: (a) => <span className="text-sm text-muted-foreground">{a.deviceName ?? "—"}</span>,
+      cell: (a) => <span className="text-sm text-muted-foreground">{a.deviceName ?? "-"}</span>,
     },
     {
       key: "created",
@@ -81,14 +81,14 @@ function ActivityList() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Aktywność użytkowników"
-        description="Dziennik audytowy platformy — logowania, zmiany haseł, blokady i zdarzenia domenowe."
+        description="Dziennik audytowy platformy - logowania, zmiany haseł, blokady i zdarzenia domenowe."
       />
 
       <FilterBar>
-        <div className="min-w-56 flex-1">
+        <div className="min-w-0 flex-1 sm:min-w-56">
           <Input
             icon={<Search />}
             placeholder="Szukaj w opisie, typie lub IP..."
@@ -97,7 +97,7 @@ function ActivityList() {
             className="h-9"
           />
         </div>
-        <Select options={typeOptions} value={type} onChange={(e) => setType(e.target.value)} className="h-9 w-64" />
+        <Select options={typeOptions} value={type} onChange={(e) => setType(e.target.value)} className="h-9 w-full sm:w-64" />
       </FilterBar>
 
       {userId && (
@@ -143,13 +143,13 @@ function ActivityList() {
             columns={1}
             items={[
               { label: "Typ", value: selected.type },
-              { label: "Nazwa", value: selected.name ?? "—" },
-              { label: "Opis", value: selected.message ?? "—" },
+              { label: "Nazwa", value: selected.name ?? "-" },
+              { label: "Opis", value: selected.message ?? "-" },
               { label: "Konto", value: emailOf(selected.userId) },
               { label: "Wywołane przez", value: emailOf(selected.creatorId) },
-              { label: "Adres IP", value: selected.ipAddress ?? "—" },
-              { label: "User agent", value: selected.userAgent ?? "—" },
-              { label: "Urządzenie", value: selected.deviceName ?? "—" },
+              { label: "Adres IP", value: selected.ipAddress ?? "-" },
+              { label: "User agent", value: selected.userAgent ?? "-" },
+              { label: "Urządzenie", value: selected.deviceName ?? "-" },
             ]}
           />
         )}

@@ -63,13 +63,13 @@ export const NAVIGATION: NavSection[] = [
       { label: "Urządzenia", href: "/urzadzenia", icon: Router, permission: "stations.view" },
       { label: "Zdarzenia", href: "/zdarzenia", icon: Activity, permission: "events.view" },
       { label: "Klucze dostępu", href: "/klucze", icon: KeySquare, permission: "sessions.view" },
-      { label: "Sesje dostępu", href: "/sesje", icon: KeyRound, permission: "sessions.view" },
+      { label: "Otwarcia altanek", href: "/sesje", icon: KeyRound, permission: "sessions.view" },
       { label: "Spółdzielnie", href: "/spoldzielnie", icon: Building2, permission: "cooperatives.view", full: true },
       { label: "Nieruchomości", href: "/nieruchomosci", icon: Home, permission: "properties.view", full: true },
     ],
   },
   {
-    // Platform layer of the backend (identity, messaging, CMS) — beyond KM1,
+    // Platform layer of the backend (identity, messaging, CMS) - beyond KM1,
     // so the whole section lives behind the hidden full mode.
     title: "Platforma",
     items: [

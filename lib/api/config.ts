@@ -5,7 +5,7 @@
  * (app/api/[...path]/route.ts), which forwards to the real backend
  * server-side (API_PROXY_TARGET, a runtime env var) and rewrites the auth
  * cookie to be first-party. This makes cross-domain backends work in every
- * browser (Safari/Chrome/Firefox third-party-cookie blocking) and — crucially —
+ * browser (Safari/Chrome/Firefox third-party-cookie blocking) and - crucially -
  * cannot be broken by a stale build-time `NEXT_PUBLIC_API_URL`.
  *
  * Configure the backend URL at runtime via API_PROXY_TARGET (server env),

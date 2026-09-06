@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus, Search } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { FilterBar } from "@/components/layout/filter-bar";
-import { Button, DataTable, Input, Select, StatCard, type Column } from "@/components/ui";
+import { Button, DataTable, DatePicker, Input, Select, StatCard, type Column } from "@/components/ui";
 import { FillBar } from "@/components/domain/fill-level";
 import { DataSourceBadge } from "@/components/domain/badges";
 import { MeasurementDialog } from "@/components/domain/forms/measurement-dialog";
@@ -17,7 +17,7 @@ import { DATA_SOURCE_LABEL } from "@/lib/labels";
 import { formatDateTime } from "@/lib/utils/format";
 
 /**
- * Fill telemetry feed (GET /v1/fill/measurements) — the raw readings behind
+ * Fill telemetry feed (GET /v1/fill/measurements) - the raw readings behind
  * every level shown in the app, plus manual entry for sensorless altankas.
  */
 
@@ -60,9 +60,9 @@ export default function MeasurementsPage() {
   ];
 
   const columns: Column<FillMeasurement>[] = [
-    { key: "container", header: "Pojemnik", cell: (m) => <span className="font-medium">{m.containerCode ?? "—"}</span> },
+    { key: "container", header: "Pojemnik", cell: (m) => <span className="font-medium">{m.containerCode ?? "-"}</span> },
     { key: "value", header: "Zapełnienie", className: "w-44", cell: (m) => <FillBar level={m.value} /> },
-    { key: "source", header: "Źródło", cell: (m) => <DataSourceBadge source={m.source} /> },
+    { key: "source", header: "Źródło", align: "center", cell: (m) => <DataSourceBadge source={m.source} /> },
     {
       key: "device",
       header: "Urządzenie",
@@ -86,10 +86,10 @@ export default function MeasurementsPage() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Pomiary zapełnienia"
-        description="Telemetria zapełnienia pojemników — odczyty automatyczne i wpisy ręczne."
+        description="Odczyty automatyczne i wpisy ręczne."
         actions={
           <Button onClick={() => setAddOpen(true)}>
             <Plus className="size-4" />
@@ -98,7 +98,7 @@ export default function MeasurementsPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
         <StatCard label="Pomiary (filtr)" value={rows.length} />
         <StatCard label="Automatyczne" value={auto} />
         <StatCard label="Ręczne" value={manual} />
@@ -110,7 +110,7 @@ export default function MeasurementsPage() {
           options={containerOptions}
           value={containerCode}
           onChange={(e) => setContainerCode(e.target.value)}
-          className="h-9 w-52"
+          className="h-9 w-full sm:w-52"
         />
         <div className="min-w-44 flex-1">
           <Input
@@ -125,10 +125,10 @@ export default function MeasurementsPage() {
           options={SOURCE_OPTIONS}
           value={source}
           onChange={(e) => setSource(e.target.value as DataSource | "all")}
-          className="h-9 w-44"
+          className="h-9 w-full sm:w-44"
         />
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-40" aria-label="Od" />
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-40" aria-label="Do" />
+        <DatePicker value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-full sm:w-44" aria-label="Data od" placeholder="Data od…" />
+        <DatePicker value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-full sm:w-44" aria-label="Data do" placeholder="Data do…" />
       </FilterBar>
 
       <DataTable

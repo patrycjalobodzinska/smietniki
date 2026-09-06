@@ -87,7 +87,7 @@ export default function SessionDetailPage() {
               <p className="font-semibold text-danger">Wykryto anomalię</p>
               <p className="text-sm text-muted-foreground">
                 Anomalia dotyczy tej sesji dostępu. Backend zgłasza wyłącznie sam fakt
-                (bez typu i przyczyny) — poniżej kontekst zdarzenia, którego dotyczy.
+                (bez typu i przyczyny) - poniżej kontekst zdarzenia, którego dotyczy.
               </p>
               <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
                 <div className="flex justify-between gap-3 sm:block">
@@ -98,13 +98,13 @@ export default function SessionDetailPage() {
                         {station.name}
                       </button>
                     ) : (
-                      session.stationName || "—"
+                      session.stationName || "-"
                     )}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-3 sm:block">
                   <dt className="text-muted-foreground">Lokal</dt>
-                  <dd className="font-medium">{session.unitNumber ? `#${session.unitNumber}` : "—"}</dd>
+                  <dd className="font-medium">{session.unitNumber ? `#${session.unitNumber}` : "-"}</dd>
                 </div>
                 <div className="flex justify-between gap-3 sm:block">
                   <dt className="text-muted-foreground">Klucz / karta</dt>
@@ -120,15 +120,15 @@ export default function SessionDetailPage() {
         </div>
       )}
 
-      <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mt-4 grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
         <StatCard label="Klucz" value={session.keyIdentifier} icon={KeyRound} />
         <StatCard label="Rozpoczęcie" value={formatDateTime(session.startedAt)} icon={Clock} />
         <StatCard label="Zakończenie" value={session.endedAt ? formatDateTime(session.endedAt) : "N/D"} icon={Clock} />
         <StatCard label="Czas trwania" value={duration(session.durationSeconds)} icon={Timer} />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+      <div className="mt-3 sm:mt-6 grid gap-3 sm:gap-6 lg:grid-cols-3">
+        <div className="min-w-0 space-y-3 sm:space-y-6 lg:col-span-2">
           <Card>
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle>Stan pojemników: przed → po wizycie</CardTitle>
@@ -154,7 +154,7 @@ export default function SessionDetailPage() {
           </Card>
         </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-3 sm:space-y-6">
           {session.rawEventId && (
             <Card>
               <CardHeader className="flex-row items-center justify-between">
@@ -170,16 +170,16 @@ export default function SessionDetailPage() {
                 {rawEvent?.hasSnapshot && rawEvent.snapshotId && (
                   <SnapshotImage
                     snapshotId={rawEvent.snapshotId}
-                    alt="Snapshot z chwili otwarcia"
+                    alt="Zdjęcie z chwili otwarcia"
                     className="w-full rounded-xl border border-border"
                   />
                 )}
                 <DescriptionList
                   columns={1}
                   items={[
-                    { label: "Typ zdarzenia", value: rawEvent?.eventType ?? "—" },
-                    { label: "Urządzenie", value: rawEvent?.deviceIp ?? "—" },
-                    { label: "PID", value: rawEvent?.pid ?? "—" },
+                    { label: "Typ zdarzenia", value: rawEvent?.eventType ?? "-" },
+                    { label: "Urządzenie", value: rawEvent?.deviceIp ?? "-" },
+                    { label: "PID", value: rawEvent?.pid ?? "-" },
                     {
                       label: "Obraz z kamery",
                       value: rawEvent?.hasSnapshot ? (
@@ -208,11 +208,11 @@ export default function SessionDetailPage() {
               <DescriptionList
                 columns={1}
                 items={[
-                  { label: "Altanka", value: station ? <button className="text-primary hover:underline" onClick={() => router.push(`/altanki/${station.id}`)}>{station.name}</button> : "—" },
-                  { label: "Lokal", value: session.unitNumber ? `#${session.unitNumber}` : "—" },
+                  { label: "Altanka", value: station ? <button className="text-primary hover:underline" onClick={() => router.push(`/altanki/${station.id}`)}>{station.name}</button> : "-" },
+                  { label: "Lokal", value: session.unitNumber ? `#${session.unitNumber}` : "-" },
                   { label: "Klucz / karta", value: session.keyIdentifier },
                   { label: "Typ klucza", value: KEY_TYPE_LABEL[session.keyType] },
-                  { label: "Anomalia", value: session.anomaly ? "Tak — wykryto" : "Nie" },
+                  { label: "Anomalia", value: session.anomaly ? "Tak - wykryto" : "Nie" },
                 ]}
               />
             </CardContent>

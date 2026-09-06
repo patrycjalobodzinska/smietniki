@@ -26,7 +26,7 @@ import type { PlatformUser, PlatformUserState } from "@/lib/types";
 import { formatDateTime } from "@/lib/utils/format";
 
 /**
- * Platform accounts (`/v1/users`) — who can sign in, with which system role,
+ * Platform accounts (`/v1/users`) - who can sign in, with which system role,
  * plus locking and re-sending the address-confirmation e-mail.
  */
 
@@ -71,7 +71,7 @@ export default function UsersPage() {
             ))}
           </div>
         ) : (
-          <span className="text-sm text-muted-foreground">—</span>
+          <span className="text-sm text-muted-foreground">-</span>
         ),
     },
     {
@@ -123,20 +123,20 @@ export default function UsersPage() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Użytkownicy"
         description="Konta platformy: role systemowe, blokady i potwierdzenie adresu e-mail."
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
         <StatCard label="Konta" value={users.length} icon={Users} />
         <StatCard label="Zablokowane" value={locked} tone={locked ? "danger" : "default"} />
         <StatCard label="Niepotwierdzone" value={unconfirmed} tone={unconfirmed ? "warning" : "default"} />
       </div>
 
       <FilterBar>
-        <div className="min-w-56 flex-1">
+        <div className="min-w-0 flex-1 sm:min-w-56">
           <Input
             icon={<Search />}
             placeholder="Szukaj adresu e-mail..."
@@ -145,12 +145,12 @@ export default function UsersPage() {
             className="h-9"
           />
         </div>
-        <Select options={roleOptions} value={role} onChange={(e) => setRole(e.target.value)} className="h-9 w-44" />
+        <Select options={roleOptions} value={role} onChange={(e) => setRole(e.target.value)} className="h-9 w-full sm:w-44" />
         <Select
           options={STATE_OPTIONS}
           value={state}
           onChange={(e) => setState(e.target.value as PlatformUserState | "all")}
-          className="h-9 w-48"
+          className="h-9 w-full sm:w-48"
         />
       </FilterBar>
 
@@ -186,27 +186,27 @@ export default function UsersPage() {
         }
       >
         {selected && (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <DescriptionList
               columns={2}
               items={[
-                { label: "Identyfikator", value: <span className="font-mono text-xs">{selected.id}</span> },
-                { label: "Role", value: selected.roles.join(", ") || "—" },
+                { label: "Identyfikator", value: <span className="text-xs">{selected.id}</span> },
+                { label: "Role", value: selected.roles.join(", ") || "-" },
                 { label: "Status", value: selected.state === "locked" ? "Zablokowane" : "Aktywne" },
                 { label: "Email potwierdzony", value: selected.emailConfirmed ? "tak" : "nie" },
                 {
                   label: "Telefon",
                   value: selected.phone
                     ? `${selected.phonePrefix ? `+${selected.phonePrefix} ` : ""}${selected.phone}`
-                    : "—",
+                    : "-",
                 },
                 { label: "Telefon potwierdzony", value: selected.phoneConfirmed ? "tak" : "nie" },
                 { label: "Utworzone", value: formatDateTime(selected.createdAt) },
                 {
                   label: "Ostatnia zmiana hasła",
-                  value: selected.lastPasswordChangeAt ? formatDateTime(selected.lastPasswordChangeAt) : "—",
+                  value: selected.lastPasswordChangeAt ? formatDateTime(selected.lastPasswordChangeAt) : "-",
                 },
-                { label: "Rejestracja", value: selected.registrationProvider ?? "—" },
+                { label: "Rejestracja", value: selected.registrationProvider ?? "-" },
               ]}
             />
             <Link

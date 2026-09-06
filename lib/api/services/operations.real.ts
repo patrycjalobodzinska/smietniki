@@ -92,7 +92,7 @@ export const collectionsService: CollectionsService = {
     return (await this.list()).find((c) => c.id === id);
   },
 
-  /** POST /v1/collections — register a completed pickup for one container. */
+  /** POST /v1/collections - register a completed pickup for one container. */
   register(input: RegisterCollectionInput) {
     return http.post<string>("/v1/collections", {
       binStationCode: input.stationCode,
@@ -118,13 +118,13 @@ export const routesService: RoutesService = {
     return out;
   },
   async get(id: string) {
-    // No GET /routes/{id} — resolve from the list.
+    // No GET /routes/{id} - resolve from the list.
     const dtos = await getPagedItems<RouteDto>("/v1/routes");
     const dto = dtos.find((r) => r.id === id);
     return dto ? mapRoute(dto) : undefined;
   },
   // The API's POST /routes only accepts date/operator/vehicle (no stops), so
-  // stationIds can't be sent — it creates a header route we then resolve by id.
+  // stationIds can't be sent - it creates a header route we then resolve by id.
   async optimize(_stationIds: string[]): Promise<CollectionRoute> {
     const date = new Date().toISOString();
     const id = await this.plan({ date });
@@ -133,7 +133,7 @@ export const routesService: RoutesService = {
     return mapRoute(dto ?? { id, date, operatorName: null, vehicleId: null, status: "Planned" });
   },
 
-  /** POST /v1/routes — plan a route header (date, operator, vehicle). */
+  /** POST /v1/routes - plan a route header (date, operator, vehicle). */
   plan(input: RouteInput) {
     return http.post<string>("/v1/routes", {
       date: input.date,
