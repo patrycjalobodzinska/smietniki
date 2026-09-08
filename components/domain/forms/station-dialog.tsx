@@ -93,8 +93,8 @@ export function StationDialog({
   const [cooperativeId, setCooperativeId] = useState(station?.cooperativeId ?? "");
   // Współrzędne ustawia wyłącznie mapa (klik, przeciągnięcie pinu, geokoder),
   // więc trzymamy je od razu jako liczby - nie ma tekstu do walidowania.
-  const [lat, setLat] = useState<number | null>(station?.location.lat ?? null);
-  const [lng, setLng] = useState<number | null>(station?.location.lng ?? null);
+  const [lat, setLat] = useState<number | null>(station?.location?.lat ?? null);
+  const [lng, setLng] = useState<number | null>(station?.location?.lng ?? null);
   const [variant, setVariant] = useState<DeploymentVariant>(station?.deploymentVariant ?? "access");
   const [accessMode, setAccessMode] = useState<AccessMode>(station?.accessMode ?? "rfid");
   const [hasCamera, setHasCamera] = useState(station?.hasCamera ?? false);

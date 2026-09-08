@@ -11,6 +11,7 @@ import {
   Camera,
   KeyRound,
   Maximize2,
+  MapPinOff,
   Info,
   Pencil,
   Plus,
@@ -26,6 +27,7 @@ import {
   DataTable,
   Button,
   Dialog,
+  EmptyState,
   Spinner,
   type Column,
 } from "@/components/ui";
@@ -150,11 +152,23 @@ export default function StationDetailPage() {
             <Card>
               <CardHeader className="flex-row items-center justify-between">
                 <CardTitle>Pozycja</CardTitle>
-                <Button size="sm" variant="ghost" onClick={() => setMapOpen(true)}>
-                  <Maximize2 /> Powiększ
-                </Button>
+                {station.location && (
+                  <Button size="sm" variant="ghost" onClick={() => setMapOpen(true)}>
+                    <Maximize2 /> Powiększ
+                  </Button>
+                )}
               </CardHeader>
-              <CardContent><StationMap stations={[station]} height={220} /></CardContent>
+              <CardContent>
+                {station.location ? (
+                  <StationMap stations={[station]} height={220} />
+                ) : (
+                  <EmptyState
+                    icon={MapPinOff}
+                    title="Brak pozycji na mapie"
+                    description="Altanka nie ma ustawionych współrzędnych. Wskaż je w edycji altanki."
+                  />
+                )}
+              </CardContent>
             </Card>
           </div>
 
@@ -227,7 +241,7 @@ export default function StationDetailPage() {
         </div>
       </div>
 
-      {mapOpen && (
+      {mapOpen && station.location && (
         <Dialog
           open
           onClose={() => setMapOpen(false)}

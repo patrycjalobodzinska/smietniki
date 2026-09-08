@@ -110,7 +110,8 @@ export interface BinStation {
   name: string;
   address: string;
   district: string;
-  location: GeoPoint;
+  /** null, gdy altanka nie ma jeszcze ustawionej pozycji na mapie. */
+  location: GeoPoint | null;
   cooperativeId: string;
   status: StationStatus;
   deploymentVariant: DeploymentVariant;

@@ -178,8 +178,8 @@ export interface BinStationDto {
   district: string;
   /** Present only on the detail endpoint; the list omits it. */
   cooperativeId?: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   deploymentVariant: string;
   accessMode: string;
   hasCamera: boolean;
@@ -303,7 +303,11 @@ export function mapStation(
     name: dto.name,
     address: dto.address ?? "",
     district: dto.district,
-    location: { lat: dto.latitude, lng: dto.longitude },
+    // API dopuszcza altanke bez pozycji - wtedy nie ma czego pokazac na mapie.
+    location:
+      typeof dto.latitude === "number" && typeof dto.longitude === "number"
+        ? { lat: dto.latitude, lng: dto.longitude }
+        : null,
     cooperativeId: cooperativeId ?? dto.cooperativeId ?? "",
     status: toStationStatus(dto.status),
     deploymentVariant: toDeploymentVariant(dto.deploymentVariant),

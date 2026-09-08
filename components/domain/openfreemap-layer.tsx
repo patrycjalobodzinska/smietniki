@@ -28,7 +28,19 @@ const ATTRIBUTION =
   '&copy; <a href="https://www.openmaptiles.org/" target="_blank" rel="noreferrer">OpenMapTiles</a> ' +
   'dane &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>';
 
-export function OpenFreeMapLayer({ dark }: { dark: boolean }) {
+export function OpenFreeMapLayer({
+  dark,
+  onReady,
+}: {
+  dark: boolean;
+  /**
+   * Wołane, gdy MapLibre wczyta styl. Dopóki styl się nie wczyta, każda zmiana
+   * widoku Leafleta (np. `fitBounds`) idzie do nieprzygotowanej transformacji
+   * MapLibre i wywraca się w środku biblioteki - dlatego dopasowanie kadru
+   * czeka na ten sygnał.
+   */
+  onReady?: () => void;
+}) {
   const map = useMap();
 
   useEffect(() => {
@@ -39,6 +51,27 @@ export function OpenFreeMapLayer({ dark }: { dark: boolean }) {
     });
     layer.addTo(map);
 
+    /**
+     * `map.addLayer` odkłada `onAdd` przez `whenReady`, więc instancja MapLibre
+     * powstaje dopiero wtedy - sięganie po nią od razu zwracało `undefined`.
+     * Sygnał gotowości wysyłamy zawsze, także gdy nie da się go dopiąć do
+     * zdarzenia `load`, żeby dopasowanie kadru nie zostało zablokowane.
+     */
+    let signalled = false;
+    const signal = () => {
+      if (signalled) return;
+      signalled = true;
+      onReady?.();
+    };
+
+    map.whenReady(() => {
+      const gl = layer.getMaplibreMap();
+      if (!gl) return signal();
+      if (gl.isStyleLoaded()) return signal();
+      gl.once("load", signal);
+      gl.once("error", signal);
+    });
+
     const credit = L.control.attribution({ prefix: false, position: "bottomright" });
     credit.addAttribution(ATTRIBUTION);
     credit.addTo(map);
@@ -47,6 +80,9 @@ export function OpenFreeMapLayer({ dark }: { dark: boolean }) {
       credit.remove();
       layer.remove();
     };
+    // `onReady` celowo poza zależnościami - jego zmiana nie ma przebudowywać
+    // warstwy GL, a wywołanie jest jednorazowe na cykl życia stylu.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, dark]);
 
   return null;

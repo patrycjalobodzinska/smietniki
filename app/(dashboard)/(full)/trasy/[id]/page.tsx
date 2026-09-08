@@ -44,10 +44,12 @@ export default function RouteDetailPage() {
 
   const stops = criticalOnly ? route.stops.filter((s) => s.critical) : route.stops;
   const routeStations = route.stops.map((s) => stationById[s.stationId]).filter(Boolean);
+  // Przystanek bez pozycji altanki wypada z linii trasy - inaczej `null`
+  // trafiłby do współrzędnych polilinii.
   const routePath = route.stops
-    .map((s) => stationById[s.stationId])
-    .filter(Boolean)
-    .map((s) => [s.location.lat, s.location.lng] as LatLngExpression);
+    .map((s) => stationById[s.stationId]?.location)
+    .filter((p): p is NonNullable<typeof p> => !!p)
+    .map((p) => [p.lat, p.lng] as LatLngExpression);
 
   const vehicle = vehicles?.find((v) => v.id === route.vehicleId);
   const criticalCount = route.stops.filter((s) => s.critical).length;
