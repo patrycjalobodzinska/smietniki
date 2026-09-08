@@ -9,7 +9,6 @@ import { DonutChart } from "@/components/charts";
 import { useStations, useContainers } from "@/lib/api/hooks/use-infrastructure";
 import { useDashboardSummary } from "@/lib/api/hooks/use-dashboard";
 import { fillTone } from "@/lib/types";
-import { formatDateTime } from "@/lib/utils/format";
 
 const StationMap = dynamic(
   () => import("@/components/domain/station-map").then((m) => m.StationMap),
@@ -61,14 +60,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-w-0 space-y-3 sm:space-y-6">
-      <PageHeader
-        title="Dashboard"
-        description={
-          summary
-            ? `Bieżący stan infrastruktury odpadowej. Dane z systemu, stan na ${formatDateTime(summary.generatedAt)}.`
-            : "Bieżący stan infrastruktury odpadowej."
-        }
-      />
+      <PageHeader title="Dashboard" />
 
       {/* Jedna sekcja KPI: infrastruktura z list + telemetria z /v1/dashboard/summary */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 [&>*]:flex [&>*]:min-h-[7.5rem] [&>*]:flex-col [&>*]:justify-center">

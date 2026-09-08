@@ -125,10 +125,7 @@ export default function FilesPage() {
 
   return (
     <div className="space-y-3 sm:space-y-6">
-      <PageHeader
-        title="Pliki"
-        description="Magazyn plików platformy - wgrywanie, podgląd po identyfikatorze i usuwanie."
-      />
+      <PageHeader title="Pliki" />
 
       <div className="grid gap-3 sm:gap-6 lg:grid-cols-2">
         <Card>

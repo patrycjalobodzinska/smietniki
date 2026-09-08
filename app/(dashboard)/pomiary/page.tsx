@@ -89,7 +89,6 @@ export default function MeasurementsPage() {
     <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Pomiary zapełnienia"
-        description="Odczyty automatyczne i wpisy ręczne."
         actions={
           <Button onClick={() => setAddOpen(true)}>
             <Plus className="size-4" />

@@ -109,10 +109,7 @@ function FeatureCard({ f }: { f: Feature }) {
 export default function FeaturesPage() {
   return (
     <div className="space-y-3 sm:space-y-6">
-      <PageHeader
-        title="Wszystkie funkcje"
-        description="Pełen zakres platformy - wszystkie moduły działają na danych na żywo z systemu."
-      />
+      <PageHeader title="Wszystkie funkcje" />
       {GROUPS.map((g) => (
         <section key={g.title} className="space-y-3">
           <div>

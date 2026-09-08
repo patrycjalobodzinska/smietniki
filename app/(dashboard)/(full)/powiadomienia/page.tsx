@@ -144,7 +144,6 @@ export default function PushPage() {
     <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Powiadomienia push"
-        description="Dziennik powiadomień wysłanych do aplikacji mobilnych."
         actions={
           <Button variant="outline" onClick={() => setRegisterOpen(true)}>
             <Smartphone /> Zarejestruj urządzenie

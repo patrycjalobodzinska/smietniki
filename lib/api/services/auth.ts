@@ -26,7 +26,7 @@ export const authService = {
     return http.post<UserDto>("/v1/account/refresh-cookie/web").then(mapUser);
   },
 
-  /* ---- Self-service account recovery / registration ---------------- */
+  /* ---- Odzyskiwanie hasła i potwierdzenie adresu ------------------- */
 
   /** Step 1 of a password reset: emails a reset token to the address. */
   requestPasswordReset(email: string): Promise<void> {
@@ -45,15 +45,6 @@ export const authService = {
       token: input.token.trim(),
       password: input.password,
       confirmPassword: input.confirmPassword,
-    });
-  },
-
-  /** Creates an account; returns the new user id. */
-  signUp(email: string, password: string, confirmPassword: string): Promise<{ userId: string }> {
-    return http.post<{ userId: string }>("/v1/account/sign-up", {
-      email: email.trim(),
-      password,
-      confirmPassword,
     });
   },
 

@@ -12,6 +12,10 @@ import type { Device } from "@/lib/types";
  *
  * The assignment is what lets sessions, measurements and snapshots resolve a
  * station - an unassigned device shows up in the UI as a bare device key.
+ *
+ * Czytnik RFID obsługuje wejście do altanki, nie pojedynczy pojemnik, więc dla
+ * tego źródła pole pojemnika nie jest pokazywane, a `containerCode` leci jako
+ * null - również po to, żeby wyczyścić błędne przypisanie z przeszłości.
  */
 export function DeviceDialog({
   open,
@@ -32,6 +36,10 @@ export function DeviceDialog({
   const [containerCode, setContainerCode] = useState(device.containerCode ?? "");
   const [error, setError] = useState<string | null>(null);
 
+  // Kamera i czujnik zapełnienia patrzą na konkretny pojemnik; czytnik RFID
+  // obsługuje wejście do całej altanki, więc pojemnika nie wybiera.
+  const canAssignContainer = device.source !== "rfid";
+
   const stationId = (stations ?? []).find((s) => s.code === stationCode)?.id;
   const containerOptions = [
     { value: "", label: "- bez pojemnika -" },
@@ -51,11 +59,12 @@ export function DeviceDialog({
     setError(null);
     try {
       if (name.trim() !== device.name) await rename.mutateAsync({ id: device.id, name });
-      if (stationCode !== (device.stationCode ?? "") || containerCode !== (device.containerCode ?? "")) {
+      const nextContainer = canAssignContainer ? containerCode || null : null;
+      if (stationCode !== (device.stationCode ?? "") || nextContainer !== (device.containerCode ?? null)) {
         await assign.mutateAsync({
           deviceId: device.id,
           stationCode: stationCode || null,
-          containerCode: containerCode || null,
+          containerCode: nextContainer,
         });
       }
       onClose();
@@ -98,16 +107,23 @@ export function DeviceDialog({
             />
           )}
         </Field>
-        <Field label="Pojemnik" hint="Dla czujników zapełnienia - wskazuje mierzony pojemnik.">
-          {({ id }) => (
-            <Select
-              id={id}
-              options={containerOptions}
-              value={containerCode}
-              onChange={(e) => setContainerCode(e.target.value)}
-            />
-          )}
-        </Field>
+        {canAssignContainer ? (
+          <Field label="Pojemnik" hint="Pojemnik, który urządzenie mierzy lub obserwuje. Opcjonalny.">
+            {({ id }) => (
+              <Select
+                id={id}
+                options={containerOptions}
+                value={containerCode}
+                onChange={(e) => setContainerCode(e.target.value)}
+              />
+            )}
+          </Field>
+        ) : (
+          <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
+            Czytnik RFID kontroluje wejście do altanki, więc nie przypisuje się go do
+            pojedynczego pojemnika.
+          </p>
+        )}
         {error && <p className="text-sm text-danger">{error}</p>}
       </div>
     </Dialog>

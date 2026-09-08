@@ -79,7 +79,11 @@ export default function DevicesPage() {
         d.stationCode ? (
           <div>
             <p className="text-sm">{d.stationCode}</p>
-            {d.containerCode && <p className="text-xs text-muted-foreground">{d.containerCode}</p>}
+            {/* Czytnik RFID obsługuje wejście do altanki - kod pojemnika, gdyby
+                został w danych, nie ma tu znaczenia. */}
+            {d.source !== "rfid" && d.containerCode && (
+              <p className="text-xs text-muted-foreground">{d.containerCode}</p>
+            )}
           </div>
         ) : (
           <Badge variant="warning">brak przypisania</Badge>
@@ -111,10 +115,7 @@ export default function DevicesPage() {
 
   return (
     <div className="space-y-3 sm:space-y-4">
-      <PageHeader
-        title="Urządzenia"
-        description="Urządzenia OT (kamery, czytniki RFID) - stan łączności i przypisanie do altanek."
-      />
+      <PageHeader title="Urządzenia" />
 
       <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
         <StatCard label="Urządzenia" value={devices.length} />

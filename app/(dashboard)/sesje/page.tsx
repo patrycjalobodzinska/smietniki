@@ -57,7 +57,7 @@ function SessionsList() {
 
   return (
     <div className="space-y-3 sm:space-y-4">
-      <PageHeader title="Otwarcia altanek" description="Historia wejść do altanek: kto, kiedy i jakim kluczem." />
+      <PageHeader title="Otwarcia altanek" />
       <FilterBar>
         <div className="min-w-0 flex-1 sm:min-w-48">
           <Input icon={<Search />} placeholder="Szukaj klucza, altanki, lokalu..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-9" />

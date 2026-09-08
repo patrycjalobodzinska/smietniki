@@ -124,10 +124,7 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-3 sm:space-y-4">
-      <PageHeader
-        title="Użytkownicy"
-        description="Konta platformy: role systemowe, blokady i potwierdzenie adresu e-mail."
-      />
+      <PageHeader title="Użytkownicy" />
 
       <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
         <StatCard label="Konta" value={users.length} icon={Users} />

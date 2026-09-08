@@ -59,7 +59,6 @@ export default function CollectionsPage() {
     <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Odbiory"
-        description="Historia i bieżące operacje odbioru odpadów."
         actions={
           <Button onClick={() => setRegisterOpen(true)}>
             <Plus /> Zarejestruj odbiór

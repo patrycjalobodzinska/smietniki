@@ -61,7 +61,6 @@ export default function RoutesPage() {
     <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Trasy PGK"
-        description="Planowanie i optymalizacja tras odbioru odpadów."
         actions={
           <Button onClick={() => setPlanOpen(true)}>
             <Plus /> Zaplanuj trasę

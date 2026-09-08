@@ -200,11 +200,6 @@ export default function KeysPage() {
     <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Klucze dostępu"
-        description={
-          fullMode
-            ? "Wydane klucze/karty RFID przypisane do lokali i kontrola ich statusu."
-            : "Wydane klucze/karty RFID i kontrola ich statusu."
-        }
         actions={
           fullMode ? (
             <Button onClick={() => setIssueOpen(true)}>

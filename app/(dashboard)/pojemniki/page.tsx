@@ -77,7 +77,6 @@ export default function ContainersPage() {
     <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Pojemniki"
-        description="Pojemniki osiedlowe ze statusem zapełnienia i źródłem danych."
         actions={
           <Button onClick={() => setAddOpen(true)}>
             <Plus className="size-4" />

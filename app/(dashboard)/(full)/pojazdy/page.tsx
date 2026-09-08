@@ -40,7 +40,6 @@ export default function VehiclesPage() {
     <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Pojazdy"
-        description="Flota realizująca odbiory - przypisywana do tras i pojedynczych odbiorów."
         actions={
           <Button onClick={() => setAddOpen(true)}>
             <Plus /> Dodaj pojazd

@@ -79,10 +79,7 @@ export default function EmailsPage() {
 
   return (
     <div className="space-y-3 sm:space-y-4">
-      <PageHeader
-        title="Wiadomości e-mail"
-        description="Dziennik wiadomości transakcyjnych wysłanych przez platformę."
-      />
+      <PageHeader title="Wiadomości e-mail" />
 
       <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3">
         <StatCard label="Wiadomości" value={emails.length} icon={Mail} />

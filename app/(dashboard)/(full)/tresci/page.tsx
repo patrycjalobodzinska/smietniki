@@ -232,7 +232,6 @@ export default function ContentPage() {
     <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Treści"
-        description="Artykuły i komunikaty dla mieszkańców wraz z kategoriami."
         actions={
           tab === "articles" ? (
             <Button onClick={() => setAddOpen(true)}>

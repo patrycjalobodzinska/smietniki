@@ -84,7 +84,6 @@ export default function PropertiesPage() {
     <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Nieruchomości i lokale"
-        description="Relacja lokal → liczba mieszkańców → liczba aktywnych kluczy."
         actions={
           <Button onClick={() => setAddOpen(true)}>
             <Plus /> Dodaj nieruchomość

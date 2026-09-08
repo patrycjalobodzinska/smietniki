@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { Button, Input, Field } from "@/components/ui";
@@ -78,7 +77,7 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <div className="mt-4 flex items-center justify-between text-xs">
+      <div className="mt-4 text-center text-xs">
         <button
           type="button"
           onClick={() => setResetOpen(true)}
@@ -86,9 +85,6 @@ export default function LoginPage() {
         >
           Nie pamiętam hasła
         </button>
-        <Link href="/rejestracja" className="font-medium text-primary hover:underline">
-          Utwórz konto
-        </Link>
       </div>
 
       <p className="mt-4 text-center text-xs text-muted-foreground">

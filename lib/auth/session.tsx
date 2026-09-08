@@ -75,7 +75,7 @@ interface SessionContextValue {
 const SessionContext = createContext<SessionContextValue | null>(null);
 
 /** Screens reachable without a session (login, registration, e-mail confirm). */
-const PUBLIC_PATHS = ["/login", "/rejestracja", "/potwierdzenie"];
+const PUBLIC_PATHS = ["/login", "/potwierdzenie", "/reset-hasla"];
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [role, setRole] = useState<Role>("city_admin");

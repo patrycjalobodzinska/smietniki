@@ -82,10 +82,7 @@ function ActivityList() {
 
   return (
     <div className="space-y-3 sm:space-y-4">
-      <PageHeader
-        title="Aktywność użytkowników"
-        description="Dziennik audytowy platformy - logowania, zmiany haseł, blokady i zdarzenia domenowe."
-      />
+      <PageHeader title="Aktywność użytkowników" />
 
       <FilterBar>
         <div className="min-w-0 flex-1 sm:min-w-56">

@@ -152,9 +152,7 @@ function RawEventsList() {
 
   return (
     <div className="space-y-3 sm:space-y-4">
-      <PageHeader
-        title="Zdarzenia z urządzeń"
-      />
+      <PageHeader title="Zdarzenia z urządzeń" />
 
       <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
         <StatCard label="Zdarzenia (filtr)" value={events.length} />

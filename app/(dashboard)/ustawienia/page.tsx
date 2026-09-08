@@ -191,7 +191,7 @@ export default function SettingsPage() {
 
   return (
     <div className="min-w-0 space-y-3 sm:space-y-6">
-      <PageHeader title="Ustawienia" description="Konto użytkownika, bezpieczeństwo i preferencje interfejsu." />
+      <PageHeader title="Ustawienia" />
 
       <div className="grid gap-3 sm:gap-6 lg:grid-cols-2">
         <Card className="min-w-0 lg:col-span-2">

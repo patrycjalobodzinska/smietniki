@@ -72,7 +72,6 @@ export default function CooperativesPage() {
     <div className="space-y-3 sm:space-y-4">
       <PageHeader
         title="Spółdzielnie / zarządcy"
-        description="Podmioty odpowiedzialne za osiedlową infrastrukturę odpadową."
         actions={
           <Button onClick={() => setAddOpen(true)}>
             <Plus /> Dodaj spółdzielnię
