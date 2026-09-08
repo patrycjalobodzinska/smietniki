@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import { useIsDark } from "@/lib/hooks/use-is-dark";
+import { OpenFreeMapLayer } from "@/components/domain/openfreemap-layer";
 
 /**
  * Wybór punktu na mapie dla formularza altanki: przeciągalny pin, klik w mapę
@@ -67,20 +68,6 @@ export function LocationPicker({ lat, lng, onChange, height = 260, flyToken = 0 
   const placed = lat !== null && lng !== null;
   const position = useMemo<[number, number]>(() => (placed ? [lat, lng] : FALLBACK), [placed, lat, lng]);
 
-  /**
-   * Podkład CARTO Voyager (dane OSM, bez klucza API) rozbity na dwie warstwy:
-   * sam rysunek mapy w `tilePane` i nazwy w `overlayPane`. Dzięki temu etykiety
-   * leżą nad drogami i plamami zieleni, ale pod pinami - nie zasłaniają
-   * markerów, a mapa nie jest kaszą jak surowe kafelki OSM.
-   */
-  const style = dark ? "dark" : "voyager";
-  const baseUrl = `https://{s}.basemaps.cartocdn.com/rastertiles/${style}_nolabels/{z}/{x}/{y}{r}.png`;
-  const labelsUrl = `https://{s}.basemaps.cartocdn.com/rastertiles/${style}_only_labels/{z}/{x}/{y}{r}.png`;
-  const subdomains = ["a", "b", "c", "d"];
-  // Licencja OSM/CARTO wymaga widocznego źródła kafelków.
-  const attribution =
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
-
   return (
     <div className="relative isolate z-0 overflow-hidden rounded-xl border border-border" style={{ height }}>
       <MapContainer
@@ -88,10 +75,11 @@ export function LocationPicker({ lat, lng, onChange, height = 260, flyToken = 0 
         zoom={placed ? 16 : 12}
         scrollWheelZoom
         style={{ height: "100%", width: "100%", background: "var(--color-muted)" }}
+        // Atrybucję dokłada OpenFreeMapLayer - domyślna kontrolka Leafleta
+        // pokazywałaby obok pusty box z samym odnośnikiem do Leafleta.
+        attributionControl={false}
       >
-        <TileLayer url={baseUrl} subdomains={subdomains} attribution={attribution} />
-        {/* Etykiety osobno, w overlayPane - pod markerami, nad podkładem. */}
-        <TileLayer url={labelsUrl} subdomains={subdomains} pane="overlayPane" />
+        <OpenFreeMapLayer dark={dark} />
         <Recenter position={position} flyToken={flyToken} />
         <ClickToPlace onPick={onChange} />
         {placed && (
