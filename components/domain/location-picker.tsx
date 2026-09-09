@@ -75,6 +75,11 @@ export function LocationPicker({ lat, lng, onChange, height = 260, flyToken = 0 
         zoom={placed ? 16 : 12}
         scrollWheelZoom
         style={{ height: "100%", width: "100%", background: "var(--color-muted)" }}
+        // Zakres zoomu podawała wcześniej warstwa kafelków rastrowych; warstwa
+        // wektorowa nie zgłasza żadnego, a bez niego Leaflet dopuszcza zoom
+        // nieskończony, którego MapLibre nie przyjmuje.
+        minZoom={3}
+        maxZoom={19}
         // Atrybucję dokłada OpenFreeMapLayer - domyślna kontrolka Leafleta
         // pokazywałaby obok pusty box z samym odnośnikiem do Leafleta.
         attributionControl={false}

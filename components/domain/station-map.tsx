@@ -42,6 +42,9 @@ function pinIcon(level: number | null): DivIcon {
   return icon;
 }
 
+/** Zoom dla pojedynczej altanki - `fitBounds` nie ma z czego go wyliczyć. */
+const SINGLE_POINT_ZOOM = 16;
+
 function FitBounds({ bounds }: { bounds: LatLngBoundsExpression | null }) {
   const map = useMap();
   useEffect(() => {
@@ -50,7 +53,21 @@ function FitBounds({ bounds }: { bounds: LatLngBoundsExpression | null }) {
     // `fitBounds` w środku Leafleta - sprawdzamy je, zanim tam trafią.
     const box = bounds instanceof L.LatLngBounds ? bounds : L.latLngBounds(bounds);
     if (!box.isValid()) return;
-    map.fitBounds(box, { padding: [40, 40] });
+
+    /**
+     * Jedna altanka to granice o zerowym rozmiarze, z których `getBoundsZoom`
+     * wylicza zoom nieskończony. Leaflet przycina go do `maxZoom`, więc trzeba
+     * go podać jawnie - wcześniej dostarczała go warstwa kafelków rastrowych
+     * (domyślnie 18), a warstwa wektorowa już nie. Bez tego Infinity trafiał do
+     * MapLibre i wywracał jego transformację.
+     */
+    if (box.getNorthEast().equals(box.getSouthWest())) {
+      map.setView(box.getCenter(), SINGLE_POINT_ZOOM, { animate: false });
+      return;
+    }
+
+    // Bez animacji: to ustawienie kadru startowego, nie reakcja na gest.
+    map.fitBounds(box, { padding: [40, 40], maxZoom: SINGLE_POINT_ZOOM + 1, animate: false });
   }, [bounds, map]);
   return null;
 }
@@ -94,6 +111,11 @@ export function StationMap({ stations, routePath, height = 360 }: StationMapProp
         zoom={13}
         scrollWheelZoom={false}
         style={{ height: "100%", width: "100%", background: "var(--color-muted)" }}
+        // Zakres zoomu podawała wcześniej warstwa kafelków rastrowych; warstwa
+        // wektorowa nie zgłasza żadnego, a bez niego Leaflet dopuszcza zoom
+        // nieskończony, którego MapLibre nie przyjmuje.
+        minZoom={3}
+        maxZoom={19}
         // Atrybucję dokłada OpenFreeMapLayer - domyślna kontrolka Leafleta
         // pokazywałaby obok pusty box z samym odnośnikiem do Leafleta.
         attributionControl={false}
