@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
 import { maplibreGL } from "@maplibre/maplibre-gl-leaflet";
+import { setWorkerUrl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 /**
@@ -16,6 +17,15 @@ import "maplibre-gl/dist/maplibre-gl.css";
  * zostaje w Leaflecie, bo etykiety i drogi rysuje jedna warstwa GL, a markery
  * i tak leżą nad nią.
  */
+
+/**
+ * MapLibre domyślnie szuka workera obok własnego modułu, a pod bundlerem jest
+ * nim chunk w `/_next/static/chunks/` - pod tym adresem workera nie ma i
+ * przeglądarka dostaje stronę 404 w HTML-u ("non-JavaScript MIME type"),
+ * po czym mapa zostaje pustym płótnem. Serwujemy go więc z `public/maplibre/`
+ * (kopiuje tam skrypt `copy-maplibre-worker`, wołany w `predev`/`prebuild`).
+ */
+setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 
 const STYLES = {
   light: "https://tiles.openfreemap.org/styles/positron",
@@ -66,10 +76,18 @@ export function OpenFreeMapLayer({
 
     map.whenReady(() => {
       const gl = layer.getMaplibreMap();
-      if (!gl) return signal();
+      if (!gl) {
+        console.error("[OpenFreeMap] Leaflet dodał warstwę, ale instancja MapLibre nie powstała.");
+        return signal();
+      }
+      // Błędy stylu i kafelków wypisujemy jawnie - bez tego pusta mapa nie
+      // daje żadnej wskazówki, co się nie udało.
+      gl.on("error", (e) => {
+        console.error("[OpenFreeMap] MapLibre:", e.error?.message ?? e);
+        signal();
+      });
       if (gl.isStyleLoaded()) return signal();
       gl.once("load", signal);
-      gl.once("error", signal);
     });
 
     const credit = L.control.attribution({ prefix: false, position: "bottomright" });
@@ -78,7 +96,14 @@ export function OpenFreeMapLayer({
 
     return () => {
       credit.remove();
-      layer.remove();
+      try {
+        layer.remove();
+      } catch (e) {
+        // Wtyczka sprząta `_glMap` bezwarunkowo; jeśli Leaflet nie zdążył
+        // wywołać `onAdd`, jej `onRemove` rzuca. To tylko porządki, więc nie
+        // może wywalić drzewa Reacta razem z mapą.
+        console.error("[OpenFreeMap] błąd przy usuwaniu warstwy:", e);
+      }
     };
     // `onReady` celowo poza zależnościami - jego zmiana nie ma przebudowywać
     // warstwy GL, a wywołanie jest jednorazowe na cykl życia stylu.
